@@ -19,6 +19,9 @@ export class Business {
     @Field(() => Boolean, { defaultValue: false })
     isActive: boolean;
 
+    @Field(() => Boolean, { defaultValue: false })
+    isSubscriptionActive: boolean;
+
     @Field(() => SubscriptionPlan, { nullable: true })
     subscriptionPlan?: SubscriptionPlan;
 

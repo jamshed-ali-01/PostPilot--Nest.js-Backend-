@@ -19,6 +19,7 @@ let Business = class Business {
     logo;
     theme;
     isActive;
+    isSubscriptionActive;
     subscriptionPlan;
     subscriptionPlanId;
     users;
@@ -48,6 +49,10 @@ __decorate([
     (0, graphql_1.Field)(() => Boolean, { defaultValue: false }),
     __metadata("design:type", Boolean)
 ], Business.prototype, "isActive", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => Boolean, { defaultValue: false }),
+    __metadata("design:type", Boolean)
+], Business.prototype, "isSubscriptionActive", void 0);
 __decorate([
     (0, graphql_1.Field)(() => subscription_plan_entity_1.SubscriptionPlan, { nullable: true }),
     __metadata("design:type", subscription_plan_entity_1.SubscriptionPlan)

@@ -27,11 +27,17 @@ let BusinessesResolver = class BusinessesResolver {
     async createBusiness(name) {
         return this.businessesService.create(name);
     }
-    async toggleBusinessSubscription(businessId, isActive, user) {
+    async toggleActiveStatus(businessId, isActive, user) {
+        if (!user.isSystemAdmin) {
+            throw new Error("Unauthorized: Only System Admins can toggle account active status.");
+        }
+        return this.businessesService.toggleActiveStatus(businessId, isActive);
+    }
+    async toggleBusinessSubscription(businessId, isSubscriptionActive, user) {
         if (!user.isSystemAdmin) {
             throw new Error("Unauthorized: Only System Admins can toggle subscriptions.");
         }
-        return this.businessesService.toggleSubscription(businessId, isActive);
+        return this.businessesService.toggleSubscription(businessId, isSubscriptionActive);
     }
     async purchaseSubscription(planId, user) {
         if (!user.businessId) {
@@ -44,6 +50,13 @@ let BusinessesResolver = class BusinessesResolver {
     }
     async findOne(id) {
         return this.businessesService.findOne(id);
+    }
+    async deleteBusiness(businessId, user) {
+        if (!user.isSystemAdmin) {
+            throw new Error("Unauthorized: Only System Admins can delete businesses.");
+        }
+        await this.businessesService.deleteBusiness(businessId);
+        return true;
     }
 };
 exports.BusinessesResolver = BusinessesResolver;
@@ -59,6 +72,16 @@ __decorate([
     (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard),
     __param(0, (0, graphql_1.Args)('businessId')),
     __param(1, (0, graphql_1.Args)('isActive')),
+    __param(2, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Boolean, Object]),
+    __metadata("design:returntype", Promise)
+], BusinessesResolver.prototype, "toggleActiveStatus", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => business_entity_1.Business),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard),
+    __param(0, (0, graphql_1.Args)('businessId')),
+    __param(1, (0, graphql_1.Args)('isSubscriptionActive')),
     __param(2, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Boolean, Object]),
@@ -86,6 +109,15 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], BusinessesResolver.prototype, "findOne", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => Boolean),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard),
+    __param(0, (0, graphql_1.Args)('businessId')),
+    __param(1, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], BusinessesResolver.prototype, "deleteBusiness", null);
 exports.BusinessesResolver = BusinessesResolver = __decorate([
     (0, graphql_1.Resolver)(() => business_entity_1.Business),
     __metadata("design:paramtypes", [businesses_service_1.BusinessesService])

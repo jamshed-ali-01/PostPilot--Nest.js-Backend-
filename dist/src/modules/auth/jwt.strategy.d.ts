@@ -20,6 +20,7 @@ export declare class JwtStrategy extends JwtStrategy_base {
             logo: string | null;
             theme: string | null;
             isActive: boolean;
+            isSubscriptionActive: boolean;
             subscriptionPlanId: string | null;
             stripeCustomerId: string | null;
             stripeSubscriptionId: string | null;

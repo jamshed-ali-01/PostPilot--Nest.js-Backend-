@@ -6,6 +6,7 @@ export declare class Business {
     logo?: string;
     theme: string;
     isActive: boolean;
+    isSubscriptionActive: boolean;
     subscriptionPlan?: SubscriptionPlan;
     subscriptionPlanId?: string;
     users: User[];

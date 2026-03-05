@@ -6,8 +6,8 @@ export declare class TestimonialsResolver {
     submitTestimonial(input: CreateTestimonialInput): Promise<{
         id: string;
         name: string;
-        businessId: string;
         createdAt: Date;
+        businessId: string;
         content: string;
         status: import(".prisma/client").$Enums.TestimonialStatus;
         area: string;
@@ -15,25 +15,25 @@ export declare class TestimonialsResolver {
     findAll(businessId: string): Promise<{
         id: string;
         name: string;
-        businessId: string;
         createdAt: Date;
+        businessId: string;
         content: string;
         status: import(".prisma/client").$Enums.TestimonialStatus;
         area: string;
     }[]>;
     approveTestimonial(id: string, user: any): Promise<{
         id: string;
-        businessId: string;
         createdAt: Date;
         updatedAt: Date;
+        businessId: string;
         content: string;
         mediaUrls: string[];
-        status: import(".prisma/client").$Enums.PostStatus;
         scheduledAt: Date | null;
-        publishedAt: Date | null;
-        authorId: string;
         targetingRegions: string[];
         platformIds: string[];
+        authorId: string;
+        status: import(".prisma/client").$Enums.PostStatus;
+        publishedAt: Date | null;
         reach: number;
         impressions: number;
         likes: number;

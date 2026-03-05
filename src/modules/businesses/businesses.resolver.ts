@@ -16,15 +16,28 @@ export class BusinessesResolver {
 
     @Mutation(() => Business)
     @UseGuards(GqlAuthGuard)
-    async toggleBusinessSubscription(
+    async toggleActiveStatus(
         @Args('businessId') businessId: string,
         @Args('isActive') isActive: boolean,
         @CurrentUser() user: any
     ) {
         if (!user.isSystemAdmin) {
+            throw new Error("Unauthorized: Only System Admins can toggle account active status.");
+        }
+        return this.businessesService.toggleActiveStatus(businessId, isActive);
+    }
+
+    @Mutation(() => Business)
+    @UseGuards(GqlAuthGuard)
+    async toggleBusinessSubscription(
+        @Args('businessId') businessId: string,
+        @Args('isSubscriptionActive') isSubscriptionActive: boolean,
+        @CurrentUser() user: any
+    ) {
+        if (!user.isSystemAdmin) {
             throw new Error("Unauthorized: Only System Admins can toggle subscriptions.");
         }
-        return this.businessesService.toggleSubscription(businessId, isActive);
+        return this.businessesService.toggleSubscription(businessId, isSubscriptionActive);
     }
 
     @Mutation(() => Business)
@@ -47,5 +60,18 @@ export class BusinessesResolver {
     @Query(() => Business, { name: 'business' })
     async findOne(@Args('id') id: string) {
         return this.businessesService.findOne(id);
+    }
+
+    @Mutation(() => Boolean)
+    @UseGuards(GqlAuthGuard)
+    async deleteBusiness(
+        @Args('businessId') businessId: string,
+        @CurrentUser() user: any
+    ) {
+        if (!user.isSystemAdmin) {
+            throw new Error("Unauthorized: Only System Admins can delete businesses.");
+        }
+        await this.businessesService.deleteBusiness(businessId);
+        return true;
     }
 }

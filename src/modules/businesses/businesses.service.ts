@@ -58,10 +58,17 @@ export class BusinessesService {
         return business;
     }
 
-    async toggleSubscription(id: string, isActive: boolean) {
+    async toggleActiveStatus(id: string, isActive: boolean) {
         return this.prisma.business.update({
             where: { id },
             data: { isActive },
+        });
+    }
+
+    async toggleSubscription(id: string, isSubscriptionActive: boolean) {
+        return this.prisma.business.update({
+            where: { id },
+            data: { isSubscriptionActive },
         });
     }
 
@@ -87,6 +94,14 @@ export class BusinessesService {
     async findAll() {
         return this.prisma.business.findMany({
             include: { users: true, subscriptionPlan: true },
+        });
+    }
+
+
+
+    async deleteBusiness(id: string) {
+        return this.prisma.business.delete({
+            where: { id },
         });
     }
 }

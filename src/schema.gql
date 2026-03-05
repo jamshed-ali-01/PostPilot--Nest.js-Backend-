@@ -30,6 +30,7 @@ type Business {
   logo: String
   theme: String!
   isActive: Boolean!
+  isSubscriptionActive: Boolean!
   subscriptionPlan: SubscriptionPlan
   subscriptionPlanId: String
   users: [User!]!
@@ -203,8 +204,10 @@ type Mutation {
   assignRoleToUser(userId: String!, roleId: String!): Boolean!
   createPermission(name: String!, description: String): Permission!
   createBusiness(name: String!): Business!
-  toggleBusinessSubscription(businessId: String!, isActive: Boolean!): Business!
+  toggleActiveStatus(businessId: String!, isActive: Boolean!): Business!
+  toggleBusinessSubscription(businessId: String!, isSubscriptionActive: Boolean!): Business!
   purchaseSubscription(planId: String!): Business!
+  deleteBusiness(businessId: String!): Boolean!
   createPost(input: CreatePostInput!): Post!
   generateAIContent(prompt: String!, tone: String, location: String, imageUrls: [String!]): String!
   submitPostForApproval(id: ID!): Post!

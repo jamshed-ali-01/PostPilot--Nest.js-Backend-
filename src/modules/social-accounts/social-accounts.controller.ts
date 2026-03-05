@@ -9,12 +9,18 @@ export class SocialAccountsController {
     @Get('callback')
     async handleCallback(
         @Query('code') code: string,
-        @Query('state') state: string, // state will contain businessId and platform
+        @Query('state') state: string,
+        @Query('error') error: string,
+        @Query('error_description') errorDescription: string,
         @Res() res: Response,
     ) {
         try {
+            if (error || errorDescription) {
+                throw new Error(errorDescription || error || 'OAuth failed');
+            }
+
             if (!code || !state) {
-                throw new Error('Invalid callback parameters');
+                throw new Error('Invalid callback parameters (code or state missing)');
             }
 
             // 1. Parse state (e.g., "businessId:platform")

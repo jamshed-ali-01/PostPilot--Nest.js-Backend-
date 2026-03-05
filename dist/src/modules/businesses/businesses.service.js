@@ -59,10 +59,16 @@ let BusinessesService = class BusinessesService {
         }
         return business;
     }
-    async toggleSubscription(id, isActive) {
+    async toggleActiveStatus(id, isActive) {
         return this.prisma.business.update({
             where: { id },
             data: { isActive },
+        });
+    }
+    async toggleSubscription(id, isSubscriptionActive) {
+        return this.prisma.business.update({
+            where: { id },
+            data: { isSubscriptionActive },
         });
     }
     async purchaseSubscription(id, planId) {
@@ -84,6 +90,11 @@ let BusinessesService = class BusinessesService {
     async findAll() {
         return this.prisma.business.findMany({
             include: { users: true, subscriptionPlan: true },
+        });
+    }
+    async deleteBusiness(id) {
+        return this.prisma.business.delete({
+            where: { id },
         });
     }
 };

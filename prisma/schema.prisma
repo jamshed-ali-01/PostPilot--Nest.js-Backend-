@@ -16,6 +16,7 @@ model Business {
   logo         String?
   theme        String?         @default("light")
   isActive     Boolean         @default(false)
+  isSubscriptionActive Boolean @default(false)
   subscriptionPlan   SubscriptionPlan? @relation(fields: [subscriptionPlanId], references: [id])
   subscriptionPlanId String?           @db.ObjectId
   users        User[]
@@ -42,7 +43,7 @@ model User {
   password   String
   firstName  String?
   lastName   String?
-  business   Business @relation(fields: [businessId], references: [id])
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
   businessId String   @db.ObjectId
   roleIds    String[] @db.ObjectId
   roles      Role[]   @relation(fields: [roleIds], references: [id])
@@ -68,7 +69,7 @@ model Role {
   id           String       @id @default(auto()) @map("_id") @db.ObjectId
   name         String       @unique
   description  String?
-  business     Business?    @relation(fields: [businessId], references: [id])
+  business     Business?    @relation(fields: [businessId], references: [id], onDelete: Cascade)
   businessId   String?      @db.ObjectId
   permissionIds String[]     @db.ObjectId
   permissions  Permission[] @relation(fields: [permissionIds], references: [id])
@@ -99,7 +100,7 @@ model Post {
   status           PostStatus @default(DRAFT)
   scheduledAt      DateTime?
   publishedAt      DateTime?
-  business         Business   @relation(fields: [businessId], references: [id])
+  business         Business   @relation(fields: [businessId], references: [id], onDelete: Cascade)
   businessId       String     @db.ObjectId
   author           User       @relation(fields: [authorId], references: [id])
   authorId         String     @db.ObjectId
@@ -124,7 +125,7 @@ model Testimonial {
   area       String
   content    String
   status     TestimonialStatus @default(PENDING)
-  business   Business          @relation(fields: [businessId], references: [id])
+  business   Business          @relation(fields: [businessId], references: [id], onDelete: Cascade)
   businessId String            @db.ObjectId
   createdAt  DateTime          @default(now())
 }
@@ -140,7 +141,7 @@ model ServiceArea {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   postcode   String
   location   String?
-  business   Business @relation(fields: [businessId], references: [id])
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
   businessId String   @db.ObjectId
 }
 
@@ -148,7 +149,7 @@ model Integration {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   platform   String // META, GOOGLE_ADS
   config     Json // Storing tokens and settings
-  business   Business @relation(fields: [businessId], references: [id])
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
   businessId String   @db.ObjectId
 }
 
@@ -159,7 +160,7 @@ model SocialAccount {
   accountId   String // Unique ID from platform
   accessToken String?
   isActive    Boolean  @default(true)
-  business    Business @relation(fields: [businessId], references: [id])
+  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
   businessId  String   @db.ObjectId
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

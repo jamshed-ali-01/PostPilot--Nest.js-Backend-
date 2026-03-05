@@ -32,38 +32,39 @@ export declare class AuthResolver {
         lastName: string;
         id: string;
         name: string | null;
-        email: string;
-        password: string;
         createdAt: Date;
         updatedAt: Date;
+        email: string;
+        password: string;
     } | {
         isSystemAdmin: boolean;
         business: {
             id: string;
             name: string;
+            createdAt: Date;
+            updatedAt: Date;
             logo: string | null;
             theme: string | null;
             isActive: boolean;
+            isSubscriptionActive: boolean;
             subscriptionPlanId: string | null;
             stripeCustomerId: string | null;
             stripeSubscriptionId: string | null;
             stripePriceId: string | null;
             trialEndsAt: Date | null;
-            createdAt: Date;
-            updatedAt: Date;
         };
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         email: string;
+        password: string;
         firstName: string | null;
         lastName: string | null;
         businessId: string;
+        roleIds: string[];
         aiTone: string | null;
         aiHashtags: string[];
         aiCaptionLength: string | null;
         aiIncludeEmojis: boolean | null;
-        password: string;
-        roleIds: string[];
-        createdAt: Date;
-        updatedAt: Date;
     }>;
 }

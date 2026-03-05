@@ -20,10 +20,13 @@ let SocialAccountsController = class SocialAccountsController {
     constructor(socialAccountsService) {
         this.socialAccountsService = socialAccountsService;
     }
-    async handleCallback(code, state, res) {
+    async handleCallback(code, state, error, errorDescription, res) {
         try {
+            if (error || errorDescription) {
+                throw new Error(errorDescription || error || 'OAuth failed');
+            }
             if (!code || !state) {
-                throw new Error('Invalid callback parameters');
+                throw new Error('Invalid callback parameters (code or state missing)');
             }
             const [businessId, platform] = state.split(':');
             await this.socialAccountsService.handleOAuthCallback(businessId, platform, code);
@@ -40,9 +43,11 @@ __decorate([
     (0, common_1.Get)('callback'),
     __param(0, (0, common_1.Query)('code')),
     __param(1, (0, common_1.Query)('state')),
-    __param(2, (0, common_1.Res)()),
+    __param(2, (0, common_1.Query)('error')),
+    __param(3, (0, common_1.Query)('error_description')),
+    __param(4, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:paramtypes", [String, String, String, String, Object]),
     __metadata("design:returntype", Promise)
 ], SocialAccountsController.prototype, "handleCallback", null);
 exports.SocialAccountsController = SocialAccountsController = __decorate([

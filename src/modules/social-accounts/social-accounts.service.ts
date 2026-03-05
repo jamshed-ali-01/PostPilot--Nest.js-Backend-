@@ -72,7 +72,7 @@ export class SocialAccountsService {
         switch (platform.toUpperCase()) {
             case 'FACEBOOK':
                 // Using v22.0 (latest stable)
-                return `https://www.facebook.com/v22.0/dialog/oauth?client_id=${fbClientId}&redirect_uri=${redirectUri}&state=${state}&scope=pages_manage_posts,pages_read_engagement,public_profile`;
+                return `https://www.facebook.com/v22.0/dialog/oauth?client_id=${fbClientId}&redirect_uri=${redirectUri}&state=${state}&scope=pages_manage_posts,pages_read_engagement,pages_show_list,public_profile`;
             case 'INSTAGRAM':
                 return `https://api.instagram.com/oauth/authorize?client_id=${igClientId}&redirect_uri=${redirectUri}&scope=user_profile,user_media&response_type=code&state=${state}`;
             case 'LINKEDIN':

@@ -5,55 +5,73 @@ export declare class BusinessesResolver {
     createBusiness(name: string): Promise<{
         id: string;
         name: string;
+        createdAt: Date;
+        updatedAt: Date;
         logo: string | null;
         theme: string | null;
         isActive: boolean;
+        isSubscriptionActive: boolean;
+        subscriptionPlanId: string | null;
         stripeCustomerId: string | null;
         stripeSubscriptionId: string | null;
         stripePriceId: string | null;
         trialEndsAt: Date | null;
-        createdAt: Date;
-        updatedAt: Date;
-        subscriptionPlanId: string | null;
     }>;
-    toggleBusinessSubscription(businessId: string, isActive: boolean, user: any): Promise<{
+    toggleActiveStatus(businessId: string, isActive: boolean, user: any): Promise<{
         id: string;
         name: string;
+        createdAt: Date;
+        updatedAt: Date;
         logo: string | null;
         theme: string | null;
         isActive: boolean;
+        isSubscriptionActive: boolean;
+        subscriptionPlanId: string | null;
         stripeCustomerId: string | null;
         stripeSubscriptionId: string | null;
         stripePriceId: string | null;
         trialEndsAt: Date | null;
+    }>;
+    toggleBusinessSubscription(businessId: string, isSubscriptionActive: boolean, user: any): Promise<{
+        id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
+        logo: string | null;
+        theme: string | null;
+        isActive: boolean;
+        isSubscriptionActive: boolean;
         subscriptionPlanId: string | null;
+        stripeCustomerId: string | null;
+        stripeSubscriptionId: string | null;
+        stripePriceId: string | null;
+        trialEndsAt: Date | null;
     }>;
     purchaseSubscription(planId: string, user: any): Promise<{
         id: string;
         name: string;
+        createdAt: Date;
+        updatedAt: Date;
         logo: string | null;
         theme: string | null;
         isActive: boolean;
+        isSubscriptionActive: boolean;
+        subscriptionPlanId: string | null;
         stripeCustomerId: string | null;
         stripeSubscriptionId: string | null;
         stripePriceId: string | null;
         trialEndsAt: Date | null;
-        createdAt: Date;
-        updatedAt: Date;
-        subscriptionPlanId: string | null;
     }>;
     findAll(): Promise<({
         subscriptionPlan: {
             id: string;
             name: string;
-            createdAt: Date;
-            updatedAt: Date;
-            description: string | null;
             price: number;
+            description: string | null;
             features: string[];
             isPopular: boolean;
+            createdAt: Date;
+            updatedAt: Date;
         } | null;
         users: {
             id: string;
@@ -73,18 +91,27 @@ export declare class BusinessesResolver {
     } & {
         id: string;
         name: string;
+        createdAt: Date;
+        updatedAt: Date;
         logo: string | null;
         theme: string | null;
         isActive: boolean;
+        isSubscriptionActive: boolean;
+        subscriptionPlanId: string | null;
         stripeCustomerId: string | null;
         stripeSubscriptionId: string | null;
         stripePriceId: string | null;
         trialEndsAt: Date | null;
-        createdAt: Date;
-        updatedAt: Date;
-        subscriptionPlanId: string | null;
     })[]>;
     findOne(id: string): Promise<({
+        roles: {
+            id: string;
+            name: string;
+            description: string | null;
+            businessId: string | null;
+            permissionIds: string[];
+            userIds: string[];
+        }[];
         users: {
             id: string;
             createdAt: Date;
@@ -100,26 +127,20 @@ export declare class BusinessesResolver {
             aiCaptionLength: string | null;
             aiIncludeEmojis: boolean | null;
         }[];
-        roles: {
-            id: string;
-            name: string;
-            businessId: string | null;
-            description: string | null;
-            permissionIds: string[];
-            userIds: string[];
-        }[];
     } & {
         id: string;
         name: string;
+        createdAt: Date;
+        updatedAt: Date;
         logo: string | null;
         theme: string | null;
         isActive: boolean;
+        isSubscriptionActive: boolean;
+        subscriptionPlanId: string | null;
         stripeCustomerId: string | null;
         stripeSubscriptionId: string | null;
         stripePriceId: string | null;
         trialEndsAt: Date | null;
-        createdAt: Date;
-        updatedAt: Date;
-        subscriptionPlanId: string | null;
     }) | null>;
+    deleteBusiness(businessId: string, user: any): Promise<boolean>;
 }
