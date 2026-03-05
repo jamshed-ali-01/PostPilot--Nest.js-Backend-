@@ -1,0 +1,296 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Permission {
+  id: ID!
+  name: String!
+  description: String
+}
+
+type Role {
+  id: ID!
+  name: String!
+  description: String
+  permissions: [Permission!]!
+}
+
+type SubscriptionPlan {
+  id: ID!
+  name: String!
+  price: Float!
+  description: String
+  features: [String!]!
+  isPopular: Boolean!
+}
+
+type Business {
+  id: ID!
+  name: String!
+  logo: String
+  theme: String!
+  isActive: Boolean!
+  subscriptionPlan: SubscriptionPlan
+  subscriptionPlanId: String
+  users: [User!]!
+  stripeCustomerId: String
+  stripeSubscriptionId: String
+  stripePriceId: String
+  trialEndsAt: DateTime
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type User {
+  id: ID!
+  email: String!
+  firstName: String
+  lastName: String
+  businessId: String!
+  business: Business!
+  roles: [Role!]!
+  aiTone: String
+  aiHashtags: [String!]!
+  aiCaptionLength: String
+  aiIncludeEmojis: Boolean
+}
+
+type Post {
+  id: ID!
+  content: String!
+  mediaUrls: [String!]!
+  status: PostStatus!
+  scheduledAt: DateTime
+  publishedAt: DateTime
+  businessId: String!
+  business: Business!
+  authorId: String!
+  author: User!
+  targetingRegions: [String!]!
+  platformIds: [String!]!
+  platforms: [String!]!
+  reach: Float!
+  impressions: Float!
+  likes: Float!
+  comments: Float!
+  shares: Float!
+  engagement: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum PostStatus {
+  DRAFT
+  PENDING_APPROVAL
+  SCHEDULED
+  PUBLISHED
+  FAILED
+}
+
+type BusinessAnalytics {
+  totalReach: Float!
+  engagement: Float!
+  impressions: Float!
+  likes: Float!
+  comments: Float!
+  shares: Float!
+  totalPosts: Float!
+  publishedPosts: Float!
+  scheduledPosts: Float!
+  pendingPosts: Float!
+}
+
+type ServiceArea {
+  id: ID!
+  postcode: String!
+  location: String
+  businessId: String!
+}
+
+type GlobalStats {
+  businessCount: Int!
+  userCount: Int!
+  postCount: Int!
+  testimonialCount: Int!
+}
+
+type AuthUser {
+  id: String!
+  email: String!
+  firstName: String
+  lastName: String
+  name: String
+  isSystemAdmin: Boolean!
+  businessId: String
+  business: Business
+  aiTone: String
+  aiHashtags: [String!]
+  aiCaptionLength: String
+  aiIncludeEmojis: Boolean
+}
+
+type AuthResponse {
+  access_token: String!
+  user: AuthUser!
+  stripeUrl: String
+}
+
+type AuthInitiateResponse {
+  stripeUrl: String!
+}
+
+type Testimonial {
+  id: ID!
+  name: String!
+  area: String!
+  content: String!
+  status: TestimonialStatus!
+  businessId: ID!
+  createdAt: DateTime!
+}
+
+enum TestimonialStatus {
+  PENDING
+  APPROVED
+  CONVERTED_TO_POST
+  REJECTED
+}
+
+type SocialAccount {
+  id: ID!
+  platform: String!
+  accountName: String!
+  accountId: String!
+  isActive: Boolean
+  business: Business!
+  businessId: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Query {
+  hello: String!
+  me: AuthUser!
+  user(email: String!): User
+  globalRoles: [Role!]!
+  businessRoles(businessId: String!): [Role!]!
+  permissions: [Permission!]!
+  businesses: [Business!]!
+  business(id: String!): Business!
+  businessPosts(businessId: ID!): [Post!]!
+  pendingPosts(businessId: ID!): [Post!]!
+  post(id: ID!): Post
+  businessAnalytics(businessId: ID!): BusinessAnalytics!
+  businessServiceAreas(businessId: ID!): [ServiceArea!]!
+  businessTestimonials(businessId: ID!): [Testimonial!]!
+  socialAccounts: [SocialAccount!]!
+  socialAccountAuthUrl(platform: String!): String!
+  subscriptionPlans: [SubscriptionPlan!]!
+  adminAllBusinesses: [Business!]!
+  adminAllUsers: [User!]!
+  adminGlobalStats: GlobalStats!
+}
+
+type Mutation {
+  login(input: LoginInput!): AuthResponse!
+  initiateRegister(input: RegisterInput!): AuthInitiateResponse!
+  updateAiPreferences(input: UpdateAiPreferencesInput!): User!
+  createCheckoutSession(planId: String!): String!
+  createRole(input: CreateRoleInput!): Role!
+  assignRoleToUser(userId: String!, roleId: String!): Boolean!
+  createPermission(name: String!, description: String): Permission!
+  createBusiness(name: String!): Business!
+  toggleBusinessSubscription(businessId: String!, isActive: Boolean!): Business!
+  purchaseSubscription(planId: String!): Business!
+  createPost(input: CreatePostInput!): Post!
+  generateAIContent(prompt: String!, tone: String, location: String, imageUrls: [String!]): String!
+  submitPostForApproval(id: ID!): Post!
+  approvePost(id: ID!, status: PostStatus!): Post!
+  deletePost(id: ID!): Post!
+  updatePost(input: UpdatePostInput!): Post!
+  syncPostMetrics(id: ID!): Post!
+  syncBusinessAnalytics(businessId: ID!): BusinessAnalytics!
+  seedDemoData(businessId: ID!): BusinessAnalytics!
+  createServiceArea(input: CreateServiceAreaInput!): ServiceArea!
+  removeServiceArea(id: ID!): ServiceArea!
+  submitTestimonial(input: CreateTestimonialInput!): Testimonial!
+  approveTestimonial(id: ID!): Post!
+  connectSocialAccount(input: ConnectSocialAccountInput!): SocialAccount!
+  disconnectSocialAccount(id: String!): SocialAccount!
+  createSubscriptionPlan(name: String!, price: Float!, features: [String!]!, description: String, isPopular: Boolean! = false): SubscriptionPlan!
+  updateSubscriptionPlan(id: String!, name: String, price: Float, features: [String!], description: String, isPopular: Boolean): SubscriptionPlan!
+  deleteSubscriptionPlan(id: String!): Boolean!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input RegisterInput {
+  email: String!
+  password: String!
+  businessId: String
+  businessName: String
+  firstName: String
+  lastName: String
+  planId: String
+}
+
+input UpdateAiPreferencesInput {
+  aiTone: String
+  aiHashtags: [String!]
+  aiCaptionLength: String
+  aiIncludeEmojis: Boolean
+}
+
+input CreateRoleInput {
+  name: String!
+  description: String
+  permissionIds: [String!]! = []
+  businessId: String
+}
+
+input CreatePostInput {
+  content: String!
+  mediaUrls: [String!]! = []
+  scheduledAt: DateTime
+  targetingRegions: [String!]! = []
+  platformIds: [String!]! = []
+  businessId: String!
+  authorId: String!
+}
+
+input UpdatePostInput {
+  content: String
+  mediaUrls: [String!] = []
+  scheduledAt: DateTime
+  targetingRegions: [String!] = []
+  platformIds: [String!] = []
+  businessId: String
+  authorId: String
+  id: ID!
+}
+
+input CreateServiceAreaInput {
+  postcode: String!
+  location: String
+  businessId: String!
+}
+
+input CreateTestimonialInput {
+  name: String!
+  area: String!
+  content: String!
+  businessId: ID!
+}
+
+input ConnectSocialAccountInput {
+  platform: String!
+  accountName: String!
+  accountId: String!
+  accessToken: String
+}

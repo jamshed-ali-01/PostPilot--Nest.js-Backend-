@@ -1,0 +1,178 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Business {
+  id           String          @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  logo         String?
+  theme        String?         @default("light")
+  isActive     Boolean         @default(false)
+  subscriptionPlan   SubscriptionPlan? @relation(fields: [subscriptionPlanId], references: [id])
+  subscriptionPlanId String?           @db.ObjectId
+  users        User[]
+  roles        Role[] // Roles specific to this business
+  posts        Post[]
+  testimonials Testimonial[]
+  serviceAreas ServiceArea[]
+  integrations Integration[]
+  socialAccounts SocialAccount[]
+  
+  // Stripe Integration
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  stripePriceId        String?
+  trialEndsAt          DateTime?
+
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+}
+
+model User {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  email      String   @unique
+  password   String
+  firstName  String?
+  lastName   String?
+  business   Business @relation(fields: [businessId], references: [id])
+  businessId String   @db.ObjectId
+  roleIds    String[] @db.ObjectId
+  roles      Role[]   @relation(fields: [roleIds], references: [id])
+  posts      Post[]
+  aiTone          String?  @default("professional")
+  aiHashtags      String[] @default([])
+  aiCaptionLength String?  @default("medium")
+  aiIncludeEmojis Boolean? @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model SystemAdmin {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Role {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  name         String       @unique
+  description  String?
+  business     Business?    @relation(fields: [businessId], references: [id])
+  businessId   String?      @db.ObjectId
+  permissionIds String[]     @db.ObjectId
+  permissions  Permission[] @relation(fields: [permissionIds], references: [id])
+  userIds      String[]     @db.ObjectId
+  users        User[]       @relation(fields: [userIds], references: [id])
+}
+
+model Permission {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique // e.g., "CREATE_POST", "PUBLISH_POST"
+  description String?
+  roleIds     String[] @db.ObjectId
+  roles       Role[]   @relation(fields: [roleIds], references: [id])
+}
+
+enum PostStatus {
+  DRAFT
+  PENDING_APPROVAL
+  SCHEDULED
+  PUBLISHED
+  FAILED
+}
+
+model Post {
+  id               String     @id @default(auto()) @map("_id") @db.ObjectId
+  content          String
+  mediaUrls        String[]
+  status           PostStatus @default(DRAFT)
+  scheduledAt      DateTime?
+  publishedAt      DateTime?
+  business         Business   @relation(fields: [businessId], references: [id])
+  businessId       String     @db.ObjectId
+  author           User       @relation(fields: [authorId], references: [id])
+  authorId         String     @db.ObjectId
+  targetingRegions String[] // Postcodes or areas
+  platformIds      String[]   @db.ObjectId // Selected social accounts
+  
+  // Analytics Fields
+  reach            Int        @default(0)
+  impressions      Int        @default(0)
+  likes            Int        @default(0)
+  comments         Int        @default(0)
+  shares           Int        @default(0)
+  engagement       Float      @default(0.0)
+
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+}
+
+model Testimonial {
+  id         String            @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  area       String
+  content    String
+  status     TestimonialStatus @default(PENDING)
+  business   Business          @relation(fields: [businessId], references: [id])
+  businessId String            @db.ObjectId
+  createdAt  DateTime          @default(now())
+}
+
+enum TestimonialStatus {
+  PENDING
+  APPROVED
+  CONVERTED_TO_POST
+  REJECTED
+}
+
+model ServiceArea {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  postcode   String
+  location   String?
+  business   Business @relation(fields: [businessId], references: [id])
+  businessId String   @db.ObjectId
+}
+
+model Integration {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  platform   String // META, GOOGLE_ADS
+  config     Json // Storing tokens and settings
+  business   Business @relation(fields: [businessId], references: [id])
+  businessId String   @db.ObjectId
+}
+
+model SocialAccount {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  platform    String // FACEBOOK, INSTAGRAM, LINKEDIN, GOOGLE_BUSINESS
+  accountName String // e.g., "John's Plumbing Page"
+  accountId   String // Unique ID from platform
+  accessToken String?
+  isActive    Boolean  @default(true)
+  business    Business @relation(fields: [businessId], references: [id])
+  businessId  String   @db.ObjectId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SubscriptionPlan {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
+  price       Float
+  description String?
+  features    String[]
+  isPopular   Boolean  @default(false)
+  businesses  Business[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
