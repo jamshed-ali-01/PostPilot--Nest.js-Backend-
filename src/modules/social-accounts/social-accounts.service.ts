@@ -74,12 +74,12 @@ export class SocialAccountsService {
 
         switch (platform.toUpperCase()) {
             case 'FACEBOOK':
-                // Using v22.0 (latest stable)
-                const url = `https://www.facebook.com/v22.0/dialog/oauth?client_id=${fbClientId}&redirect_uri=${redirectUri}&state=${state}&scope=pages_manage_posts,pages_read_engagement,pages_show_list,public_profile`;
-                console.log(`[SocialAccountsService] Generated FB Auth URL: ${url}`);
-                return url;
             case 'INSTAGRAM':
-                return `https://api.instagram.com/oauth/authorize?client_id=${igClientId}&redirect_uri=${redirectUri}&scope=user_profile,user_media&response_type=code&state=${state}`;
+                // For Instagram Business, we use the Facebook Login flow
+                const fbScopes = encodeURIComponent('pages_manage_posts,pages_read_engagement,pages_show_list,public_profile,instagram_basic,instagram_content_publish');
+                const fbUrl = `https://www.facebook.com/v22.0/dialog/oauth?client_id=${fbClientId}&redirect_uri=${redirectUri}&state=${state}&scope=${fbScopes}`;
+                console.log(`[SocialAccountsService] Generated FB/IG Auth URL: ${fbUrl}`);
+                return fbUrl;
             case 'LINKEDIN':
                 const liScopes = encodeURIComponent('openid profile w_member_social email');
                 return `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${liClientId}&redirect_uri=${redirectUri}&state=${state}&scope=${liScopes}`;
@@ -110,12 +110,12 @@ export class SocialAccountsService {
 
             const userAccessToken = tokenData.access_token;
 
-            // 2. Get Managed Pages (Page ID + Page Access Token)
+            // 2. Get Managed Pages and linked Instagram accounts
             const pagesResponse = await fetch(
-                `https://graph.facebook.com/v22.0/me/accounts?access_token=${userAccessToken}`
+                `https://graph.facebook.com/v22.0/me/accounts?fields=name,access_token,instagram_business_account&access_token=${userAccessToken}`
             );
             const pagesData = await pagesResponse.json();
-            console.log(`[SocialAccountsService] Pages data received:`, pagesData);
+            console.log(`[SocialAccountsService] Pages/IG data received:`, pagesData);
 
             if (pagesData.error) {
                 console.error(`[SocialAccountsService] Meta Pages Fetch Error:`, pagesData.error);
@@ -127,19 +127,31 @@ export class SocialAccountsService {
                 throw new Error('No Facebook Pages found. You must have a Facebook Page to post.');
             }
 
-            // 3. Connect all managed pages
-            let firstPageResult;
+            // 3. Connect managed pages and their linked Instagram accounts
+            let firstResult;
             for (const page of pages) {
-                const result = await this.connectAccount(businessId, {
+                // Connect FB Page
+                const fbResult = await this.connectAccount(businessId, {
                     platform: 'FACEBOOK',
                     accountName: page.name,
                     accountId: page.id,
-                    accessToken: page.access_token, // This is the Page Access Token
+                    accessToken: page.access_token,
                 });
-                if (!firstPageResult) firstPageResult = result;
+                if (!firstResult) firstResult = fbResult;
+
+                // Connect linked Instagram Account
+                if (page.instagram_business_account) {
+                    const igResult = await this.connectAccount(businessId, {
+                        platform: 'INSTAGRAM',
+                        accountName: `${page.name} (Instagram)`,
+                        accountId: page.instagram_business_account.id,
+                        accessToken: page.access_token, // Use Page Access Token for IG posting
+                    });
+                    if (!firstResult) firstResult = igResult;
+                }
             }
 
-            return firstPageResult;
+            return firstResult;
         }
 
         if (platform.toUpperCase() === 'LINKEDIN') {
@@ -374,6 +386,93 @@ export class SocialAccountsService {
                 } catch (error) {
                     console.error(`[SocialAccountsService] LinkedIn Publish Error:`, error);
                     results.push({ platform: 'LINKEDIN', success: false, error });
+                }
+            }
+
+            if (account.platform === 'INSTAGRAM') {
+                try {
+                    const hasBase64 = mediaUrls.some(url => url.startsWith('data:image'));
+                    if (hasBase64) {
+                        for (const url of mediaUrls) {
+                            if (url.startsWith('data:image')) {
+                                const [meta, data] = url.split(',');
+                                const binary = Buffer.from(data, 'base64');
+                                const fbAppId = process.env.FB_CLIENT_ID || process.env.META_APP_ID;
+
+                                // 1. Create Media Container
+                                const containerUrl = `https://graph.facebook.com/v22.0/${account.accountId}/media`;
+                                const containerFormData = new FormData();
+                                containerFormData.append('caption', content);
+                                containerFormData.append('access_token', account.accessToken || '');
+
+                                // Since we are using binary data, we use the 'image' field for uploads
+                                // (Note: IG Graph API binary upload via FormData is tricky, usually requires a URL or session)
+                                // Fallback: If it's a URL, use image_url. For binary, we'll try the media endpoint.
+
+                                const containerRes = await fetch(containerUrl, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        caption: content,
+                                        image_url: url.startsWith('http') ? url : undefined, // IG requires a public URL usually
+                                        access_token: account.accessToken
+                                    })
+                                });
+
+                                const containerData = await containerRes.json();
+                                console.log(`[SocialAccountsService] IG Media Container:`, containerData);
+
+                                if (containerData.id) {
+                                    // 2. Publish Media
+                                    const publishUrl = `https://graph.facebook.com/v22.0/${account.accountId}/media_publish`;
+                                    const publishRes = await fetch(publishUrl, {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({
+                                            creation_id: containerData.id,
+                                            access_token: account.accessToken
+                                        })
+                                    });
+                                    const publishData = await publishRes.json();
+                                    results.push({ platform: 'INSTAGRAM', success: !!publishData.id, data: publishData });
+                                } else {
+                                    results.push({ platform: 'INSTAGRAM', success: false, data: containerData });
+                                }
+                                break;
+                            }
+                        }
+                    } else if (mediaUrls.length > 0) {
+                        // Handle public URL
+                        const containerUrl = `https://graph.facebook.com/v22.0/${account.accountId}/media`;
+                        const containerRes = await fetch(containerUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                caption: content,
+                                image_url: mediaUrls[0],
+                                access_token: account.accessToken
+                            })
+                        });
+                        const containerData = await containerRes.json();
+                        if (containerData.id) {
+                            const publishUrl = `https://graph.facebook.com/v22.0/${account.accountId}/media_publish`;
+                            const publishRes = await fetch(publishUrl, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    creation_id: containerData.id,
+                                    access_token: account.accessToken
+                                })
+                            });
+                            const publishData = await publishRes.json();
+                            results.push({ platform: 'INSTAGRAM', success: !!publishData.id, data: publishData });
+                        } else {
+                            results.push({ platform: 'INSTAGRAM', success: false, data: containerData });
+                        }
+                    }
+                } catch (error) {
+                    console.error(`[SocialAccountsService] Instagram Publish Error:`, error);
+                    results.push({ platform: 'INSTAGRAM', success: false, error });
                 }
             }
         }
