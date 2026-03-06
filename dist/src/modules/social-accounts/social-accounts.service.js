@@ -81,7 +81,7 @@ let SocialAccountsService = class SocialAccountsService {
             case 'INSTAGRAM':
                 return `https://api.instagram.com/oauth/authorize?client_id=${igClientId}&redirect_uri=${redirectUri}&scope=user_profile,user_media&response_type=code&state=${state}`;
             case 'LINKEDIN':
-                return `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${liClientId}&redirect_uri=${redirectUri}&state=${state}&scope=w_member_social`;
+                return `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${liClientId}&redirect_uri=${redirectUri}&state=${state}&scope=openid%20profile%20w_member_social%20email`;
             default:
                 throw new Error('Unsupported platform');
         }
@@ -124,19 +124,38 @@ let SocialAccountsService = class SocialAccountsService {
             }
             return firstPageResult;
         }
-        const mockTokens = {
-            INSTAGRAM: { name: "johnsplumbing_official", id: "ig_real_123", token: "ig_real_token_" + Math.random() },
-            LINKEDIN: { name: "Johns Plumbing Ltd (Verified)", id: "li_real_123", token: "li_real_token_" + Math.random() },
-        };
-        const data = mockTokens[platform.toUpperCase()];
-        if (!data)
-            throw new Error('Platform data not found');
-        return this.connectAccount(businessId, {
-            platform: platform.toUpperCase(),
-            accountName: data.name,
-            accountId: data.id,
-            accessToken: data.token,
-        });
+        if (platform.toUpperCase() === 'LINKEDIN') {
+            const clientId = process.env.LI_CLIENT_ID;
+            const clientSecret = process.env.LI_CLIENT_SECRET;
+            const tokenResponse = await fetch('https://www.linkedin.com/oauth/v2/accessToken', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                    grant_type: 'authorization_code',
+                    code,
+                    redirect_uri: redirectUri,
+                    client_id: clientId || '',
+                    client_secret: clientSecret || '',
+                }),
+            });
+            const tokenData = await tokenResponse.json();
+            console.log(`[SocialAccountsService] LinkedIn Token Data:`, tokenData);
+            if (tokenData.error) {
+                throw new Error(`LinkedIn Token Exchange Failed: ${tokenData.error_description || tokenData.error}`);
+            }
+            const accessToken = tokenData.access_token;
+            const profileResponse = await fetch('https://api.linkedin.com/v2/userinfo', {
+                headers: { Authorization: `Bearer ${accessToken}` },
+            });
+            const profileData = await profileResponse.json();
+            console.log(`[SocialAccountsService] LinkedIn Profile Data:`, profileData);
+            return this.connectAccount(businessId, {
+                platform: 'LINKEDIN',
+                accountName: profileData.name || 'LinkedIn User',
+                accountId: profileData.sub,
+                accessToken: accessToken,
+            });
+        }
     }
     async disconnect(id) {
         return this.prisma.socialAccount.update({
@@ -164,12 +183,8 @@ let SocialAccountsService = class SocialAccountsService {
                                 formData.append('caption', content);
                                 formData.append('access_token', account.accessToken || '');
                                 const photoUrl = `https://graph.facebook.com/v22.0/${account.accountId}/photos`;
-                                const response = await fetch(photoUrl, {
-                                    method: 'POST',
-                                    body: formData,
-                                });
+                                const response = await fetch(photoUrl, { method: 'POST', body: formData });
                                 const result = await response.json();
-                                console.log(`[SocialAccountsService] FB Photo Upload Response:`, result);
                                 results.push({ platform: 'FACEBOOK', success: !result.error, data: result });
                             }
                         }
@@ -186,13 +201,99 @@ let SocialAccountsService = class SocialAccountsService {
                             }),
                         });
                         const data = await response.json();
-                        console.log(`[SocialAccountsService] FB Feed Response:`, data);
                         results.push({ platform: 'FACEBOOK', success: !data.error, data });
                     }
                 }
                 catch (error) {
-                    console.error(`[SocialAccountsService] FB Publish Error:`, error);
                     results.push({ platform: 'FACEBOOK', success: false, error });
+                }
+            }
+            if (account.platform === 'LINKEDIN') {
+                try {
+                    const hasBase64 = mediaUrls.some(url => url.startsWith('data:image'));
+                    let mediaUrn;
+                    if (hasBase64) {
+                        for (const url of mediaUrls) {
+                            if (url.startsWith('data:image')) {
+                                const [meta, data] = url.split(',');
+                                const mime = meta.split(':')[1].split(';')[0];
+                                const binary = Buffer.from(data, 'base64');
+                                const registerUrl = 'https://api.linkedin.com/v2/assets?action=registerUpload';
+                                const registerRes = await fetch(registerUrl, {
+                                    method: 'POST',
+                                    headers: {
+                                        Authorization: `Bearer ${account.accessToken}`,
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({
+                                        registerUploadRequest: {
+                                            recipes: ['urn:li:digitalmediaRecipe:feedshare-image'],
+                                            owner: `urn:li:person:${account.accountId}`,
+                                            serviceRelationships: [{
+                                                    relationshipType: 'OWNER',
+                                                    identifier: 'urn:li:userGeneratedContent',
+                                                }],
+                                        },
+                                    }),
+                                });
+                                const registerData = await registerRes.json();
+                                console.log(`[SocialAccountsService] LinkedIn Register Asset:`, registerData);
+                                if (registerData.value) {
+                                    const uploadUrl = registerData.value.uploadMechanism['com.linkedin.digitalmedia.uploading.MediaUploadHttpRequest'].uploadUrl;
+                                    mediaUrn = registerData.value.asset;
+                                    const uploadRes = await fetch(uploadUrl, {
+                                        method: 'POST',
+                                        headers: {
+                                            Authorization: `Bearer ${account.accessToken}`,
+                                            'Content-Type': mime,
+                                        },
+                                        body: binary,
+                                    });
+                                    console.log(`[SocialAccountsService] LinkedIn Binary Upload Status:`, uploadRes.status);
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    const postUrl = 'https://api.linkedin.com/v2/ugcPosts';
+                    const ugcBody = {
+                        author: `urn:li:person:${account.accountId}`,
+                        lifecycleState: 'PUBLISHED',
+                        specificContent: {
+                            'com.linkedin.ugc.ShareContent': {
+                                shareCommentary: { text: content },
+                                shareMediaCategory: mediaUrn ? 'IMAGE' : 'NONE',
+                            },
+                        },
+                        visibility: {
+                            'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC',
+                        },
+                    };
+                    if (mediaUrn) {
+                        ugcBody.specificContent['com.linkedin.ugc.ShareContent'].media = [
+                            {
+                                status: 'READY',
+                                media: mediaUrn,
+                                title: { text: 'Post Image' },
+                            },
+                        ];
+                    }
+                    const response = await fetch(postUrl, {
+                        method: 'POST',
+                        headers: {
+                            Authorization: `Bearer ${account.accessToken}`,
+                            'Content-Type': 'application/json',
+                            'X-Restli-Protocol-Version': '2.0.0',
+                        },
+                        body: JSON.stringify(ugcBody),
+                    });
+                    const data = await response.json();
+                    console.log(`[SocialAccountsService] LinkedIn ugcPublish Response:`, data);
+                    results.push({ platform: 'LINKEDIN', success: response.status === 201, data });
+                }
+                catch (error) {
+                    console.error(`[SocialAccountsService] LinkedIn Publish Error:`, error);
+                    results.push({ platform: 'LINKEDIN', success: false, error });
                 }
             }
         }
