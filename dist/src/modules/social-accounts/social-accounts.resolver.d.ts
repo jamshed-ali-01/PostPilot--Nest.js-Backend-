@@ -5,36 +5,36 @@ export declare class SocialAccountsResolver {
     constructor(socialAccountsService: SocialAccountsService);
     socialAccounts(user: any): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        businessId: string | null;
-        isActive: boolean;
         platform: string;
         accountName: string;
         accountId: string;
         accessToken: string | null;
+        isActive: boolean;
+        businessId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
     }[]>;
     getAuthUrl(user: any, platform: string): Promise<string>;
     connectSocialAccount(user: any, input: ConnectSocialAccountInput): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        businessId: string | null;
-        isActive: boolean;
         platform: string;
         accountName: string;
         accountId: string;
         accessToken: string | null;
+        isActive: boolean;
+        businessId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     disconnectSocialAccount(id: string): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        businessId: string | null;
-        isActive: boolean;
         platform: string;
         accountName: string;
         accountId: string;
         accessToken: string | null;
+        isActive: boolean;
+        businessId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
 }

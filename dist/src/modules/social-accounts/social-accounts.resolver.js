@@ -26,7 +26,7 @@ let SocialAccountsResolver = class SocialAccountsResolver {
         this.socialAccountsService = socialAccountsService;
     }
     async socialAccounts(user) {
-        if (!user?.businessId)
+        if (!user?.businessId && !user?.isSystemAdmin)
             return [];
         return this.socialAccountsService.findAllByBusiness(user.businessId);
     }

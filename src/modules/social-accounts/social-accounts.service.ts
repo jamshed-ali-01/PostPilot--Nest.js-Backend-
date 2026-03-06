@@ -6,9 +6,12 @@ import { ConnectSocialAccountInput } from './dto/social-account-inputs';
 export class SocialAccountsService {
     constructor(private prisma: PrismaService) { }
 
-    async findAllByBusiness(businessId: string) {
+    async findAllByBusiness(businessId: string | undefined) {
         return this.prisma.socialAccount.findMany({
-            where: { businessId, isActive: true },
+            where: {
+                businessId: (businessId || null) as any,
+                isActive: true
+            },
         });
     }
 
@@ -72,7 +75,9 @@ export class SocialAccountsService {
         switch (platform.toUpperCase()) {
             case 'FACEBOOK':
                 // Using v22.0 (latest stable)
-                return `https://www.facebook.com/v22.0/dialog/oauth?client_id=${fbClientId}&redirect_uri=${redirectUri}&state=${state}&scope=pages_manage_posts,pages_read_engagement,pages_show_list,public_profile`;
+                const url = `https://www.facebook.com/v22.0/dialog/oauth?client_id=${fbClientId}&redirect_uri=${redirectUri}&state=${state}&scope=pages_manage_posts,pages_read_engagement,pages_show_list,public_profile`;
+                console.log(`[SocialAccountsService] Generated FB Auth URL: ${url}`);
+                return url;
             case 'INSTAGRAM':
                 return `https://api.instagram.com/oauth/authorize?client_id=${igClientId}&redirect_uri=${redirectUri}&scope=user_profile,user_media&response_type=code&state=${state}`;
             case 'LINKEDIN':
@@ -95,8 +100,10 @@ export class SocialAccountsService {
                 `https://graph.facebook.com/v22.0/oauth/access_token?client_id=${appId}&redirect_uri=${redirectUri}&client_secret=${appSecret}&code=${code}`
             );
             const tokenData = await tokenResponse.json();
+            console.log(`[SocialAccountsService] Token exchange response:`, tokenData);
 
             if (tokenData.error) {
+                console.error(`[SocialAccountsService] Meta Token Exchange Error:`, tokenData.error);
                 throw new Error(`Meta Token Exchange Failed: ${tokenData.error.message}`);
             }
 
@@ -107,6 +114,7 @@ export class SocialAccountsService {
                 `https://graph.facebook.com/me?fields=id,name&access_token=${accessToken}`
             );
             const profileData = await profileResponse.json();
+            console.log(`[SocialAccountsService] Profile data received:`, profileData);
 
             return this.connectAccount(businessId, {
                 platform: 'FACEBOOK',

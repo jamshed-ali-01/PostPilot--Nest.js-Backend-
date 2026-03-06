@@ -13,7 +13,7 @@ export class SocialAccountsResolver {
 
     @Query(() => [SocialAccount])
     async socialAccounts(@CurrentUser() user: any) {
-        if (!user?.businessId) return [];
+        if (!user?.businessId && !user?.isSystemAdmin) return [];
         return this.socialAccountsService.findAllByBusiness(user.businessId);
     }
 

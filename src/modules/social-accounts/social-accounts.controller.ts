@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Res } from '@nestjs/common';
+import { Controller, Get, Query, Res, Redirect } from '@nestjs/common';
 import { SocialAccountsService } from './social-accounts.service';
 import type { Response } from 'express';
 
@@ -7,13 +7,14 @@ export class SocialAccountsController {
     constructor(private readonly socialAccountsService: SocialAccountsService) { }
 
     @Get('callback')
+    @Redirect('http://localhost:5173/settings?social=success', 302)
     async handleCallback(
         @Query('code') code: string,
         @Query('state') state: string,
         @Query('error') error: string,
         @Query('error_description') errorDescription: string,
-        @Res() res: Response,
     ) {
+        console.log(`[SocialAccountsController] Received callback: code=${!!code}, state=${state}`);
         try {
             if (error || errorDescription) {
                 throw new Error(errorDescription || error || 'OAuth failed');
@@ -30,11 +31,13 @@ export class SocialAccountsController {
             // 2. Exchange code for token and save account
             await this.socialAccountsService.handleOAuthCallback(businessId, platform, code);
 
-            // 3. Redirect back to frontend settings page with success
-            return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/settings?social=success`);
+            // 3. Status is handled by @Redirect, but we can override URL if needed
+            const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+            return { url: `${frontendUrl}/settings?social=success` };
         } catch (error) {
-            console.error('OAuth Callback Error:', error);
-            return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/settings?social=error&message=${encodeURIComponent(error.message)}`);
+            console.error('[SocialAccountsController] OAuth Callback Error:', error);
+            const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+            return { url: `${frontendUrl}/settings?social=error&message=${encodeURIComponent(error.message)}` };
         }
     }
 }

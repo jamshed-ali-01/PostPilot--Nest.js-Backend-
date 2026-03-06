@@ -20,7 +20,8 @@ let SocialAccountsController = class SocialAccountsController {
     constructor(socialAccountsService) {
         this.socialAccountsService = socialAccountsService;
     }
-    async handleCallback(code, state, error, errorDescription, res) {
+    async handleCallback(code, state, error, errorDescription) {
+        console.log(`[SocialAccountsController] Received callback: code=${!!code}, state=${state}`);
         try {
             if (error || errorDescription) {
                 throw new Error(errorDescription || error || 'OAuth failed');
@@ -31,24 +32,26 @@ let SocialAccountsController = class SocialAccountsController {
             const [bId, platform] = state.split(':');
             const businessId = bId === 'ADMIN' ? undefined : bId;
             await this.socialAccountsService.handleOAuthCallback(businessId, platform, code);
-            return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/settings?social=success`);
+            const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+            return { url: `${frontendUrl}/settings?social=success` };
         }
         catch (error) {
-            console.error('OAuth Callback Error:', error);
-            return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/settings?social=error&message=${encodeURIComponent(error.message)}`);
+            console.error('[SocialAccountsController] OAuth Callback Error:', error);
+            const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+            return { url: `${frontendUrl}/settings?social=error&message=${encodeURIComponent(error.message)}` };
         }
     }
 };
 exports.SocialAccountsController = SocialAccountsController;
 __decorate([
     (0, common_1.Get)('callback'),
+    (0, common_1.Redirect)('http://localhost:5173/settings?social=success', 302),
     __param(0, (0, common_1.Query)('code')),
     __param(1, (0, common_1.Query)('state')),
     __param(2, (0, common_1.Query)('error')),
     __param(3, (0, common_1.Query)('error_description')),
-    __param(4, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String, Object]),
+    __metadata("design:paramtypes", [String, String, String, String]),
     __metadata("design:returntype", Promise)
 ], SocialAccountsController.prototype, "handleCallback", null);
 exports.SocialAccountsController = SocialAccountsController = __decorate([
