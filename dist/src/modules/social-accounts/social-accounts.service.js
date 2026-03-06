@@ -81,7 +81,8 @@ let SocialAccountsService = class SocialAccountsService {
             case 'INSTAGRAM':
                 return `https://api.instagram.com/oauth/authorize?client_id=${igClientId}&redirect_uri=${redirectUri}&scope=user_profile,user_media&response_type=code&state=${state}`;
             case 'LINKEDIN':
-                return `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${liClientId}&redirect_uri=${redirectUri}&state=${state}&scope=openid%20profile%20w_member_social%20email`;
+                const liScopes = encodeURIComponent('openid profile w_member_social email');
+                return `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${liClientId}&redirect_uri=${redirectUri}&state=${state}&scope=${liScopes}`;
             default:
                 throw new Error('Unsupported platform');
         }
@@ -149,12 +150,45 @@ let SocialAccountsService = class SocialAccountsService {
             });
             const profileData = await profileResponse.json();
             console.log(`[SocialAccountsService] LinkedIn Profile Data:`, profileData);
-            return this.connectAccount(businessId, {
+            const personalAccount = await this.connectAccount(businessId, {
                 platform: 'LINKEDIN',
                 accountName: profileData.name || 'LinkedIn User',
-                accountId: profileData.sub,
+                accountId: `urn:li:person:${profileData.sub}`,
                 accessToken: accessToken,
             });
+            try {
+                const aclResponse = await fetch('https://api.linkedin.com/v2/organizationAcls?q=roleAssignee&role=ADMINISTRATOR&state=APPROVED', {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        'X-Restli-Protocol-Version': '2.0.0'
+                    },
+                });
+                const aclData = await aclResponse.json();
+                console.log(`[SocialAccountsService] LinkedIn ACL Data:`, aclData);
+                if (aclData.elements && aclData.elements.length > 0) {
+                    for (const acl of aclData.elements) {
+                        const orgUrn = acl.organization;
+                        const orgId = orgUrn.split(':').pop();
+                        const orgDetailsRes = await fetch(`https://api.linkedin.com/v2/organizations/${orgId}`, {
+                            headers: { Authorization: `Bearer ${accessToken}` },
+                        });
+                        const orgDetails = await orgDetailsRes.json();
+                        console.log(`[SocialAccountsService] LinkedIn Org Details:`, orgDetails);
+                        if (orgDetails.localizedName) {
+                            await this.connectAccount(businessId, {
+                                platform: 'LINKEDIN',
+                                accountName: `${orgDetails.localizedName} (Page)`,
+                                accountId: orgUrn,
+                                accessToken: accessToken,
+                            });
+                        }
+                    }
+                }
+            }
+            catch (error) {
+                console.error(`[SocialAccountsService] Error fetching LinkedIn Organizations:`, error);
+            }
+            return personalAccount;
         }
     }
     async disconnect(id) {
@@ -218,6 +252,9 @@ let SocialAccountsService = class SocialAccountsService {
                                 const [meta, data] = url.split(',');
                                 const mime = meta.split(':')[1].split(';')[0];
                                 const binary = Buffer.from(data, 'base64');
+                                const authorUrn = account.accountId.startsWith('urn:li:')
+                                    ? account.accountId
+                                    : `urn:li:person:${account.accountId}`;
                                 const registerUrl = 'https://api.linkedin.com/v2/assets?action=registerUpload';
                                 const registerRes = await fetch(registerUrl, {
                                     method: 'POST',
@@ -228,7 +265,7 @@ let SocialAccountsService = class SocialAccountsService {
                                     body: JSON.stringify({
                                         registerUploadRequest: {
                                             recipes: ['urn:li:digitalmediaRecipe:feedshare-image'],
-                                            owner: `urn:li:person:${account.accountId}`,
+                                            owner: authorUrn,
                                             serviceRelationships: [{
                                                     relationshipType: 'OWNER',
                                                     identifier: 'urn:li:userGeneratedContent',
@@ -255,9 +292,12 @@ let SocialAccountsService = class SocialAccountsService {
                             }
                         }
                     }
+                    const authorUrn = account.accountId.startsWith('urn:li:')
+                        ? account.accountId
+                        : `urn:li:person:${account.accountId}`;
                     const postUrl = 'https://api.linkedin.com/v2/ugcPosts';
                     const ugcBody = {
-                        author: `urn:li:person:${account.accountId}`,
+                        author: authorUrn,
                         lifecycleState: 'PUBLISHED',
                         specificContent: {
                             'com.linkedin.ugc.ShareContent': {
