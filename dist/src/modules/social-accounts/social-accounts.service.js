@@ -99,16 +99,30 @@ let SocialAccountsService = class SocialAccountsService {
                 console.error(`[SocialAccountsService] Meta Token Exchange Error:`, tokenData.error);
                 throw new Error(`Meta Token Exchange Failed: ${tokenData.error.message}`);
             }
-            const accessToken = tokenData.access_token;
-            const profileResponse = await fetch(`https://graph.facebook.com/me?fields=id,name&access_token=${accessToken}`);
-            const profileData = await profileResponse.json();
-            console.log(`[SocialAccountsService] Profile data received:`, profileData);
-            return this.connectAccount(businessId, {
-                platform: 'FACEBOOK',
-                accountName: profileData.name || 'Facebook User',
-                accountId: profileData.id,
-                accessToken: accessToken,
-            });
+            const userAccessToken = tokenData.access_token;
+            const pagesResponse = await fetch(`https://graph.facebook.com/v22.0/me/accounts?access_token=${userAccessToken}`);
+            const pagesData = await pagesResponse.json();
+            console.log(`[SocialAccountsService] Pages data received:`, pagesData);
+            if (pagesData.error) {
+                console.error(`[SocialAccountsService] Meta Pages Fetch Error:`, pagesData.error);
+                throw new Error(`Meta Pages Fetch Failed: ${pagesData.error.message}`);
+            }
+            const pages = pagesData.data || [];
+            if (pages.length === 0) {
+                throw new Error('No Facebook Pages found. You must have a Facebook Page to post.');
+            }
+            let firstPageResult;
+            for (const page of pages) {
+                const result = await this.connectAccount(businessId, {
+                    platform: 'FACEBOOK',
+                    accountName: page.name,
+                    accountId: page.id,
+                    accessToken: page.access_token,
+                });
+                if (!firstPageResult)
+                    firstPageResult = result;
+            }
+            return firstPageResult;
         }
         const mockTokens = {
             INSTAGRAM: { name: "johnsplumbing_official", id: "ig_real_123", token: "ig_real_token_" + Math.random() },
@@ -129,6 +143,60 @@ let SocialAccountsService = class SocialAccountsService {
             where: { id },
             data: { isActive: false },
         });
+    }
+    async publishToPlatforms(platformIds, content, mediaUrls) {
+        const results = [];
+        for (const id of platformIds) {
+            const account = await this.prisma.socialAccount.findUnique({ where: { id } });
+            if (!account || !account.isActive)
+                continue;
+            if (account.platform === 'FACEBOOK') {
+                try {
+                    const hasBase64 = mediaUrls.some(url => url.startsWith('data:image'));
+                    if (hasBase64) {
+                        for (const url of mediaUrls) {
+                            if (url.startsWith('data:image')) {
+                                const [meta, data] = url.split(',');
+                                const mime = meta.split(':')[1].split(';')[0];
+                                const binary = Buffer.from(data, 'base64');
+                                const formData = new FormData();
+                                formData.append('source', new Blob([binary], { type: mime }));
+                                formData.append('caption', content);
+                                formData.append('access_token', account.accessToken || '');
+                                const photoUrl = `https://graph.facebook.com/v22.0/${account.accountId}/photos`;
+                                const response = await fetch(photoUrl, {
+                                    method: 'POST',
+                                    body: formData,
+                                });
+                                const result = await response.json();
+                                console.log(`[SocialAccountsService] FB Photo Upload Response:`, result);
+                                results.push({ platform: 'FACEBOOK', success: !result.error, data: result });
+                            }
+                        }
+                    }
+                    else {
+                        const postUrl = `https://graph.facebook.com/v22.0/${account.accountId}/feed`;
+                        const response = await fetch(postUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                message: content,
+                                link: mediaUrls.length > 0 ? mediaUrls[0] : undefined,
+                                access_token: account.accessToken,
+                            }),
+                        });
+                        const data = await response.json();
+                        console.log(`[SocialAccountsService] FB Feed Response:`, data);
+                        results.push({ platform: 'FACEBOOK', success: !data.error, data });
+                    }
+                }
+                catch (error) {
+                    console.error(`[SocialAccountsService] FB Publish Error:`, error);
+                    results.push({ platform: 'FACEBOOK', success: false, error });
+                }
+            }
+        }
+        return results;
     }
 };
 exports.SocialAccountsService = SocialAccountsService;

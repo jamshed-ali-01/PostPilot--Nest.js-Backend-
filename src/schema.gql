@@ -66,9 +66,9 @@ type Post {
   status: PostStatus!
   scheduledAt: DateTime
   publishedAt: DateTime
-  businessId: String!
+  businessId: String
   business: Business
-  authorId: String!
+  authorId: String
   author: User!
   targetingRegions: [String!]!
   platformIds: [String!]!
@@ -104,18 +104,16 @@ type BusinessAnalytics {
   pendingPosts: Float!
 }
 
-type ServiceArea {
+type SocialAccount {
   id: ID!
-  postcode: String!
-  location: String
-  businessId: String!
-}
-
-type GlobalStats {
-  businessCount: Int!
-  userCount: Int!
-  postCount: Int!
-  testimonialCount: Int!
+  platform: String!
+  accountName: String!
+  accountId: String!
+  isActive: Boolean
+  business: Business
+  businessId: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type AuthUser {
@@ -143,6 +141,20 @@ type AuthInitiateResponse {
   stripeUrl: String!
 }
 
+type ServiceArea {
+  id: ID!
+  postcode: String!
+  location: String
+  businessId: String!
+}
+
+type GlobalStats {
+  businessCount: Int!
+  userCount: Int!
+  postCount: Int!
+  testimonialCount: Int!
+}
+
 type Testimonial {
   id: ID!
   name: String!
@@ -160,18 +172,6 @@ enum TestimonialStatus {
   REJECTED
 }
 
-type SocialAccount {
-  id: ID!
-  platform: String!
-  accountName: String!
-  accountId: String!
-  isActive: Boolean
-  business: Business
-  businessId: String
-  createdAt: DateTime!
-  updatedAt: DateTime!
-}
-
 type Query {
   hello: String!
   me: AuthUser!
@@ -185,10 +185,10 @@ type Query {
   pendingPosts(businessId: ID!): [Post!]!
   post(id: ID!): Post
   businessAnalytics(businessId: ID!): BusinessAnalytics!
-  businessServiceAreas(businessId: ID!): [ServiceArea!]!
-  businessTestimonials(businessId: ID!): [Testimonial!]!
   socialAccounts: [SocialAccount!]!
   socialAccountAuthUrl(platform: String!): String!
+  businessServiceAreas(businessId: ID!): [ServiceArea!]!
+  businessTestimonials(businessId: ID!): [Testimonial!]!
   subscriptionPlans: [SubscriptionPlan!]!
   adminAllBusinesses: [Business!]!
   adminAllUsers: [User!]!
@@ -217,12 +217,12 @@ type Mutation {
   syncPostMetrics(id: ID!): Post!
   syncBusinessAnalytics(businessId: ID!): BusinessAnalytics!
   seedDemoData(businessId: ID!): BusinessAnalytics!
+  connectSocialAccount(input: ConnectSocialAccountInput!): SocialAccount!
+  disconnectSocialAccount(id: String!): SocialAccount!
   createServiceArea(input: CreateServiceAreaInput!): ServiceArea!
   removeServiceArea(id: ID!): ServiceArea!
   submitTestimonial(input: CreateTestimonialInput!): Testimonial!
   approveTestimonial(id: ID!): Post!
-  connectSocialAccount(input: ConnectSocialAccountInput!): SocialAccount!
-  disconnectSocialAccount(id: String!): SocialAccount!
   createSubscriptionPlan(name: String!, price: Float!, features: [String!]!, description: String, isPopular: Boolean! = false): SubscriptionPlan!
   updateSubscriptionPlan(id: String!, name: String, price: Float, features: [String!], description: String, isPopular: Boolean): SubscriptionPlan!
   deleteSubscriptionPlan(id: String!): Boolean!
@@ -263,8 +263,9 @@ input CreatePostInput {
   scheduledAt: DateTime
   targetingRegions: [String!]! = []
   platformIds: [String!]! = []
-  businessId: String!
+  businessId: String
   authorId: String!
+  publishNow: Boolean
 }
 
 input UpdatePostInput {
@@ -275,7 +276,15 @@ input UpdatePostInput {
   platformIds: [String!] = []
   businessId: String
   authorId: String
+  publishNow: Boolean
   id: ID!
+}
+
+input ConnectSocialAccountInput {
+  platform: String!
+  accountName: String!
+  accountId: String!
+  accessToken: String
 }
 
 input CreateServiceAreaInput {
@@ -289,11 +298,4 @@ input CreateTestimonialInput {
   area: String!
   content: String!
   businessId: ID!
-}
-
-input ConnectSocialAccountInput {
-  platform: String!
-  accountName: String!
-  accountId: String!
-  accessToken: String
 }

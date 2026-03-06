@@ -30,13 +30,17 @@ export class CreatePostInput {
     @IsString({ each: true })
     platformIds: string[];
 
-    @Field()
-    @IsNotEmpty()
+    @Field({ nullable: true })
+    @IsOptional()
     @IsString()
-    businessId: string;
+    businessId?: string;
 
     @Field()
     @IsNotEmpty()
     @IsString()
     authorId: string;
+
+    @Field({ nullable: true })
+    @IsOptional()
+    publishNow?: boolean;
 }

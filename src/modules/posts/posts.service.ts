@@ -3,31 +3,47 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { AIService } from './ai.service';
 import { CreatePostInput } from './dto/create-post.input';
 import { PostStatus } from '@prisma/client';
+import { SocialAccountsService } from '../social-accounts/social-accounts.service';
 
 @Injectable()
 export class PostsService {
     constructor(
         private prisma: PrismaService,
         private aiService: AIService,
+        private socialAccountsService: SocialAccountsService,
     ) { }
 
     async create(input: CreatePostInput) {
         try {
-            const author = await this.prisma.user.findUnique({
+            const author = input.authorId ? await this.prisma.user.findUnique({
                 where: { id: input.authorId },
                 include: { roles: { include: { permissions: true } } }
-            });
+            }) : null;
 
-            const hasPublishPermission = author?.roles.some(role =>
-                role.permissions.some(p => p.name === 'PUBLISH_POST')
-            );
+            // If author not found in User table, check if it's a SystemAdmin
+            let hasPublishPermission = false;
+            if (author) {
+                hasPublishPermission = author.roles.some(role =>
+                    role.permissions.some(p => p.name === 'PUBLISH_POST')
+                );
+            } else {
+                // Check if authorId belongs to a SystemAdmin
+                const sysAdmin = await this.prisma.systemAdmin.findUnique({
+                    where: { id: input.authorId }
+                });
+                if (sysAdmin) {
+                    hasPublishPermission = true; // SystemAdmins always have permission
+                }
+            }
 
             let status: PostStatus = PostStatus.DRAFT;
-            if (input.scheduledAt) {
+            if (input.publishNow) {
+                status = PostStatus.PUBLISHED;
+            } else if (input.scheduledAt) {
                 status = hasPublishPermission ? PostStatus.SCHEDULED : PostStatus.PENDING_APPROVAL;
             }
 
-            return await this.prisma.post.create({
+            const post = await this.prisma.post.create({
                 data: {
                     content: input.content,
                     mediaUrls: input.mediaUrls,
@@ -43,6 +59,18 @@ export class PostsService {
                     author: { include: { roles: { include: { permissions: true } } } },
                 },
             });
+
+            // Handle Instant Publishing
+            if (input.publishNow && input.platformIds && input.platformIds.length > 0) {
+                console.log(`[PostsService] Instant publishing triggered for post ${post.id}`);
+                await this.socialAccountsService.publishToPlatforms(
+                    input.platformIds,
+                    input.content,
+                    input.mediaUrls
+                );
+            }
+
+            return post;
         } catch (error: any) {
             console.error('[PostsService.create Error]', error);
             const fs = require('fs');

@@ -14,25 +14,42 @@ const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const ai_service_1 = require("./ai.service");
 const client_1 = require("@prisma/client");
+const social_accounts_service_1 = require("../social-accounts/social-accounts.service");
 let PostsService = class PostsService {
     prisma;
     aiService;
-    constructor(prisma, aiService) {
+    socialAccountsService;
+    constructor(prisma, aiService, socialAccountsService) {
         this.prisma = prisma;
         this.aiService = aiService;
+        this.socialAccountsService = socialAccountsService;
     }
     async create(input) {
         try {
-            const author = await this.prisma.user.findUnique({
+            const author = input.authorId ? await this.prisma.user.findUnique({
                 where: { id: input.authorId },
                 include: { roles: { include: { permissions: true } } }
-            });
-            const hasPublishPermission = author?.roles.some(role => role.permissions.some(p => p.name === 'PUBLISH_POST'));
+            }) : null;
+            let hasPublishPermission = false;
+            if (author) {
+                hasPublishPermission = author.roles.some(role => role.permissions.some(p => p.name === 'PUBLISH_POST'));
+            }
+            else {
+                const sysAdmin = await this.prisma.systemAdmin.findUnique({
+                    where: { id: input.authorId }
+                });
+                if (sysAdmin) {
+                    hasPublishPermission = true;
+                }
+            }
             let status = client_1.PostStatus.DRAFT;
-            if (input.scheduledAt) {
+            if (input.publishNow) {
+                status = client_1.PostStatus.PUBLISHED;
+            }
+            else if (input.scheduledAt) {
                 status = hasPublishPermission ? client_1.PostStatus.SCHEDULED : client_1.PostStatus.PENDING_APPROVAL;
             }
-            return await this.prisma.post.create({
+            const post = await this.prisma.post.create({
                 data: {
                     content: input.content,
                     mediaUrls: input.mediaUrls,
@@ -48,6 +65,11 @@ let PostsService = class PostsService {
                     author: { include: { roles: { include: { permissions: true } } } },
                 },
             });
+            if (input.publishNow && input.platformIds && input.platformIds.length > 0) {
+                console.log(`[PostsService] Instant publishing triggered for post ${post.id}`);
+                await this.socialAccountsService.publishToPlatforms(input.platformIds, input.content, input.mediaUrls);
+            }
+            return post;
         }
         catch (error) {
             console.error('[PostsService.create Error]', error);
@@ -230,6 +252,7 @@ exports.PostsService = PostsService;
 exports.PostsService = PostsService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        ai_service_1.AIService])
+        ai_service_1.AIService,
+        social_accounts_service_1.SocialAccountsService])
 ], PostsService);
 //# sourceMappingURL=posts.service.js.map

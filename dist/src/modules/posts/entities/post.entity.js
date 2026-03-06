@@ -66,7 +66,7 @@ __decorate([
     __metadata("design:type", Date)
 ], Post.prototype, "publishedAt", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], Post.prototype, "businessId", void 0);
 __decorate([
@@ -74,7 +74,7 @@ __decorate([
     __metadata("design:type", business_entity_1.Business)
 ], Post.prototype, "business", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], Post.prototype, "authorId", void 0);
 __decorate([

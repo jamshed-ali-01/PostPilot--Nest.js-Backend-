@@ -8,9 +8,9 @@ export declare class Post {
     status: PostStatus;
     scheduledAt?: Date;
     publishedAt?: Date;
-    businessId: string;
+    businessId?: string;
     business?: Business;
-    authorId: string;
+    authorId?: string;
     author: User;
     targetingRegions: string[];
     platformIds: string[];

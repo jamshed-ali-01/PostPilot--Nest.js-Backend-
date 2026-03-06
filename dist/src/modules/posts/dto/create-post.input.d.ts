@@ -4,6 +4,7 @@ export declare class CreatePostInput {
     scheduledAt?: Date;
     targetingRegions: string[];
     platformIds: string[];
-    businessId: string;
+    businessId?: string;
     authorId: string;
+    publishNow?: boolean;
 }

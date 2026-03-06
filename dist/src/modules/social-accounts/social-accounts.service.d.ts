@@ -37,17 +37,7 @@ export declare class SocialAccountsService {
         updatedAt: Date;
     }>;
     getAuthUrl(businessId: string | undefined, platform: string): Promise<string>;
-    handleOAuthCallback(businessId: string | undefined, platform: string, code: string): Promise<{
-        id: string;
-        platform: string;
-        accountName: string;
-        accountId: string;
-        accessToken: string | null;
-        isActive: boolean;
-        businessId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
-    }>;
+    handleOAuthCallback(businessId: string | undefined, platform: string, code: string): Promise<any>;
     disconnect(id: string): Promise<{
         id: string;
         platform: string;
@@ -59,4 +49,5 @@ export declare class SocialAccountsService {
         createdAt: Date;
         updatedAt: Date;
     }>;
+    publishToPlatforms(platformIds: string[], content: string, mediaUrls: string[]): Promise<any[]>;
 }

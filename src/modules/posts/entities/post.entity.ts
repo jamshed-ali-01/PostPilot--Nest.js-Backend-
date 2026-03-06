@@ -27,14 +27,14 @@ export class Post {
     @Field({ nullable: true })
     publishedAt?: Date;
 
-    @Field()
-    businessId: string;
+    @Field({ nullable: true })
+    businessId?: string;
 
     @Field(() => Business, { nullable: true })
     business?: Business;
 
-    @Field()
-    authorId: string;
+    @Field({ nullable: true })
+    authorId?: string;
 
     @Field(() => User)
     author: User;

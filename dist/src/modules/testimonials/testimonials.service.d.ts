@@ -25,13 +25,13 @@ export declare class TestimonialsService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        businessId: string;
+        businessId: string | null;
         content: string;
         mediaUrls: string[];
         scheduledAt: Date | null;
         targetingRegions: string[];
         platformIds: string[];
-        authorId: string;
+        authorId: string | null;
         status: import(".prisma/client").$Enums.PostStatus;
         publishedAt: Date | null;
         reach: number;

@@ -101,9 +101,9 @@ model Post {
   scheduledAt      DateTime?
   publishedAt      DateTime?
   business         Business?   @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  businessId       String     @db.ObjectId
-  author           User       @relation(fields: [authorId], references: [id])
-  authorId         String     @db.ObjectId
+  businessId       String?    @db.ObjectId
+  author           User?      @relation(fields: [authorId], references: [id])
+  authorId         String?    @db.ObjectId
   targetingRegions String[] // Postcodes or areas
   platformIds      String[]   @db.ObjectId // Selected social accounts
   

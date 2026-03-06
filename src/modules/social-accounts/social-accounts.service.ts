@@ -95,7 +95,7 @@ export class SocialAccountsService {
             const appId = process.env.FB_CLIENT_ID || process.env.META_APP_ID;
             const appSecret = process.env.FB_CLIENT_SECRET || process.env.META_APP_SECRET;
 
-            // 1. Exchange Code for Access Token
+            // 1. Exchange Code for Access Token (User Token)
             const tokenResponse = await fetch(
                 `https://graph.facebook.com/v22.0/oauth/access_token?client_id=${appId}&redirect_uri=${redirectUri}&client_secret=${appSecret}&code=${code}`
             );
@@ -107,21 +107,38 @@ export class SocialAccountsService {
                 throw new Error(`Meta Token Exchange Failed: ${tokenData.error.message}`);
             }
 
-            const accessToken = tokenData.access_token;
+            const userAccessToken = tokenData.access_token;
 
-            // 2. Get User/Page Profile
-            const profileResponse = await fetch(
-                `https://graph.facebook.com/me?fields=id,name&access_token=${accessToken}`
+            // 2. Get Managed Pages (Page ID + Page Access Token)
+            const pagesResponse = await fetch(
+                `https://graph.facebook.com/v22.0/me/accounts?access_token=${userAccessToken}`
             );
-            const profileData = await profileResponse.json();
-            console.log(`[SocialAccountsService] Profile data received:`, profileData);
+            const pagesData = await pagesResponse.json();
+            console.log(`[SocialAccountsService] Pages data received:`, pagesData);
 
-            return this.connectAccount(businessId, {
-                platform: 'FACEBOOK',
-                accountName: profileData.name || 'Facebook User',
-                accountId: profileData.id,
-                accessToken: accessToken,
-            });
+            if (pagesData.error) {
+                console.error(`[SocialAccountsService] Meta Pages Fetch Error:`, pagesData.error);
+                throw new Error(`Meta Pages Fetch Failed: ${pagesData.error.message}`);
+            }
+
+            const pages = pagesData.data || [];
+            if (pages.length === 0) {
+                throw new Error('No Facebook Pages found. You must have a Facebook Page to post.');
+            }
+
+            // 3. Connect all managed pages
+            let firstPageResult;
+            for (const page of pages) {
+                const result = await this.connectAccount(businessId, {
+                    platform: 'FACEBOOK',
+                    accountName: page.name,
+                    accountId: page.id,
+                    accessToken: page.access_token, // This is the Page Access Token
+                });
+                if (!firstPageResult) firstPageResult = result;
+            }
+
+            return firstPageResult;
         }
 
         // Keep mock for other platforms until real keys are provided
@@ -146,5 +163,66 @@ export class SocialAccountsService {
             where: { id },
             data: { isActive: false },
         });
+    }
+
+    async publishToPlatforms(platformIds: string[], content: string, mediaUrls: string[]) {
+        const results: any[] = [];
+        for (const id of platformIds) {
+            const account = await this.prisma.socialAccount.findUnique({ where: { id } });
+            if (!account || !account.isActive) continue;
+
+            if (account.platform === 'FACEBOOK') {
+                try {
+                    const hasBase64 = mediaUrls.some(url => url.startsWith('data:image'));
+
+                    if (hasBase64) {
+                        // Binary upload for base64 images
+                        for (const url of mediaUrls) {
+                            if (url.startsWith('data:image')) {
+                                const [meta, data] = url.split(',');
+                                const mime = meta.split(':')[1].split(';')[0];
+                                const binary = Buffer.from(data, 'base64');
+
+                                const formData = new FormData();
+                                formData.append('source', new Blob([binary], { type: mime }));
+                                formData.append('caption', content);
+                                formData.append('access_token', account.accessToken || '');
+
+                                const photoUrl = `https://graph.facebook.com/v22.0/${account.accountId}/photos`;
+                                const response = await fetch(photoUrl, {
+                                    method: 'POST',
+                                    body: formData,
+                                });
+
+                                const result = await response.json();
+                                console.log(`[SocialAccountsService] FB Photo Upload Response:`, result);
+                                results.push({ platform: 'FACEBOOK', success: !result.error, data: result });
+                            }
+                        }
+                    } else {
+                        // Standard feed post for links or text-only
+                        const postUrl = `https://graph.facebook.com/v22.0/${account.accountId}/feed`;
+                        const response = await fetch(postUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                message: content,
+                                link: mediaUrls.length > 0 ? mediaUrls[0] : undefined,
+                                access_token: account.accessToken,
+                            }),
+                        });
+
+                        const data = await response.json();
+                        console.log(`[SocialAccountsService] FB Feed Response:`, data);
+                        results.push({ platform: 'FACEBOOK', success: !data.error, data });
+                    }
+                } catch (error) {
+                    console.error(`[SocialAccountsService] FB Publish Error:`, error);
+                    results.push({ platform: 'FACEBOOK', success: false, error });
+                }
+            }
+            // Add other platforms here...
+        }
+        return results;
     }
 }

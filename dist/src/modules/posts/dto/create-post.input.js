@@ -21,6 +21,7 @@ let CreatePostInput = class CreatePostInput {
     platformIds;
     businessId;
     authorId;
+    publishNow;
 };
 exports.CreatePostInput = CreatePostInput;
 __decorate([
@@ -55,8 +56,8 @@ __decorate([
     __metadata("design:type", Array)
 ], CreatePostInput.prototype, "platformIds", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, graphql_1.Field)({ nullable: true }),
+    (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreatePostInput.prototype, "businessId", void 0);
@@ -66,6 +67,11 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreatePostInput.prototype, "authorId", void 0);
+__decorate([
+    (0, graphql_1.Field)({ nullable: true }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreatePostInput.prototype, "publishNow", void 0);
 exports.CreatePostInput = CreatePostInput = __decorate([
     (0, graphql_1.InputType)()
 ], CreatePostInput);
