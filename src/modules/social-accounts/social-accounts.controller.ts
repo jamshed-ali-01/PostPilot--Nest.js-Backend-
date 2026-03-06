@@ -24,7 +24,8 @@ export class SocialAccountsController {
             }
 
             // 1. Parse state (e.g., "businessId:platform")
-            const [businessId, platform] = state.split(':');
+            const [bId, platform] = state.split(':');
+            const businessId = bId === 'ADMIN' ? undefined : bId;
 
             // 2. Exchange code for token and save account
             await this.socialAccountsService.handleOAuthCallback(businessId, platform, code);

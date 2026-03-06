@@ -6,7 +6,7 @@ export declare class User {
     firstName?: string;
     lastName?: string;
     businessId: string;
-    business: Business;
+    business?: Business;
     roles: Role[];
     aiTone?: string;
     aiHashtags: string[];

@@ -7,7 +7,7 @@ export declare class SocialAccountsService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        businessId: string;
+        businessId: string | null;
         isActive: boolean;
         platform: string;
         accountName: string;
@@ -18,30 +18,30 @@ export declare class SocialAccountsService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        businessId: string;
+        businessId: string | null;
         isActive: boolean;
         platform: string;
         accountName: string;
         accountId: string;
         accessToken: string | null;
     }>;
-    connectAccount(businessId: string, input: ConnectSocialAccountInput): Promise<{
+    connectAccount(businessId: string | undefined, input: ConnectSocialAccountInput): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        businessId: string;
+        businessId: string | null;
         isActive: boolean;
         platform: string;
         accountName: string;
         accountId: string;
         accessToken: string | null;
     }>;
-    getAuthUrl(businessId: string, platform: string): Promise<string>;
-    handleOAuthCallback(businessId: string, platform: string, code: string): Promise<{
+    getAuthUrl(businessId: string | undefined, platform: string): Promise<string>;
+    handleOAuthCallback(businessId: string | undefined, platform: string, code: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        businessId: string;
+        businessId: string | null;
         isActive: boolean;
         platform: string;
         accountName: string;
@@ -52,7 +52,7 @@ export declare class SocialAccountsService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        businessId: string;
+        businessId: string | null;
         isActive: boolean;
         platform: string;
         accountName: string;

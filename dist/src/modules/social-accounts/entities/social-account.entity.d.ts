@@ -5,8 +5,8 @@ export declare class SocialAccount {
     accountName: string;
     accountId: string;
     isActive: boolean;
-    business: Business;
-    businessId: string;
+    business?: Business;
+    businessId?: string;
     createdAt: Date;
     updatedAt: Date;
 }

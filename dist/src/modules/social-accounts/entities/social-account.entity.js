@@ -45,11 +45,11 @@ __decorate([
     __metadata("design:type", Boolean)
 ], SocialAccount.prototype, "isActive", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => business_entity_1.Business),
+    (0, graphql_1.Field)(() => business_entity_1.Business, { nullable: true }),
     __metadata("design:type", business_entity_1.Business)
 ], SocialAccount.prototype, "business", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], SocialAccount.prototype, "businessId", void 0);
 __decorate([

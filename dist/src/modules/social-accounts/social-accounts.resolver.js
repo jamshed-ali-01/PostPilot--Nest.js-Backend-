@@ -31,13 +31,13 @@ let SocialAccountsResolver = class SocialAccountsResolver {
         return this.socialAccountsService.findAllByBusiness(user.businessId);
     }
     async getAuthUrl(user, platform) {
-        if (!user?.businessId)
+        if (!user?.businessId && !user?.isSystemAdmin)
             throw new Error('Unauthorized');
         return this.socialAccountsService.getAuthUrl(user.businessId, platform);
     }
     async connectSocialAccount(user, input) {
-        if (!user?.businessId)
-            throw new Error('Only business users can connect accounts');
+        if (!user?.businessId && !user?.isSystemAdmin)
+            throw new Error('Only business users or admins can connect accounts');
         return this.socialAccountsService.connectAccount(user.businessId, input);
     }
     async disconnectSocialAccount(id) {

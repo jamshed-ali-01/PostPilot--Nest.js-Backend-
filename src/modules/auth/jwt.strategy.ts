@@ -20,13 +20,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    const user = await this.usersService.findByEmail(payload.email);
-    if (user) return { ...user, isSystemAdmin: false };
-
     const sysAdmin = await this.prisma.systemAdmin.findUnique({
       where: { email: payload.email }
     });
     if (sysAdmin) return { ...sysAdmin, isSystemAdmin: true };
+
+    const user = await this.usersService.findByEmail(payload.email);
+    if (user) return { ...user, isSystemAdmin: false };
 
     throw new UnauthorizedException();
   }

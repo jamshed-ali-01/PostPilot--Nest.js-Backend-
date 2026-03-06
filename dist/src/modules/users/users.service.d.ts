@@ -17,7 +17,7 @@ export declare class UsersService {
             stripeSubscriptionId: string | null;
             stripePriceId: string | null;
             trialEndsAt: Date | null;
-        };
+        } | null;
         roles: ({
             permissions: {
                 id: string;
@@ -70,7 +70,7 @@ export declare class UsersService {
             stripeSubscriptionId: string | null;
             stripePriceId: string | null;
             trialEndsAt: Date | null;
-        };
+        } | null;
         roles: {
             id: string;
             name: string;

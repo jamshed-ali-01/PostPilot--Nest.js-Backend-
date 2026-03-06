@@ -31,14 +31,14 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
         this.prisma = prisma;
     }
     async validate(payload) {
-        const user = await this.usersService.findByEmail(payload.email);
-        if (user)
-            return { ...user, isSystemAdmin: false };
         const sysAdmin = await this.prisma.systemAdmin.findUnique({
             where: { email: payload.email }
         });
         if (sysAdmin)
             return { ...sysAdmin, isSystemAdmin: true };
+        const user = await this.usersService.findByEmail(payload.email);
+        if (user)
+            return { ...user, isSystemAdmin: false };
         throw new common_1.UnauthorizedException();
     }
 };

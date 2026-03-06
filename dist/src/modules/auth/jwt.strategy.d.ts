@@ -12,6 +12,14 @@ export declare class JwtStrategy extends JwtStrategy_base {
     constructor(configService: ConfigService, usersService: UsersService, prisma: PrismaService);
     validate(payload: any): Promise<{
         isSystemAdmin: boolean;
+        id: string;
+        name: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        email: string;
+        password: string;
+    } | {
+        isSystemAdmin: boolean;
         business: {
             id: string;
             name: string;
@@ -26,7 +34,7 @@ export declare class JwtStrategy extends JwtStrategy_base {
             stripeSubscriptionId: string | null;
             stripePriceId: string | null;
             trialEndsAt: Date | null;
-        };
+        } | null;
         roles: ({
             permissions: {
                 id: string;
@@ -55,14 +63,6 @@ export declare class JwtStrategy extends JwtStrategy_base {
         aiHashtags: string[];
         aiCaptionLength: string | null;
         aiIncludeEmojis: boolean | null;
-    } | {
-        isSystemAdmin: boolean;
-        id: string;
-        name: string | null;
-        createdAt: Date;
-        updatedAt: Date;
-        email: string;
-        password: string;
     }>;
 }
 export {};

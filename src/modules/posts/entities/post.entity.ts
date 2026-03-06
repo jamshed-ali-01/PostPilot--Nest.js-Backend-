@@ -30,8 +30,8 @@ export class Post {
     @Field()
     businessId: string;
 
-    @Field(() => Business)
-    business: Business;
+    @Field(() => Business, { nullable: true })
+    business?: Business;
 
     @Field()
     authorId: string;

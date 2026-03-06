@@ -41,7 +41,7 @@ let SocialAccountsService = class SocialAccountsService {
     async connectAccount(businessId, input) {
         const existing = await this.prisma.socialAccount.findFirst({
             where: {
-                businessId,
+                businessId: (businessId || null),
                 platform: input.platform,
                 accountId: input.accountId,
             },
@@ -59,14 +59,14 @@ let SocialAccountsService = class SocialAccountsService {
         return this.prisma.socialAccount.create({
             data: {
                 ...input,
-                businessId,
+                businessId: businessId || null,
             },
         });
     }
     async getAuthUrl(businessId, platform) {
         const backendUrl = process.env.BACKEND_URL || 'http://localhost:3000';
         const redirectUri = `${backendUrl}/social-accounts/callback`;
-        const state = `${businessId}:${platform}`;
+        const state = `${businessId || 'ADMIN'}:${platform}`;
         const fbClientId = process.env.FB_CLIENT_ID || process.env.META_APP_ID;
         const igClientId = process.env.IG_CLIENT_ID || process.env.META_APP_ID;
         const liClientId = process.env.LI_CLIENT_ID;

@@ -59,7 +59,7 @@ export declare class AuthService {
             stripeSubscriptionId: string | null;
             stripePriceId: string | null;
             trialEndsAt: Date | null;
-        };
+        } | null;
         id: string;
         createdAt: Date;
         updatedAt: Date;

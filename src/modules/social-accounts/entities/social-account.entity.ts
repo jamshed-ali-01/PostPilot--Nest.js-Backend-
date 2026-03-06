@@ -18,11 +18,11 @@ export class SocialAccount {
     @Field({ nullable: true })
     isActive: boolean;
 
-    @Field(() => Business)
-    business: Business;
+    @Field(() => Business, { nullable: true })
+    business?: Business;
 
-    @Field()
-    businessId: string;
+    @Field({ nullable: true })
+    businessId?: string;
 
     @Field()
     createdAt: Date;

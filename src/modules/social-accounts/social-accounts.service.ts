@@ -32,10 +32,10 @@ export class SocialAccountsService {
     }
 
     // Improved connect with findFirst for MongoDB
-    async connectAccount(businessId: string, input: ConnectSocialAccountInput) {
+    async connectAccount(businessId: string | undefined, input: ConnectSocialAccountInput) {
         const existing = await this.prisma.socialAccount.findFirst({
             where: {
-                businessId,
+                businessId: (businessId || null) as any,
                 platform: input.platform,
                 accountId: input.accountId,
             },
@@ -55,15 +55,15 @@ export class SocialAccountsService {
         return this.prisma.socialAccount.create({
             data: {
                 ...input,
-                businessId,
-            },
+                businessId: businessId || null,
+            } as any,
         });
     }
 
-    async getAuthUrl(businessId: string, platform: string) {
+    async getAuthUrl(businessId: string | undefined, platform: string) {
         const backendUrl = process.env.BACKEND_URL || 'http://localhost:3000';
         const redirectUri = `${backendUrl}/social-accounts/callback`;
-        const state = `${businessId}:${platform}`;
+        const state = `${businessId || 'ADMIN'}:${platform}`;
 
         const fbClientId = process.env.FB_CLIENT_ID || process.env.META_APP_ID;
         const igClientId = process.env.IG_CLIENT_ID || process.env.META_APP_ID;
@@ -82,7 +82,7 @@ export class SocialAccountsService {
         }
     }
 
-    async handleOAuthCallback(businessId: string, platform: string, code: string) {
+    async handleOAuthCallback(businessId: string | undefined, platform: string, code: string) {
         const backendUrl = process.env.BACKEND_URL || 'http://localhost:3000';
         const redirectUri = `${backendUrl}/social-accounts/callback`;
 

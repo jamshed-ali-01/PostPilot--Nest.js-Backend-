@@ -28,7 +28,8 @@ let SocialAccountsController = class SocialAccountsController {
             if (!code || !state) {
                 throw new Error('Invalid callback parameters (code or state missing)');
             }
-            const [businessId, platform] = state.split(':');
+            const [bId, platform] = state.split(':');
+            const businessId = bId === 'ADMIN' ? undefined : bId;
             await this.socialAccountsService.handleOAuthCallback(businessId, platform, code);
             return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/settings?social=success`);
         }

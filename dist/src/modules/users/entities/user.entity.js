@@ -48,7 +48,7 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "businessId", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => business_entity_1.Business),
+    (0, graphql_1.Field)(() => business_entity_1.Business, { nullable: true }),
     __metadata("design:type", business_entity_1.Business)
 ], User.prototype, "business", void 0);
 __decorate([

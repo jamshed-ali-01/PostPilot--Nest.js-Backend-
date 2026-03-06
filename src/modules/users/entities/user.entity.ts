@@ -19,8 +19,8 @@ export class User {
     @Field()
     businessId: string;
 
-    @Field(() => Business)
-    business: Business;
+    @Field(() => Business, { nullable: true })
+    business?: Business;
 
     @Field(() => [Role])
     roles: Role[];

@@ -22,7 +22,7 @@ export class SocialAccountsResolver {
         @CurrentUser() user: any,
         @Args('platform') platform: string,
     ) {
-        if (!user?.businessId) throw new Error('Unauthorized');
+        if (!user?.businessId && !user?.isSystemAdmin) throw new Error('Unauthorized');
         return this.socialAccountsService.getAuthUrl(user.businessId, platform);
     }
 
@@ -31,7 +31,7 @@ export class SocialAccountsResolver {
         @CurrentUser() user: any,
         @Args('input') input: ConnectSocialAccountInput,
     ) {
-        if (!user?.businessId) throw new Error('Only business users can connect accounts');
+        if (!user?.businessId && !user?.isSystemAdmin) throw new Error('Only business users or admins can connect accounts');
         return this.socialAccountsService.connectAccount(user.businessId, input);
     }
 

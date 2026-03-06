@@ -21,7 +21,7 @@ export declare class PostsResolver {
             stripeSubscriptionId: string | null;
             stripePriceId: string | null;
             trialEndsAt: Date | null;
-        };
+        } | null;
         author: {
             roles: ({
                 permissions: {
@@ -88,7 +88,7 @@ export declare class PostsResolver {
             stripeSubscriptionId: string | null;
             stripePriceId: string | null;
             trialEndsAt: Date | null;
-        };
+        } | null;
         author: {
             id: string;
             createdAt: Date;
@@ -175,7 +175,7 @@ export declare class PostsResolver {
             stripeSubscriptionId: string | null;
             stripePriceId: string | null;
             trialEndsAt: Date | null;
-        };
+        } | null;
         author: {
             id: string;
             createdAt: Date;

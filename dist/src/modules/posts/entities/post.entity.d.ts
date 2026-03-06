@@ -9,7 +9,7 @@ export declare class Post {
     scheduledAt?: Date;
     publishedAt?: Date;
     businessId: string;
-    business: Business;
+    business?: Business;
     authorId: string;
     author: User;
     targetingRegions: string[];

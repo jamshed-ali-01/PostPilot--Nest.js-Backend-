@@ -7,7 +7,7 @@ export declare class SocialAccountsResolver {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        businessId: string;
+        businessId: string | null;
         isActive: boolean;
         platform: string;
         accountName: string;
@@ -19,7 +19,7 @@ export declare class SocialAccountsResolver {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        businessId: string;
+        businessId: string | null;
         isActive: boolean;
         platform: string;
         accountName: string;
@@ -30,7 +30,7 @@ export declare class SocialAccountsResolver {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        businessId: string;
+        businessId: string | null;
         isActive: boolean;
         platform: string;
         accountName: string;

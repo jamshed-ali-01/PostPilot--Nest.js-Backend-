@@ -51,7 +51,7 @@ type User {
   firstName: String
   lastName: String
   businessId: String!
-  business: Business!
+  business: Business
   roles: [Role!]!
   aiTone: String
   aiHashtags: [String!]!
@@ -67,7 +67,7 @@ type Post {
   scheduledAt: DateTime
   publishedAt: DateTime
   businessId: String!
-  business: Business!
+  business: Business
   authorId: String!
   author: User!
   targetingRegions: [String!]!
@@ -166,8 +166,8 @@ type SocialAccount {
   accountName: String!
   accountId: String!
   isActive: Boolean
-  business: Business!
-  businessId: String!
+  business: Business
+  businessId: String
   createdAt: DateTime!
   updatedAt: DateTime!
 }

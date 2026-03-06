@@ -38,7 +38,7 @@ export declare class SuperAdminResolver {
             stripeSubscriptionId: string | null;
             stripePriceId: string | null;
             trialEndsAt: Date | null;
-        };
+        } | null;
         roles: {
             id: string;
             name: string;

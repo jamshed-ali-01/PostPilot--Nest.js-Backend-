@@ -38,7 +38,7 @@ export declare class SuperAdminService {
             stripeSubscriptionId: string | null;
             stripePriceId: string | null;
             trialEndsAt: Date | null;
-        };
+        } | null;
         roles: {
             id: string;
             name: string;
