@@ -8,10 +8,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SocialAccountsService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
+const path_1 = require("path");
+const uuid_1 = require("uuid");
+const sharp_1 = __importDefault(require("sharp"));
 let SocialAccountsService = class SocialAccountsService {
     prisma;
     constructor(prisma) {
@@ -75,11 +81,14 @@ let SocialAccountsService = class SocialAccountsService {
         const liClientId = process.env.LI_CLIENT_ID;
         switch (platform.toUpperCase()) {
             case 'FACEBOOK':
+                const fbScopes = encodeURIComponent('pages_manage_posts,pages_read_engagement,pages_show_list,public_profile');
+                return `https://www.facebook.com/v18.0/dialog/oauth?client_id=${fbClientId}&redirect_uri=${redirectUri}&state=${state}&scope=${fbScopes}`;
             case 'INSTAGRAM':
-                const fbScopes = encodeURIComponent('pages_manage_posts,pages_read_engagement,pages_show_list,public_profile,instagram_basic,instagram_content_publish');
-                const fbUrl = `https://www.facebook.com/v22.0/dialog/oauth?client_id=${fbClientId}&redirect_uri=${redirectUri}&state=${state}&scope=${fbScopes}`;
-                console.log(`[SocialAccountsService] Generated FB/IG Auth URL: ${fbUrl}`);
-                return fbUrl;
+                const encodedIgRedirect = encodeURIComponent(redirectUri);
+                const igScopes = encodeURIComponent('instagram_business_basic,instagram_business_content_publish,instagram_business_manage_comments,instagram_business_manage_messages');
+                const igUrl = `https://api.instagram.com/oauth/authorize?client_id=${igClientId}&redirect_uri=${encodedIgRedirect}&scope=${igScopes}&response_type=code&state=${state}`;
+                console.log(`[SocialAccountsService] Generated Direct IG Auth URL: ${igUrl}`);
+                return igUrl;
             case 'LINKEDIN':
                 const liScopes = encodeURIComponent('openid profile w_member_social email');
                 return `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${liClientId}&redirect_uri=${redirectUri}&state=${state}&scope=${liScopes}`;
@@ -88,52 +97,66 @@ let SocialAccountsService = class SocialAccountsService {
         }
     }
     async handleOAuthCallback(businessId, platform, code) {
+        console.log(`[SocialAccountsService] handleOAuthCallback started for platform: ${platform}, businessId: ${businessId}`);
         const backendUrl = process.env.BACKEND_URL || 'http://localhost:3000';
         const redirectUri = `${backendUrl}/social-accounts/callback`;
         if (platform.toUpperCase() === 'FACEBOOK') {
             const appId = process.env.FB_CLIENT_ID || process.env.META_APP_ID;
             const appSecret = process.env.FB_CLIENT_SECRET || process.env.META_APP_SECRET;
-            const tokenResponse = await fetch(`https://graph.facebook.com/v22.0/oauth/access_token?client_id=${appId}&redirect_uri=${redirectUri}&client_secret=${appSecret}&code=${code}`);
+            console.log(`[SocialAccountsService] FB Token Exchange for App ID: ${appId}`);
+            const tokenResponse = await fetch(`https://graph.facebook.com/v18.0/oauth/access_token?client_id=${appId}&redirect_uri=${redirectUri}&client_secret=${appSecret}&code=${code}`);
             const tokenData = await tokenResponse.json();
-            console.log(`[SocialAccountsService] Token exchange response:`, tokenData);
             if (tokenData.error) {
-                console.error(`[SocialAccountsService] Meta Token Exchange Error:`, tokenData.error);
-                throw new Error(`Meta Token Exchange Failed: ${tokenData.error.message}`);
+                console.error(`[SocialAccountsService] FB Token Error:`, tokenData.error);
+                throw new Error(`Facebook Token Exchange Failed: ${tokenData.error.message}`);
             }
             const userAccessToken = tokenData.access_token;
-            const pagesResponse = await fetch(`https://graph.facebook.com/v22.0/me/accounts?fields=name,access_token,instagram_business_account&access_token=${userAccessToken}`);
+            const pagesResponse = await fetch(`https://graph.facebook.com/v18.0/me/accounts?fields=name,access_token&access_token=${userAccessToken}`);
             const pagesData = await pagesResponse.json();
-            console.log(`[SocialAccountsService] Pages/IG data received:`, pagesData);
-            if (pagesData.error) {
-                console.error(`[SocialAccountsService] Meta Pages Fetch Error:`, pagesData.error);
-                throw new Error(`Meta Pages Fetch Failed: ${pagesData.error.message}`);
-            }
             const pages = pagesData.data || [];
-            if (pages.length === 0) {
-                throw new Error('No Facebook Pages found. You must have a Facebook Page to post.');
-            }
             let firstResult;
             for (const page of pages) {
-                const fbResult = await this.connectAccount(businessId, {
+                const result = await this.connectAccount(businessId, {
                     platform: 'FACEBOOK',
                     accountName: page.name,
                     accountId: page.id,
                     accessToken: page.access_token,
                 });
                 if (!firstResult)
-                    firstResult = fbResult;
-                if (page.instagram_business_account) {
-                    const igResult = await this.connectAccount(businessId, {
-                        platform: 'INSTAGRAM',
-                        accountName: `${page.name} (Instagram)`,
-                        accountId: page.instagram_business_account.id,
-                        accessToken: page.access_token,
-                    });
-                    if (!firstResult)
-                        firstResult = igResult;
-                }
+                    firstResult = result;
             }
             return firstResult;
+        }
+        if (platform.toUpperCase() === 'INSTAGRAM') {
+            const appId = process.env.IG_CLIENT_ID || process.env.META_APP_ID;
+            const appSecret = process.env.IG_CLIENT_SECRET || process.env.META_APP_SECRET;
+            console.log(`[SocialAccountsService] Direct IG Token Exchange for App ID: ${appId}`);
+            const tokenResponse = await fetch('https://api.instagram.com/oauth/access_token', {
+                method: 'POST',
+                body: new URLSearchParams({
+                    client_id: appId || '',
+                    client_secret: appSecret || '',
+                    grant_type: 'authorization_code',
+                    redirect_uri: redirectUri,
+                    code: code,
+                }),
+            });
+            const tokenData = await tokenResponse.json();
+            console.log(`[SocialAccountsService] Direct IG Token Data:`, tokenData);
+            if (tokenData.error_message || tokenData.error) {
+                throw new Error(`Instagram Token Exchange Failed: ${tokenData.error_message || tokenData.error}`);
+            }
+            const accessToken = tokenData.access_token;
+            const userId = tokenData.user_id;
+            const igResponse = await fetch(`https://graph.instagram.com/v18.0/me?fields=username,id&access_token=${accessToken}`);
+            const igData = await igResponse.json();
+            console.log(`[SocialAccountsService] Direct IG Account Data:`, igData);
+            return await this.connectAccount(businessId, {
+                platform: 'INSTAGRAM',
+                accountName: igData.username || 'Instagram Business',
+                accountId: igData.id || userId,
+                accessToken: accessToken,
+            });
         }
         if (platform.toUpperCase() === 'LINKEDIN') {
             const clientId = process.env.LI_CLIENT_ID;
@@ -226,7 +249,7 @@ let SocialAccountsService = class SocialAccountsService {
                                 formData.append('source', new Blob([binary], { type: mime }));
                                 formData.append('caption', content);
                                 formData.append('access_token', account.accessToken || '');
-                                const photoUrl = `https://graph.facebook.com/v22.0/${account.accountId}/photos`;
+                                const photoUrl = `https://graph.facebook.com/v18.0/${account.accountId}/photos`;
                                 const response = await fetch(photoUrl, { method: 'POST', body: formData });
                                 const result = await response.json();
                                 results.push({ platform: 'FACEBOOK', success: !result.error, data: result });
@@ -234,7 +257,7 @@ let SocialAccountsService = class SocialAccountsService {
                         }
                     }
                     else {
-                        const postUrl = `https://graph.facebook.com/v22.0/${account.accountId}/feed`;
+                        const postUrl = `https://graph.facebook.com/v18.0/${account.accountId}/feed`;
                         const response = await fetch(postUrl, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -349,29 +372,39 @@ let SocialAccountsService = class SocialAccountsService {
             if (account.platform === 'INSTAGRAM') {
                 try {
                     const hasBase64 = mediaUrls.some(url => url.startsWith('data:image'));
+                    const igBaseUrl = 'https://graph.instagram.com/v18.0';
                     if (hasBase64) {
                         for (const url of mediaUrls) {
                             if (url.startsWith('data:image')) {
                                 const [meta, data] = url.split(',');
-                                const binary = Buffer.from(data, 'base64');
-                                const fbAppId = process.env.FB_CLIENT_ID || process.env.META_APP_ID;
-                                const containerUrl = `https://graph.facebook.com/v22.0/${account.accountId}/media`;
-                                const containerFormData = new FormData();
-                                containerFormData.append('caption', content);
-                                containerFormData.append('access_token', account.accessToken || '');
+                                const ext = meta.split('/')[1].split(';')[0] || 'jpg';
+                                const filename = `${(0, uuid_1.v4)()}.${ext}`;
+                                const filePath = (0, path_1.join)(process.cwd(), 'src/uploads', filename);
+                                const buffer = Buffer.from(data, 'base64');
+                                await (0, sharp_1.default)(buffer)
+                                    .resize(1080, 1080, {
+                                    fit: 'contain',
+                                    background: { r: 255, g: 255, b: 255, alpha: 1 }
+                                })
+                                    .toFile(filePath);
+                                const publicUrl = `${process.env.BACKEND_URL}/uploads/${filename}`;
+                                console.log(`[SocialAccountsService] Generated IG Public URL: ${publicUrl}`);
+                                const containerUrl = `${igBaseUrl}/${account.accountId}/media`;
                                 const containerRes = await fetch(containerUrl, {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({
                                         caption: content,
-                                        image_url: url.startsWith('http') ? url : undefined,
+                                        image_url: publicUrl,
                                         access_token: account.accessToken
                                     })
                                 });
                                 const containerData = await containerRes.json();
                                 console.log(`[SocialAccountsService] IG Media Container:`, containerData);
                                 if (containerData.id) {
-                                    const publishUrl = `https://graph.facebook.com/v22.0/${account.accountId}/media_publish`;
+                                    console.log(`[SocialAccountsService] Waiting 3s for IG to process media...`);
+                                    await new Promise(resolve => setTimeout(resolve, 3000));
+                                    const publishUrl = `${igBaseUrl}/${account.accountId}/media_publish`;
                                     const publishRes = await fetch(publishUrl, {
                                         method: 'POST',
                                         headers: { 'Content-Type': 'application/json' },
@@ -381,17 +414,22 @@ let SocialAccountsService = class SocialAccountsService {
                                         })
                                     });
                                     const publishData = await publishRes.json();
+                                    console.log(`[SocialAccountsService] IG Media Publish Response:`, publishData);
                                     results.push({ platform: 'INSTAGRAM', success: !!publishData.id, data: publishData });
                                 }
                                 else {
-                                    results.push({ platform: 'INSTAGRAM', success: false, data: containerData });
+                                    let errorMsg = containerData.error?.message || 'Failed to create media container';
+                                    if (containerData.error?.code === 36003 || errorMsg.includes('aspect ratio')) {
+                                        errorMsg = "Instagram Aspect Ratio Error: Please use a Square (1:1), Portrait (4:5), or Landscape (1.91:1) image.";
+                                    }
+                                    results.push({ platform: 'INSTAGRAM', success: false, data: { ...containerData, userMessage: errorMsg } });
                                 }
                                 break;
                             }
                         }
                     }
                     else if (mediaUrls.length > 0) {
-                        const containerUrl = `https://graph.facebook.com/v22.0/${account.accountId}/media`;
+                        const containerUrl = `${igBaseUrl}/${account.accountId}/media`;
                         const containerRes = await fetch(containerUrl, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -403,7 +441,7 @@ let SocialAccountsService = class SocialAccountsService {
                         });
                         const containerData = await containerRes.json();
                         if (containerData.id) {
-                            const publishUrl = `https://graph.facebook.com/v22.0/${account.accountId}/media_publish`;
+                            const publishUrl = `${igBaseUrl}/${account.accountId}/media_publish`;
                             const publishRes = await fetch(publishUrl, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
@@ -416,7 +454,11 @@ let SocialAccountsService = class SocialAccountsService {
                             results.push({ platform: 'INSTAGRAM', success: !!publishData.id, data: publishData });
                         }
                         else {
-                            results.push({ platform: 'INSTAGRAM', success: false, data: containerData });
+                            let errorMsg = containerData.error?.message || 'Failed to create media container';
+                            if (containerData.error?.code === 36003 || errorMsg.includes('aspect ratio')) {
+                                errorMsg = "Instagram Aspect Ratio Error: Please use a Square (1:1), Portrait (4:5), or Landscape (1.91:1) image.";
+                            }
+                            results.push({ platform: 'INSTAGRAM', success: false, data: { ...containerData, userMessage: errorMsg } });
                         }
                     }
                 }
