@@ -19,7 +19,7 @@ exports.PostsModule = PostsModule = __decorate([
     (0, common_1.Module)({
         imports: [social_accounts_module_1.SocialAccountsModule],
         providers: [posts_service_1.PostsService, posts_resolver_1.PostsResolver, ai_service_1.AIService],
-        exports: [posts_service_1.PostsService],
+        exports: [posts_service_1.PostsService, ai_service_1.AIService],
     })
 ], PostsModule);
 //# sourceMappingURL=posts.module.js.map

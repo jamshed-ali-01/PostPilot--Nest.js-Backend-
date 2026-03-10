@@ -8,6 +8,6 @@ import { SocialAccountsModule } from '../social-accounts/social-accounts.module'
 @Module({
     imports: [SocialAccountsModule],
     providers: [PostsService, PostsResolver, AIService],
-    exports: [PostsService],
+    exports: [PostsService, AIService],
 })
 export class PostsModule { }

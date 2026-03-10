@@ -20,6 +20,51 @@ export class AIService {
         this.gemini = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
     }
 
+    private buildAdSystemPrompt(prompt: string, tone: string, platform: string): string {
+        return `You are a direct-response ad copywriter for UK trades businesses (plumbers, builders, electricians, etc.).
+Generate a high-converting ad for ${platform}.
+Rules:
+- Headline: Catchy and under 40 characters
+- Primary Text: Engaging, solves a pain point, and under 125 characters
+- Description: Concise and highlights a benefit (e.g., "5-Year Warranty")
+- Tone: ${tone}
+- Style: Professional, trustworthy, and local.
+- No fluff. Just the copy.
+
+Business Context/Job: ${prompt}
+
+Format the response as JSON:
+{
+  "headline": "...",
+  "primaryText": "...",
+  "description": "..."
+}`;
+    }
+
+    async generateAdContent(prompt: string, tone: string = 'professional', platform: string = 'FACEBOOK'): Promise<{ headline: string, primaryText: string, description: string }> {
+        const systemPrompt = this.buildAdSystemPrompt(prompt, tone, platform);
+        let result: string;
+
+        if (this.provider === 'openai') {
+            result = await this.generateWithOpenAI(systemPrompt);
+        } else {
+            result = await this.generateWithGemini(systemPrompt);
+        }
+
+        try {
+            // Remove markdown code blocks if present
+            const cleanResult = result.replace(/```json|```/g, '').trim();
+            return JSON.parse(cleanResult);
+        } catch (error) {
+            console.error('[AI Ad Generation Parsing Error]', error, result);
+            return {
+                headline: "Professional Trades Service",
+                primaryText: "Get high-quality service from local experts. Book your free estimate today!",
+                description: "Expert Workmanship Guaranteed",
+            };
+        }
+    }
+
     private buildSystemPrompt(prompt: string, tone: string, location?: string, hasImages?: boolean, includeEmojis: boolean = true, captionLength: string = 'medium'): string {
         const lengthMap: Record<string, string> = {
             'short': 'concise and under 150 characters',

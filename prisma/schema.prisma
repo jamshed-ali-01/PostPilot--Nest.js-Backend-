@@ -26,6 +26,7 @@ model Business {
   serviceAreas ServiceArea[]
   integrations Integration[]
   socialAccounts SocialAccount[]
+  ads            Ad[]
   
   // Stripe Integration
   stripeCustomerId     String?
@@ -164,6 +165,39 @@ model SocialAccount {
   businessId  String?  @db.ObjectId
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Ad {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  headline     String
+  primaryText  String
+  description  String?
+  mediaUrls    String[]
+  platform     String   // e.g., "FACEBOOK", "GOOGLE"
+  status       AdStatus @default(DRAFT)
+  
+  // Meta Ads specific fields
+  adAccountId  String?
+  pageId       String?
+  campaignId   String?
+  adSetId      String?
+  metaAdId     String?  // The ID of the actual ad created on Meta
+  budget       Float?
+  postcode     String?
+  startDate    DateTime?
+  endDate      DateTime?
+
+  business     Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  businessId   String   @db.ObjectId
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+enum AdStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  COMPLETED
 }
 
 model SubscriptionPlan {

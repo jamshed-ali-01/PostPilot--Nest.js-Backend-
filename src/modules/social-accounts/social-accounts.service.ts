@@ -66,7 +66,8 @@ export class SocialAccountsService {
     }
 
     async getAuthUrl(businessId: string | undefined, platform: string) {
-        const backendUrl = process.env.BACKEND_URL || 'http://localhost:3000';
+        const rawBackendUrl = process.env.BACKEND_URL || 'http://localhost:3000';
+        const backendUrl = rawBackendUrl.endsWith('/') ? rawBackendUrl.slice(0, -1) : rawBackendUrl;
         const redirectUri = `${backendUrl}/social-accounts/callback`;
         const state = `${businessId || 'ADMIN'}:${platform}`;
 
@@ -76,8 +77,9 @@ export class SocialAccountsService {
 
         switch (platform.toUpperCase()) {
             case 'FACEBOOK':
-                const fbScopes = encodeURIComponent('pages_manage_posts,pages_read_engagement,pages_show_list,public_profile');
-                return `https://www.facebook.com/v18.0/dialog/oauth?client_id=${fbClientId}&redirect_uri=${redirectUri}&state=${state}&scope=${fbScopes}`;
+                const fbScopes = encodeURIComponent('pages_manage_posts,pages_read_engagement,pages_show_list,public_profile,ads_management,business_management');
+                const encodedFbRedirect = encodeURIComponent(redirectUri);
+                return `https://www.facebook.com/v18.0/dialog/oauth?client_id=${fbClientId}&redirect_uri=${encodedFbRedirect}&state=${state}&scope=${fbScopes}`;
 
             case 'INSTAGRAM':
                 // DIRECT INSTAGRAM LOGIN FLOW (Standalone)
@@ -99,7 +101,8 @@ export class SocialAccountsService {
 
     async handleOAuthCallback(businessId: string | undefined, platform: string, code: string) {
         console.log(`[SocialAccountsService] handleOAuthCallback started for platform: ${platform}, businessId: ${businessId}`);
-        const backendUrl = process.env.BACKEND_URL || 'http://localhost:3000';
+        const rawBackendUrl = process.env.BACKEND_URL || 'http://localhost:3000';
+        const backendUrl = rawBackendUrl.endsWith('/') ? rawBackendUrl.slice(0, -1) : rawBackendUrl;
         const redirectUri = `${backendUrl}/social-accounts/callback`;
 
         if (platform.toUpperCase() === 'FACEBOOK') {
@@ -109,8 +112,9 @@ export class SocialAccountsService {
             console.log(`[SocialAccountsService] FB Token Exchange for App ID: ${appId}`);
 
             // 1. Exchange Code for Access Token
+            const encodedRedirectUri = encodeURIComponent(redirectUri);
             const tokenResponse = await fetch(
-                `https://graph.facebook.com/v18.0/oauth/access_token?client_id=${appId}&redirect_uri=${redirectUri}&client_secret=${appSecret}&code=${code}`
+                `https://graph.facebook.com/v18.0/oauth/access_token?client_id=${appId}&redirect_uri=${encodedRedirectUri}&client_secret=${appSecret}&code=${code}`
             );
             const tokenData = await tokenResponse.json();
 

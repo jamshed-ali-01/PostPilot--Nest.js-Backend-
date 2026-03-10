@@ -18,6 +18,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppResolver } from './app.resolver';
 import { StripeModule } from './modules/stripe/stripe.module';
+import { AdsModule } from './modules/ads/ads.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { StripeModule } from './modules/stripe/stripe.module';
     SubscriptionPlansModule,
     SuperAdminModule,
     StripeModule,
+    AdsModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],

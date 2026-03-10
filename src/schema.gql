@@ -172,6 +172,52 @@ enum TestimonialStatus {
   REJECTED
 }
 
+type Ad {
+  id: ID!
+  headline: String!
+  primaryText: String!
+  description: String
+  mediaUrls: [String!]
+  platform: String!
+  status: AdStatus!
+  businessId: ID!
+  adAccountId: String
+  pageId: String
+  campaignId: String
+  adSetId: String
+  metaAdId: String
+  budget: Float
+  postcode: String
+  startDate: DateTime
+  endDate: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum AdStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  COMPLETED
+}
+
+type AIAdResult {
+  headline: String!
+  primaryText: String!
+  description: String!
+}
+
+type FbAdAccount {
+  id: ID!
+  name: String!
+  currency: String
+}
+
+type FbPage {
+  id: ID!
+  name: String!
+}
+
 type Query {
   hello: String!
   me: AuthUser!
@@ -193,6 +239,9 @@ type Query {
   adminAllBusinesses: [Business!]!
   adminAllUsers: [User!]!
   adminGlobalStats: GlobalStats!
+  businessAds(businessId: ID!): [Ad!]!
+  facebookAdAccounts(businessId: ID): [FbAdAccount!]!
+  facebookPages(businessId: ID): [FbPage!]!
 }
 
 type Mutation {
@@ -226,6 +275,9 @@ type Mutation {
   createSubscriptionPlan(name: String!, price: Float!, features: [String!]!, description: String, isPopular: Boolean! = false): SubscriptionPlan!
   updateSubscriptionPlan(id: String!, name: String, price: Float, features: [String!], description: String, isPopular: Boolean): SubscriptionPlan!
   deleteSubscriptionPlan(id: String!): Boolean!
+  createAd(input: CreateAdInput!): Ad!
+  generateAIAd(prompt: String!, platform: String! = "FACEBOOK"): AIAdResult!
+  deleteAd(id: ID!): Ad!
 }
 
 input LoginInput {
@@ -298,4 +350,19 @@ input CreateTestimonialInput {
   area: String!
   content: String!
   businessId: ID!
+}
+
+input CreateAdInput {
+  headline: String!
+  primaryText: String!
+  description: String
+  mediaUrls: [String!]
+  platform: String!
+  businessId: ID!
+  adAccountId: String
+  pageId: String
+  budget: Float
+  postcode: String
+  startDate: DateTime
+  endDate: DateTime
 }

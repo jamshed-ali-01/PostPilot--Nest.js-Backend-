@@ -25,6 +25,48 @@ let AIService = class AIService {
         this.openai = new openai_1.default({ apiKey: process.env.OPENAI_API_KEY || '' });
         this.gemini = new generative_ai_1.GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
     }
+    buildAdSystemPrompt(prompt, tone, platform) {
+        return `You are a direct-response ad copywriter for UK trades businesses (plumbers, builders, electricians, etc.).
+Generate a high-converting ad for ${platform}.
+Rules:
+- Headline: Catchy and under 40 characters
+- Primary Text: Engaging, solves a pain point, and under 125 characters
+- Description: Concise and highlights a benefit (e.g., "5-Year Warranty")
+- Tone: ${tone}
+- Style: Professional, trustworthy, and local.
+- No fluff. Just the copy.
+
+Business Context/Job: ${prompt}
+
+Format the response as JSON:
+{
+  "headline": "...",
+  "primaryText": "...",
+  "description": "..."
+}`;
+    }
+    async generateAdContent(prompt, tone = 'professional', platform = 'FACEBOOK') {
+        const systemPrompt = this.buildAdSystemPrompt(prompt, tone, platform);
+        let result;
+        if (this.provider === 'openai') {
+            result = await this.generateWithOpenAI(systemPrompt);
+        }
+        else {
+            result = await this.generateWithGemini(systemPrompt);
+        }
+        try {
+            const cleanResult = result.replace(/```json|```/g, '').trim();
+            return JSON.parse(cleanResult);
+        }
+        catch (error) {
+            console.error('[AI Ad Generation Parsing Error]', error, result);
+            return {
+                headline: "Professional Trades Service",
+                primaryText: "Get high-quality service from local experts. Book your free estimate today!",
+                description: "Expert Workmanship Guaranteed",
+            };
+        }
+    }
     buildSystemPrompt(prompt, tone, location, hasImages, includeEmojis = true, captionLength = 'medium') {
         const lengthMap = {
             'short': 'concise and under 150 characters',

@@ -26,19 +26,23 @@ let SocialAccountsResolver = class SocialAccountsResolver {
         this.socialAccountsService = socialAccountsService;
     }
     async socialAccounts(user) {
-        if (!user?.businessId && !user?.isSystemAdmin)
+        const busId = user?.businessId || user?.business?.id;
+        if (!busId && !user?.isSystemAdmin)
             return [];
-        return this.socialAccountsService.findAllByBusiness(user.businessId);
+        return this.socialAccountsService.findAllByBusiness(busId);
     }
     async getAuthUrl(user, platform) {
-        if (!user?.businessId && !user?.isSystemAdmin)
+        const busId = user?.businessId || user?.business?.id;
+        console.log(`[SocialAccountsResolver] getAuthUrl called for platform: ${platform}, user:`, { id: user?.id, businessId: busId, type: user?.isSystemAdmin ? 'Admin' : 'BusinessUser' });
+        if (!busId && !user?.isSystemAdmin)
             throw new Error('Unauthorized');
-        return this.socialAccountsService.getAuthUrl(user.businessId, platform);
+        return this.socialAccountsService.getAuthUrl(busId, platform);
     }
     async connectSocialAccount(user, input) {
-        if (!user?.businessId && !user?.isSystemAdmin)
+        const busId = user?.businessId || user?.business?.id;
+        if (!busId && !user?.isSystemAdmin)
             throw new Error('Only business users or admins can connect accounts');
-        return this.socialAccountsService.connectAccount(user.businessId, input);
+        return this.socialAccountsService.connectAccount(busId, input);
     }
     async disconnectSocialAccount(id) {
         return this.socialAccountsService.disconnect(id);

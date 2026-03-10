@@ -27,6 +27,7 @@ const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const app_resolver_1 = require("./app.resolver");
 const stripe_module_1 = require("./modules/stripe/stripe.module");
+const ads_module_1 = require("./modules/ads/ads.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -57,6 +58,7 @@ exports.AppModule = AppModule = __decorate([
             subscription_plans_module_1.SubscriptionPlansModule,
             super_admin_module_1.SuperAdminModule,
             stripe_module_1.StripeModule,
+            ads_module_1.AdsModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, app_resolver_1.AppResolver],

@@ -13,8 +13,9 @@ export class SocialAccountsResolver {
 
     @Query(() => [SocialAccount])
     async socialAccounts(@CurrentUser() user: any) {
-        if (!user?.businessId && !user?.isSystemAdmin) return [];
-        return this.socialAccountsService.findAllByBusiness(user.businessId);
+        const busId = user?.businessId || user?.business?.id;
+        if (!busId && !user?.isSystemAdmin) return [];
+        return this.socialAccountsService.findAllByBusiness(busId);
     }
 
     @Query(() => String, { name: 'socialAccountAuthUrl' })
@@ -22,8 +23,10 @@ export class SocialAccountsResolver {
         @CurrentUser() user: any,
         @Args('platform') platform: string,
     ) {
-        if (!user?.businessId && !user?.isSystemAdmin) throw new Error('Unauthorized');
-        return this.socialAccountsService.getAuthUrl(user.businessId, platform);
+        const busId = user?.businessId || user?.business?.id;
+        console.log(`[SocialAccountsResolver] getAuthUrl called for platform: ${platform}, user:`, { id: user?.id, businessId: busId, type: user?.isSystemAdmin ? 'Admin' : 'BusinessUser' });
+        if (!busId && !user?.isSystemAdmin) throw new Error('Unauthorized');
+        return this.socialAccountsService.getAuthUrl(busId, platform);
     }
 
     @Mutation(() => SocialAccount)
@@ -31,8 +34,9 @@ export class SocialAccountsResolver {
         @CurrentUser() user: any,
         @Args('input') input: ConnectSocialAccountInput,
     ) {
-        if (!user?.businessId && !user?.isSystemAdmin) throw new Error('Only business users or admins can connect accounts');
-        return this.socialAccountsService.connectAccount(user.businessId, input);
+        const busId = user?.businessId || user?.business?.id;
+        if (!busId && !user?.isSystemAdmin) throw new Error('Only business users or admins can connect accounts');
+        return this.socialAccountsService.connectAccount(busId, input);
     }
 
     @Mutation(() => SocialAccount)
