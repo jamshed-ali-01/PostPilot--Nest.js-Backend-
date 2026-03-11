@@ -115,6 +115,16 @@ let SocialAccountsService = class SocialAccountsService {
                 throw new Error(`Facebook Token Exchange Failed: ${tokenData.error.message}`);
             }
             const userAccessToken = tokenData.access_token;
+            console.log(`[SocialAccountsService] FB User Token obtained. Fetching User profile...`);
+            const userProfileRes = await fetch(`https://graph.facebook.com/v18.0/me?fields=name,id&access_token=${userAccessToken}`);
+            const userProfile = await userProfileRes.json();
+            console.log(`[SocialAccountsService] FB User Profile: ${userProfile.name} (${userProfile.id})`);
+            await this.connectAccount(businessId, {
+                platform: 'FACEBOOK',
+                accountName: `${userProfile.name} (User Account)`,
+                accountId: userProfile.id,
+                accessToken: userAccessToken,
+            });
             const pagesResponse = await fetch(`https://graph.facebook.com/v18.0/me/accounts?fields=name,access_token&access_token=${userAccessToken}`);
             const pagesData = await pagesResponse.json();
             const pages = pagesData.data || [];

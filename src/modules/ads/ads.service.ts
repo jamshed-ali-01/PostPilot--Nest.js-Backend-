@@ -14,13 +14,23 @@ export class AdsService {
 
     async getFacebookAdAccounts(businessId: string | null | undefined) {
         console.log("[AdsService] getFacebookAdAccounts called for businessId:", businessId);
-        const fbAccount = await this.prisma.socialAccount.findFirst({
-            where: { businessId: (businessId || null) as any, platform: 'FACEBOOK', isActive: true }
+        
+        const accounts = await this.prisma.socialAccount.findMany({
+            where: { 
+                businessId: (businessId || null) as any, 
+                platform: 'FACEBOOK', 
+                isActive: true,
+                accessToken: { not: null }
+            }
         });
 
-        console.log("[AdsService] fbAccount found in DB:", fbAccount ? { id: fbAccount.id, name: fbAccount.accountName, hasToken: !!fbAccount.accessToken } : "NULL");
+        console.log(`[AdsService] Found ${accounts.length} FB accounts in DB`);
 
-        // If no linked Facebook account, return empty list instead of throwing
+        // Prioritize User Account token (contains 'User Account' in name)
+        const fbAccount = accounts.find(a => a.accountName.includes('User Account')) || accounts[0];
+
+        console.log("[AdsService] Selected account for Ad fetching:", fbAccount ? { id: fbAccount.id, name: fbAccount.accountName } : "NULL");
+
         if (!fbAccount || !fbAccount.accessToken) {
             return [];
         }
@@ -38,8 +48,6 @@ export class AdsService {
             }));
         } catch (error: any) {
             console.error("[AdsService] Error fetching Ad Accounts:", error);
-            if (error.stack) console.error(error.stack);
-            // Return error in the list for frontend debugging
             return [{
                 id: 'error',
                 name: `Error: ${error.message || 'Unknown Meta Error'}`,
@@ -50,7 +58,12 @@ export class AdsService {
 
     async getFacebookPages(businessId: string | null | undefined) {
         const fbAccount = await this.prisma.socialAccount.findFirst({
-            where: { businessId: (businessId || null) as any, platform: 'FACEBOOK', isActive: true }
+            where: { 
+                businessId: (businessId || null) as any, 
+                platform: 'FACEBOOK', 
+                isActive: true,
+                accessToken: { not: null }
+            }
         });
 
         // If no linked Facebook account, return empty list
@@ -60,17 +73,35 @@ export class AdsService {
 
         try {
             const pagesResponse = await fetch(
-                `https://graph.facebook.com/v18.0/me/accounts?fields=name,access_token\u0026access_token=${fbAccount.accessToken}`
+                `https://graph.facebook.com/v18.0/me/accounts?fields=name,access_token&access_token=${fbAccount.accessToken}`
             );
             const pagesData = await pagesResponse.json();
-            return pagesData.data?.map((p: any) => ({
-                id: p.id,
-                name: p.name,
-            })) || [];
-        } catch (error) {
+            
+            if (pagesData.error) {
+                console.error("[AdsService] getFacebookPages Meta Error:", pagesData.error);
+                return [{ id: 'error', name: `Error: ${pagesData.error.message}` }];
+            }
+
+            const pages = pagesData.data || [];
+            const result = await Promise.all(pages.map(async (p: any) => {
+                let name = p.name;
+                if (!name || name === 'Unnamed Page') {
+                    // Try to find name in DB
+                    const dbAcc = await this.prisma.socialAccount.findFirst({
+                        where: { accountId: p.id, platform: 'FACEBOOK' }
+                    });
+                    if (dbAcc) name = dbAcc.accountName;
+                }
+                return {
+                    id: p.id,
+                    name: name || 'Unnamed Page',
+                };
+            }));
+            
+            return result;
+        } catch (error: any) {
             console.error("[AdsService] Error fetching Pages:", error);
-            // Return empty array on error
-            return [];
+            return [{ id: 'error', name: `Error: ${error.message}` }];
         }
     }
 
@@ -100,9 +131,12 @@ export class AdsService {
     }
 
     private async createMetaAd(input: CreateAdInput) {
-        const fbAccount = await this.prisma.socialAccount.findFirst({
-            where: { businessId: input.businessId, platform: 'FACEBOOK', isActive: true }
+        const accounts = await this.prisma.socialAccount.findMany({
+            where: { businessId: input.businessId, platform: 'FACEBOOK', isActive: true, accessToken: { not: null } }
         });
+
+        // Prioritize User Account token for ad management permissions
+        const fbAccount = accounts.find(a => a.accountName.includes('User Account')) || accounts[0];
 
         if (!fbAccount || !fbAccount.accessToken) {
             throw new Error("Facebook Account not connected");
@@ -135,6 +169,9 @@ export class AdsService {
                 const imageData = await imageUploadRes.json();
                 if (imageData.images && imageData.images['ad_image.jpg']) {
                     imageHash = imageData.images['ad_image.jpg'].hash;
+                } else {
+                    console.error("[AdsService] Meta Image Upload Failed:", imageData);
+                    throw new Error(`Meta Image Upload Failed: ${imageData.error?.message || 'No hash returned'}`);
                 }
             }
 
@@ -146,12 +183,14 @@ export class AdsService {
                     [Campaign.Fields.objective]: 'OUTCOME_TRAFFIC', // or OUTCOME_ENGAGEMENT
                     [Campaign.Fields.status]: 'PAUSED',
                     [Campaign.Fields.special_ad_categories]: ['NONE'],
+                    'is_adset_budget_sharing_enabled': false,
                 }
             );
 
             // 3. Create AdSet (PAUSED)
             // Note: Budget needs to be in minimum units (e.g., cents, so $50 = 5000)
-            const dailyBudget = Math.floor((input.budget || 50) * 100);
+            const rawBudget = Math.max(input.budget || 300, 300);
+            const dailyBudget = Math.floor(rawBudget * 100);
 
             // Basic targeting using postcode (if provided and API allows string zip) or broad defaults
             const targeting: any = {
@@ -168,7 +207,8 @@ export class AdsService {
                     [AdSet.Fields.daily_budget]: dailyBudget,
                     [AdSet.Fields.billing_event]: 'IMPRESSIONS',
                     [AdSet.Fields.optimization_goal]: 'LINK_CLICKS',
-                    [AdSet.Fields.bid_amount]: 200, // manual bid or use lowest cost
+                    // Use LOWEST_COST_WITHOUT_CAP to avoid needing a manual bid_amount
+                    'bid_strategy': 'LOWEST_COST_WITHOUT_CAP',
                     [AdSet.Fields.promoted_object]: { page_id: input.pageId },
                     [AdSet.Fields.targeting]: targeting,
                     [AdSet.Fields.status]: 'PAUSED',
@@ -189,6 +229,7 @@ export class AdsService {
                     }
                 }
             };
+            console.log("[AdsService] Creating Meta AdCreative with data:", JSON.stringify(creativeData, null, 2));
             const creative = await account.createAdCreative([AdCreative.Fields.Id], creativeData);
 
             // 5. Create Ad (PAUSED)
@@ -223,9 +264,13 @@ export class AdsService {
             });
 
         } catch (error: any) {
-            console.error("[AdsService] Meta Ad Creation Error:", error?.response?.error || error);
-            // Fallback save as DRAFT if Meta API fails
-            return this.prisma.ad.create({
+            const metaError = error?.response?.error || error?.response?.data?.error || error;
+            console.error("[AdsService] Meta Ad Creation Error Details:", JSON.stringify(metaError, null, 2));
+            
+            const friendlyMsg = metaError.error_user_msg || metaError.message || "Meta API Error occurred";
+
+            // Save as DRAFT and store the Meta error so user sees it but record is not lost
+            return (this.prisma.ad as any).create({
                 data: {
                     headline: input.headline,
                     primaryText: input.primaryText,
@@ -237,10 +282,10 @@ export class AdsService {
                     adAccountId: input.adAccountId,
                     pageId: input.pageId,
                     budget: input.budget,
-                    postcode: input.postcode,
                     startDate: input.startDate,
                     endDate: input.endDate,
-                },
+                    metaError: friendlyMsg,
+                } as any,
             });
         }
     }

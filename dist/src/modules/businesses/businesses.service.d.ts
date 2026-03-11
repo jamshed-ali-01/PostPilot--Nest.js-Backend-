@@ -11,11 +11,11 @@ export declare class BusinessesService {
         theme: string | null;
         isActive: boolean;
         isSubscriptionActive: boolean;
-        subscriptionPlanId: string | null;
         stripeCustomerId: string | null;
         stripeSubscriptionId: string | null;
         stripePriceId: string | null;
         trialEndsAt: Date | null;
+        subscriptionPlanId: string | null;
     }>;
     toggleActiveStatus(id: string, isActive: boolean): Promise<{
         id: string;
@@ -26,11 +26,11 @@ export declare class BusinessesService {
         theme: string | null;
         isActive: boolean;
         isSubscriptionActive: boolean;
-        subscriptionPlanId: string | null;
         stripeCustomerId: string | null;
         stripeSubscriptionId: string | null;
         stripePriceId: string | null;
         trialEndsAt: Date | null;
+        subscriptionPlanId: string | null;
     }>;
     toggleSubscription(id: string, isSubscriptionActive: boolean): Promise<{
         id: string;
@@ -41,11 +41,11 @@ export declare class BusinessesService {
         theme: string | null;
         isActive: boolean;
         isSubscriptionActive: boolean;
-        subscriptionPlanId: string | null;
         stripeCustomerId: string | null;
         stripeSubscriptionId: string | null;
         stripePriceId: string | null;
         trialEndsAt: Date | null;
+        subscriptionPlanId: string | null;
     }>;
     purchaseSubscription(id: string, planId: string): Promise<{
         id: string;
@@ -56,11 +56,11 @@ export declare class BusinessesService {
         theme: string | null;
         isActive: boolean;
         isSubscriptionActive: boolean;
-        subscriptionPlanId: string | null;
         stripeCustomerId: string | null;
         stripeSubscriptionId: string | null;
         stripePriceId: string | null;
         trialEndsAt: Date | null;
+        subscriptionPlanId: string | null;
     }>;
     findOne(id: string): Promise<({
         roles: {
@@ -95,11 +95,11 @@ export declare class BusinessesService {
         theme: string | null;
         isActive: boolean;
         isSubscriptionActive: boolean;
-        subscriptionPlanId: string | null;
         stripeCustomerId: string | null;
         stripeSubscriptionId: string | null;
         stripePriceId: string | null;
         trialEndsAt: Date | null;
+        subscriptionPlanId: string | null;
     }) | null>;
     findAll(): Promise<({
         subscriptionPlan: {
@@ -136,11 +136,11 @@ export declare class BusinessesService {
         theme: string | null;
         isActive: boolean;
         isSubscriptionActive: boolean;
-        subscriptionPlanId: string | null;
         stripeCustomerId: string | null;
         stripeSubscriptionId: string | null;
         stripePriceId: string | null;
         trialEndsAt: Date | null;
+        subscriptionPlanId: string | null;
     })[]>;
     deleteBusiness(id: string): Promise<{
         id: string;
@@ -151,10 +151,10 @@ export declare class BusinessesService {
         theme: string | null;
         isActive: boolean;
         isSubscriptionActive: boolean;
-        subscriptionPlanId: string | null;
         stripeCustomerId: string | null;
         stripeSubscriptionId: string | null;
         stripePriceId: string | null;
         trialEndsAt: Date | null;
+        subscriptionPlanId: string | null;
     }>;
 }

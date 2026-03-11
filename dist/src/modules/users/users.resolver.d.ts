@@ -13,11 +13,11 @@ export declare class UsersResolver {
             theme: string | null;
             isActive: boolean;
             isSubscriptionActive: boolean;
-            subscriptionPlanId: string | null;
             stripeCustomerId: string | null;
             stripeSubscriptionId: string | null;
             stripePriceId: string | null;
             trialEndsAt: Date | null;
+            subscriptionPlanId: string | null;
         } | null;
         roles: ({
             permissions: {

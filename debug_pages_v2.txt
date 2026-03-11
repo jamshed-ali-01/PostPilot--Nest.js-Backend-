@@ -1,0 +1,60 @@
+[2026-03-11T18:19:53.867Z] getFacebookPages raw response: {
+  "data": [
+    {
+      "access_token": "EAASDR6kEiWcBQ4S5fT180QvHXMCKKjgv8qe0fVXdqLLQZAYMDDt6u3peaxiFPK718WMvNWrMZAo0cMqa2smq90RqeWIWkmwUxvWuAwsjTwobTMEFkZC0dgSibIpkEMGXvTZCKThNZAYJIgiX64aeyFk51fZCW6RGd5EGRp1kx76Qx2pnwWoCOY9ZAFy08CuG3PrAZCip",
+      "id": "1030895783438343"
+    }
+  ],
+  "paging": {
+    "cursors": {
+      "before": "QVFIU0wwT3o3S25lb0k3SjhQM1NjYkZAzTjBFQjRyQVZADSHJXdkRidU5tN0FCSElmX1MxeDJFMWNkVXFHbENaSVR5Ty1YbGZAYVHBRZAUkyYWhzdnFEVTUzaU1B",
+      "after": "QVFIU0wwT3o3S25lb0k3SjhQM1NjYkZAzTjBFQjRyQVZADSHJXdkRidU5tN0FCSElmX1MxeDJFMWNkVXFHbENaSVR5Ty1YbGZAYVHBRZAUkyYWhzdnFEVTUzaU1B"
+    }
+  }
+}
+[2026-03-11T18:19:53.867Z] getFacebookPages returning: [
+  {
+    "id": "1030895783438343",
+    "name": "Unnamed Page"
+  }
+]
+[2026-03-11T18:21:47.611Z] getFacebookPages raw response: {
+  "data": [
+    {
+      "access_token": "EAASDR6kEiWcBQ0wO86PNZAj7AbvzByRVlfBEbs6QczA8ezNstUrndKYHsZAN0SDE43VrvsJsWQPVh9kBjRvg28ZB27GoZB1WScZByhWmdKKrD2mDJj4bzeXZCewHPDQzqCN6hVcyWQ4vn1w5XXagV6qoyae4HhOB88L85S5XGOpNWc47xRxh3QnSrMtHqPna2zZB1H2",
+      "id": "1030895783438343"
+    }
+  ],
+  "paging": {
+    "cursors": {
+      "before": "QVFIU0wwT3o3S25lb0k3SjhQM1NjYkZAzTjBFQjRyQVZADSHJXdkRidU5tN0FCSElmX1MxeDJFMWNkVXFHbENaSVR5Ty1YbGZAYVHBRZAUkyYWhzdnFEVTUzaU1B",
+      "after": "QVFIU0wwT3o3S25lb0k3SjhQM1NjYkZAzTjBFQjRyQVZADSHJXdkRidU5tN0FCSElmX1MxeDJFMWNkVXFHbENaSVR5Ty1YbGZAYVHBRZAUkyYWhzdnFEVTUzaU1B"
+    }
+  }
+}
+[2026-03-11T18:21:47.611Z] getFacebookPages returning: [
+  {
+    "id": "1030895783438343",
+    "name": "Unnamed Page"
+  }
+]
+[2026-03-11T18:22:43.451Z] getFacebookPages raw response: {
+  "data": [
+    {
+      "access_token": "EAASDR6kEiWcBQ28KKNoaOOp5MUxxUIzs5QlZBcktNYRafqWJiunyISdBu7TZA2io3kqg455Nupw8pk9bNsNaTHdictwYQiJ3CSUU6ZCWf3UorgNUfO2QXL2KcaZCpD5kU8bOZAXTGPZBUCZAORDRYZBK6Ju7PIaHnqBRkq6kJ7t50m3ZB4sw5LU9laThlvq7FyO9NRVCF1MFn",
+      "id": "1030895783438343"
+    }
+  ],
+  "paging": {
+    "cursors": {
+      "before": "QVFIU0wwT3o3S25lb0k3SjhQM1NjYkZAzTjBFQjRyQVZADSHJXdkRidU5tN0FCSElmX1MxeDJFMWNkVXFHbENaSVR5Ty1YbGZAYVHBRZAUkyYWhzdnFEVTUzaU1B",
+      "after": "QVFIU0wwT3o3S25lb0k3SjhQM1NjYkZAzTjBFQjRyQVZADSHJXdkRidU5tN0FCSElmX1MxeDJFMWNkVXFHbENaSVR5Ty1YbGZAYVHBRZAUkyYWhzdnFEVTUzaU1B"
+    }
+  }
+}
+[2026-03-11T18:22:43.451Z] getFacebookPages returning: [
+  {
+    "id": "1030895783438343",
+    "name": "Unnamed Page"
+  }
+]

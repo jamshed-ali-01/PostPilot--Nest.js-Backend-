@@ -58,6 +58,9 @@ export class Ad {
     @Field({ nullable: true })
     endDate?: Date;
 
+    @Field({ nullable: true })
+    metaError?: string;
+
     @Field()
     createdAt: Date;
 

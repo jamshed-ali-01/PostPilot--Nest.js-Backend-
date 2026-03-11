@@ -54,11 +54,11 @@ export declare class AuthService {
             theme: string | null;
             isActive: boolean;
             isSubscriptionActive: boolean;
-            subscriptionPlanId: string | null;
             stripeCustomerId: string | null;
             stripeSubscriptionId: string | null;
             stripePriceId: string | null;
             trialEndsAt: Date | null;
+            subscriptionPlanId: string | null;
         } | null;
         id: string;
         createdAt: Date;

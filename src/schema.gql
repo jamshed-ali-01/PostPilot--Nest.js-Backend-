@@ -190,6 +190,7 @@ type Ad {
   postcode: String
   startDate: DateTime
   endDate: DateTime
+  metaError: String
   createdAt: DateTime!
   updatedAt: DateTime!
 }

@@ -124,8 +124,24 @@ export class SocialAccountsService {
             }
 
             const userAccessToken = tokenData.access_token;
+            console.log(`[SocialAccountsService] FB User Token obtained. Fetching User profile...`);
 
-            // 2. Get Managed Pages
+            // 2. Get User Profile (to store a User Token for Ad management)
+            const userProfileRes = await fetch(
+                `https://graph.facebook.com/v18.0/me?fields=name,id&access_token=${userAccessToken}`
+            );
+            const userProfile = await userProfileRes.json();
+            console.log(`[SocialAccountsService] FB User Profile: ${userProfile.name} (${userProfile.id})`);
+
+            // Connect the User's own account (holds the primary token for Ads)
+            await this.connectAccount(businessId, {
+                platform: 'FACEBOOK',
+                accountName: `${userProfile.name} (User Account)`,
+                accountId: userProfile.id,
+                accessToken: userAccessToken,
+            });
+
+            // 3. Get Managed Pages
             const pagesResponse = await fetch(
                 `https://graph.facebook.com/v18.0/me/accounts?fields=name,access_token&access_token=${userAccessToken}`
             );

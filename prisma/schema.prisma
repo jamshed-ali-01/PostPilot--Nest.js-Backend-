@@ -186,6 +186,7 @@ model Ad {
   postcode     String?
   startDate    DateTime?
   endDate      DateTime?
+  metaError    String?
 
   business     Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
   businessId   String   @db.ObjectId
