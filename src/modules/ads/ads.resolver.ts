@@ -2,6 +2,7 @@ import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
 import { AdsService } from './ads.service';
 import { Ad } from './entities/ad.entity';
 import { CreateAdInput } from './dto/create-ad.input';
+import { UpdateAdInput } from './dto/update-ad.input';
 import { AIAdResult } from './entities/ad-ai-result.entity';
 import { FbAdAccount, FbPage } from './entities/fb-metadata.entity';
 import { UseGuards } from '@nestjs/common';
@@ -52,6 +53,12 @@ export class AdsResolver {
         @Args('platform', { defaultValue: 'FACEBOOK' }) platform: string,
     ) {
         return this.adsService.generateAIAd(user.id, prompt, platform);
+    }
+
+    @Mutation(() => Ad)
+    @UseGuards(GqlAuthGuard)
+    async updateAd(@Args('input') input: UpdateAdInput) {
+        return this.adsService.update(input);
     }
 
     @Mutation(() => Ad)

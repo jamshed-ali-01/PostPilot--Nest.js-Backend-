@@ -10,51 +10,7 @@ export class BusinessesService {
             data: { name },
         });
 
-        // Seed default permissions if they don't exist
-        const permissionNames = [
-            'CREATE_POST', 'EDIT_POST', 'SCHEDULE_POST', 'PUBLISH_POST',
-            'VIEW_ANALYTICS', 'MANAGE_INTEGRATIONS', 'MANAGE_SERVICE_AREAS',
-            'INVITE_USERS', 'REMOVE_USERS', 'MANAGE_BILLING'
-        ];
-
-        for (const pName of permissionNames) {
-            await this.prisma.permission.upsert({
-                where: { name: pName },
-                update: {},
-                create: { name: pName },
-            });
-        }
-
-        const allPermissions = await this.prisma.permission.findMany();
-        const getPermId = (name: string) => allPermissions.find(p => p.name === name)?.id;
-
-        // Seed default roles
-        const ownerPerms = allPermissions.map(p => p.id);
-        const managerPerms = [
-            'CREATE_POST', 'EDIT_POST', 'SCHEDULE_POST', 'PUBLISH_POST',
-            'VIEW_ANALYTICS', 'MANAGE_SERVICE_AREAS', 'INVITE_USERS'
-        ].map(getPermId).filter(id => !!id) as string[];
-
-        const staffPerms = [
-            'CREATE_POST', 'VIEW_ANALYTICS'
-        ].map(getPermId).filter(id => !!id) as string[];
-
-        const roles = [
-            { name: `OWNER`, description: 'Full access', permissionIds: ownerPerms },
-            { name: `MANAGER`, description: 'Manage posts and users', permissionIds: managerPerms },
-            { name: `STAFF`, description: 'Create drafts', permissionIds: staffPerms },
-        ];
-
-        for (const roleData of roles) {
-            await this.prisma.role.create({
-                data: {
-                    ...roleData,
-                    name: `${roleData.name}_${business.id}`,
-                    businessId: business.id,
-                },
-            });
-        }
-
+        // Global roles are now used by default, no need for business-specific role seeding.
         return business;
     }
 

@@ -41,4 +41,24 @@ export class SuperAdminService {
             testimonialCount
         };
     }
+
+    async createGlobalPermission(name: string, description?: string) {
+        return this.prisma.permission.create({
+            data: { name, description }
+        });
+    }
+
+    async createGlobalRole(name: string, description: string, permissionIds: string[]) {
+        return this.prisma.role.create({
+            data: {
+                name,
+                description,
+                businessId: null, // Global role
+                permissions: {
+                    connect: permissionIds.map(id => ({ id }))
+                }
+            },
+            include: { permissions: true }
+        });
+    }
 }

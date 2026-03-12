@@ -4,8 +4,8 @@ export declare class SuperAdminService {
     constructor(prisma: PrismaService);
     getAllBusinesses(): Promise<({
         _count: {
-            posts: number;
             users: number;
+            posts: number;
             testimonials: number;
         };
     } & {
@@ -17,13 +17,21 @@ export declare class SuperAdminService {
         theme: string | null;
         isActive: boolean;
         isSubscriptionActive: boolean;
+        subscriptionPlanId: string | null;
         stripeCustomerId: string | null;
         stripeSubscriptionId: string | null;
         stripePriceId: string | null;
         trialEndsAt: Date | null;
-        subscriptionPlanId: string | null;
     })[]>;
     getAllUsers(): Promise<({
+        roles: {
+            id: string;
+            name: string;
+            description: string | null;
+            businessId: string | null;
+            permissionIds: string[];
+            userIds: string[];
+        }[];
         business: {
             id: string;
             name: string;
@@ -33,39 +41,52 @@ export declare class SuperAdminService {
             theme: string | null;
             isActive: boolean;
             isSubscriptionActive: boolean;
+            subscriptionPlanId: string | null;
             stripeCustomerId: string | null;
             stripeSubscriptionId: string | null;
             stripePriceId: string | null;
             trialEndsAt: Date | null;
-            subscriptionPlanId: string | null;
         } | null;
-        roles: {
-            id: string;
-            name: string;
-            description: string | null;
-            businessId: string | null;
-            permissionIds: string[];
-            userIds: string[];
-        }[];
     } & {
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
+        roleIds: string[];
+        businessId: string;
         email: string;
         password: string;
         firstName: string | null;
         lastName: string | null;
-        businessId: string;
-        roleIds: string[];
         aiTone: string | null;
         aiHashtags: string[];
         aiCaptionLength: string | null;
         aiIncludeEmojis: boolean | null;
+        createdAt: Date;
+        updatedAt: Date;
     })[]>;
     getGlobalStats(): Promise<{
         businessCount: number;
         userCount: number;
         postCount: number;
         testimonialCount: number;
+    }>;
+    createGlobalPermission(name: string, description?: string): Promise<{
+        id: string;
+        name: string;
+        description: string | null;
+        roleIds: string[];
+    }>;
+    createGlobalRole(name: string, description: string, permissionIds: string[]): Promise<{
+        permissions: {
+            id: string;
+            name: string;
+            description: string | null;
+            roleIds: string[];
+        }[];
+    } & {
+        id: string;
+        name: string;
+        description: string | null;
+        businessId: string | null;
+        permissionIds: string[];
+        userIds: string[];
     }>;
 }

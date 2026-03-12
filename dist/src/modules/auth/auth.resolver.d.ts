@@ -26,16 +26,31 @@ export declare class AuthResolver {
     initiateRegister(registerInput: RegisterInput): Promise<{
         stripeUrl: string;
     }>;
+    registerByInvite(input: RegisterInput, token: string): Promise<{
+        id: string;
+        roleIds: string[];
+        businessId: string;
+        email: string;
+        password: string;
+        firstName: string | null;
+        lastName: string | null;
+        aiTone: string | null;
+        aiHashtags: string[];
+        aiCaptionLength: string | null;
+        aiIncludeEmojis: boolean | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
     getMe(user: any): Promise<{
         isSystemAdmin: boolean;
         firstName: string;
         lastName: string;
         id: string;
         name: string | null;
-        createdAt: Date;
-        updatedAt: Date;
         email: string;
         password: string;
+        createdAt: Date;
+        updatedAt: Date;
     } | {
         isSystemAdmin: boolean;
         business: {
@@ -47,24 +62,24 @@ export declare class AuthResolver {
             theme: string | null;
             isActive: boolean;
             isSubscriptionActive: boolean;
+            subscriptionPlanId: string | null;
             stripeCustomerId: string | null;
             stripeSubscriptionId: string | null;
             stripePriceId: string | null;
             trialEndsAt: Date | null;
-            subscriptionPlanId: string | null;
         } | null;
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
+        roleIds: string[];
+        businessId: string;
         email: string;
         password: string;
         firstName: string | null;
         lastName: string | null;
-        businessId: string;
-        roleIds: string[];
         aiTone: string | null;
         aiHashtags: string[];
         aiCaptionLength: string | null;
         aiIncludeEmojis: boolean | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
 }

@@ -50,6 +50,24 @@ let SuperAdminService = class SuperAdminService {
             testimonialCount
         };
     }
+    async createGlobalPermission(name, description) {
+        return this.prisma.permission.create({
+            data: { name, description }
+        });
+    }
+    async createGlobalRole(name, description, permissionIds) {
+        return this.prisma.role.create({
+            data: {
+                name,
+                description,
+                businessId: null,
+                permissions: {
+                    connect: permissionIds.map(id => ({ id }))
+                }
+            },
+            include: { permissions: true }
+        });
+    }
 };
 exports.SuperAdminService = SuperAdminService;
 exports.SuperAdminService = SuperAdminService = __decorate([

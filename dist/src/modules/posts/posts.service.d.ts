@@ -11,12 +11,12 @@ export declare class PostsService {
     create(input: CreatePostInput): Promise<{
         business: {
             id: string;
-            isActive: boolean;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
             logo: string | null;
             theme: string | null;
+            isActive: boolean;
             isSubscriptionActive: boolean;
             subscriptionPlanId: string | null;
             stripeCustomerId: string | null;
@@ -29,31 +29,31 @@ export declare class PostsService {
                 permissions: {
                     id: string;
                     name: string;
-                    roleIds: string[];
                     description: string | null;
+                    roleIds: string[];
                 }[];
             } & {
                 id: string;
-                businessId: string | null;
                 name: string;
                 description: string | null;
+                businessId: string | null;
                 permissionIds: string[];
                 userIds: string[];
             })[];
         } & {
             id: string;
+            roleIds: string[];
             businessId: string;
-            createdAt: Date;
-            updatedAt: Date;
             email: string;
             password: string;
             firstName: string | null;
             lastName: string | null;
-            roleIds: string[];
             aiTone: string | null;
             aiHashtags: string[];
             aiCaptionLength: string | null;
             aiIncludeEmojis: boolean | null;
+            createdAt: Date;
+            updatedAt: Date;
         }) | null;
     } & {
         id: string;
@@ -62,18 +62,18 @@ export declare class PostsService {
         updatedAt: Date;
         content: string;
         mediaUrls: string[];
-        status: import(".prisma/client").$Enums.PostStatus;
         scheduledAt: Date | null;
-        publishedAt: Date | null;
         targetingRegions: string[];
         platformIds: string[];
+        authorId: string | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        publishedAt: Date | null;
         reach: number;
         impressions: number;
         likes: number;
         comments: number;
         shares: number;
         engagement: number;
-        authorId: string | null;
     }>;
     submitForApproval(id: string): Promise<{
         id: string;
@@ -82,34 +82,34 @@ export declare class PostsService {
         updatedAt: Date;
         content: string;
         mediaUrls: string[];
-        status: import(".prisma/client").$Enums.PostStatus;
         scheduledAt: Date | null;
-        publishedAt: Date | null;
         targetingRegions: string[];
         platformIds: string[];
+        authorId: string | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        publishedAt: Date | null;
         reach: number;
         impressions: number;
         likes: number;
         comments: number;
         shares: number;
         engagement: number;
-        authorId: string | null;
     }>;
     getPendingPosts(businessId: string): Promise<({
         author: {
             id: string;
+            roleIds: string[];
             businessId: string;
-            createdAt: Date;
-            updatedAt: Date;
             email: string;
             password: string;
             firstName: string | null;
             lastName: string | null;
-            roleIds: string[];
             aiTone: string | null;
             aiHashtags: string[];
             aiCaptionLength: string | null;
             aiIncludeEmojis: boolean | null;
+            createdAt: Date;
+            updatedAt: Date;
         } | null;
     } & {
         id: string;
@@ -118,28 +118,28 @@ export declare class PostsService {
         updatedAt: Date;
         content: string;
         mediaUrls: string[];
-        status: import(".prisma/client").$Enums.PostStatus;
         scheduledAt: Date | null;
-        publishedAt: Date | null;
         targetingRegions: string[];
         platformIds: string[];
+        authorId: string | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        publishedAt: Date | null;
         reach: number;
         impressions: number;
         likes: number;
         comments: number;
         shares: number;
         engagement: number;
-        authorId: string | null;
     })[]>;
     findAllByBusiness(businessId: string): Promise<({
         business: {
             id: string;
-            isActive: boolean;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
             logo: string | null;
             theme: string | null;
+            isActive: boolean;
             isSubscriptionActive: boolean;
             subscriptionPlanId: string | null;
             stripeCustomerId: string | null;
@@ -149,18 +149,18 @@ export declare class PostsService {
         } | null;
         author: {
             id: string;
+            roleIds: string[];
             businessId: string;
-            createdAt: Date;
-            updatedAt: Date;
             email: string;
             password: string;
             firstName: string | null;
             lastName: string | null;
-            roleIds: string[];
             aiTone: string | null;
             aiHashtags: string[];
             aiCaptionLength: string | null;
             aiIncludeEmojis: boolean | null;
+            createdAt: Date;
+            updatedAt: Date;
         } | null;
     } & {
         id: string;
@@ -169,28 +169,28 @@ export declare class PostsService {
         updatedAt: Date;
         content: string;
         mediaUrls: string[];
-        status: import(".prisma/client").$Enums.PostStatus;
         scheduledAt: Date | null;
-        publishedAt: Date | null;
         targetingRegions: string[];
         platformIds: string[];
+        authorId: string | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        publishedAt: Date | null;
         reach: number;
         impressions: number;
         likes: number;
         comments: number;
         shares: number;
         engagement: number;
-        authorId: string | null;
     })[]>;
     findOne(id: string): Promise<({
         business: {
             id: string;
-            isActive: boolean;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
             logo: string | null;
             theme: string | null;
+            isActive: boolean;
             isSubscriptionActive: boolean;
             subscriptionPlanId: string | null;
             stripeCustomerId: string | null;
@@ -200,18 +200,18 @@ export declare class PostsService {
         } | null;
         author: {
             id: string;
+            roleIds: string[];
             businessId: string;
-            createdAt: Date;
-            updatedAt: Date;
             email: string;
             password: string;
             firstName: string | null;
             lastName: string | null;
-            roleIds: string[];
             aiTone: string | null;
             aiHashtags: string[];
             aiCaptionLength: string | null;
             aiIncludeEmojis: boolean | null;
+            createdAt: Date;
+            updatedAt: Date;
         } | null;
     } & {
         id: string;
@@ -220,18 +220,18 @@ export declare class PostsService {
         updatedAt: Date;
         content: string;
         mediaUrls: string[];
-        status: import(".prisma/client").$Enums.PostStatus;
         scheduledAt: Date | null;
-        publishedAt: Date | null;
         targetingRegions: string[];
         platformIds: string[];
+        authorId: string | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        publishedAt: Date | null;
         reach: number;
         impressions: number;
         likes: number;
         comments: number;
         shares: number;
         engagement: number;
-        authorId: string | null;
     }) | null>;
     updateStatus(id: string, status: PostStatus): Promise<{
         id: string;
@@ -240,18 +240,18 @@ export declare class PostsService {
         updatedAt: Date;
         content: string;
         mediaUrls: string[];
-        status: import(".prisma/client").$Enums.PostStatus;
         scheduledAt: Date | null;
-        publishedAt: Date | null;
         targetingRegions: string[];
         platformIds: string[];
+        authorId: string | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        publishedAt: Date | null;
         reach: number;
         impressions: number;
         likes: number;
         comments: number;
         shares: number;
         engagement: number;
-        authorId: string | null;
     }>;
     generateAIContent(userId: string, prompt: string, tone?: string, location?: string, imageUrls?: string[]): Promise<string>;
     getOptimalScheduleTime(businessId: string): Promise<Date>;
@@ -274,18 +274,18 @@ export declare class PostsService {
         updatedAt: Date;
         content: string;
         mediaUrls: string[];
-        status: import(".prisma/client").$Enums.PostStatus;
         scheduledAt: Date | null;
-        publishedAt: Date | null;
         targetingRegions: string[];
         platformIds: string[];
+        authorId: string | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        publishedAt: Date | null;
         reach: number;
         impressions: number;
         likes: number;
         comments: number;
         shares: number;
         engagement: number;
-        authorId: string | null;
     }>;
     syncAllBusinessMetrics(businessId: string): Promise<{
         totalReach: number;
@@ -309,18 +309,18 @@ export declare class PostsService {
         updatedAt: Date;
         content: string;
         mediaUrls: string[];
-        status: import(".prisma/client").$Enums.PostStatus;
         scheduledAt: Date | null;
-        publishedAt: Date | null;
         targetingRegions: string[];
         platformIds: string[];
+        authorId: string | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        publishedAt: Date | null;
         reach: number;
         impressions: number;
         likes: number;
         comments: number;
         shares: number;
         engagement: number;
-        authorId: string | null;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
@@ -329,18 +329,18 @@ export declare class PostsService {
         updatedAt: Date;
         content: string;
         mediaUrls: string[];
-        status: import(".prisma/client").$Enums.PostStatus;
         scheduledAt: Date | null;
-        publishedAt: Date | null;
         targetingRegions: string[];
         platformIds: string[];
+        authorId: string | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        publishedAt: Date | null;
         reach: number;
         impressions: number;
         likes: number;
         comments: number;
         shares: number;
         engagement: number;
-        authorId: string | null;
     }>;
     seedDemoData(businessId: string): Promise<{
         totalReach: number;

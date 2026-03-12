@@ -38,12 +38,18 @@ export class RolesService {
     }
 
     async findAllByBusiness(businessId: string) {
-        return this.prisma.role.findMany({
+        console.log(`[RolesService] Finding roles for business: "${businessId}"`);
+        const roles = await this.prisma.role.findMany({
             where: {
-                OR: [{ businessId }, { businessId: null }],
+                OR: [
+                    { businessId: businessId || undefined }, 
+                    { businessId: null }
+                ],
             },
             include: { permissions: true },
         });
+        console.log(`[RolesService] Found ${roles.length} roles.`);
+        return roles;
     }
 
     async assignToUser(userId: string, roleId: string) {
@@ -51,7 +57,7 @@ export class RolesService {
             where: { id: userId },
             data: {
                 roles: {
-                    connect: { id: roleId },
+                    set: [{ id: roleId }],
                 },
             },
         });
@@ -59,5 +65,27 @@ export class RolesService {
 
     async findPermissions() {
         return this.prisma.permission.findMany();
+    }
+
+    async findPermissionByName(name: string) {
+        return this.prisma.permission.findUnique({ where: { name } });
+    }
+
+    async update(id: string, updateRoleInput: Partial<CreateRoleInput>) {
+        const { name, description, permissionIds } = updateRoleInput;
+
+        return this.prisma.role.update({
+            where: { id },
+            data: {
+                name,
+                description,
+                permissionIds: permissionIds,
+            },
+            include: { permissions: true },
+        });
+    }
+
+    async delete(id: string) {
+        return this.prisma.role.delete({ where: { id } });
     }
 }

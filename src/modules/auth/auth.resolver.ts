@@ -81,6 +81,14 @@ export class AuthResolver {
         return this.authService.initiateRegister(registerInput);
     }
 
+    @Mutation(() => User)
+    async registerByInvite(
+        @Args('input') input: RegisterInput,
+        @Args('token') token: string,
+    ) {
+        return this.authService.registerByInvite(input, token);
+    }
+
     @Query(() => AuthUser, { name: 'me' })
     @UseGuards(GqlAuthGuard)
     async getMe(@CurrentUser() user: any) {

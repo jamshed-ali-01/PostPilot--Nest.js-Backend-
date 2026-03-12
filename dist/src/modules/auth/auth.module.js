@@ -16,6 +16,7 @@ const jwt_1 = require("@nestjs/jwt");
 const config_1 = require("@nestjs/config");
 const jwt_strategy_1 = require("./jwt.strategy");
 const stripe_module_1 = require("../stripe/stripe.module");
+const invitations_module_1 = require("../invitations/invitations.module");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -25,6 +26,7 @@ exports.AuthModule = AuthModule = __decorate([
             users_module_1.UsersModule,
             passport_1.PassportModule,
             (0, common_1.forwardRef)(() => stripe_module_1.StripeModule),
+            invitations_module_1.InvitationsModule,
             jwt_1.JwtModule.registerAsync({
                 imports: [config_1.ConfigModule],
                 useFactory: async (configService) => ({

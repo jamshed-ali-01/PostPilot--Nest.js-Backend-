@@ -141,6 +141,18 @@ type AuthInitiateResponse {
   stripeUrl: String!
 }
 
+type Invitation {
+  id: ID!
+  token: String!
+  email: String!
+  roleId: String!
+  businessId: String!
+  expiresAt: DateTime!
+  acceptedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
 type ServiceArea {
   id: ID!
   postcode: String!
@@ -223,8 +235,10 @@ type Query {
   hello: String!
   me: AuthUser!
   user(email: String!): User
+  businessUsers(businessId: ID!): [User!]!
+  getInvitation(token: String!): Invitation!
   globalRoles: [Role!]!
-  businessRoles(businessId: String!): [Role!]!
+  businessRoles(businessId: ID!): [Role!]!
   permissions: [Permission!]!
   businesses: [Business!]!
   business(id: String!): Business!
@@ -248,11 +262,15 @@ type Query {
 type Mutation {
   login(input: LoginInput!): AuthResponse!
   initiateRegister(input: RegisterInput!): AuthInitiateResponse!
+  registerByInvite(input: RegisterInput!, token: String!): User!
   updateAiPreferences(input: UpdateAiPreferencesInput!): User!
   createCheckoutSession(planId: String!): String!
+  createInvitation(input: CreateInvitationInput!): Invitation!
   createRole(input: CreateRoleInput!): Role!
-  assignRoleToUser(userId: String!, roleId: String!): Boolean!
+  assignRoleToUser(userId: ID!, roleId: ID!): Boolean!
   createPermission(name: String!, description: String): Permission!
+  updateRole(id: ID!, input: CreateRoleInput!): Role!
+  deleteRole(id: ID!): Boolean!
   createBusiness(name: String!): Business!
   toggleActiveStatus(businessId: String!, isActive: Boolean!): Business!
   toggleBusinessSubscription(businessId: String!, isSubscriptionActive: Boolean!): Business!
@@ -278,6 +296,7 @@ type Mutation {
   deleteSubscriptionPlan(id: String!): Boolean!
   createAd(input: CreateAdInput!): Ad!
   generateAIAd(prompt: String!, platform: String! = "FACEBOOK"): AIAdResult!
+  updateAd(input: UpdateAdInput!): Ad!
   deleteAd(id: ID!): Ad!
 }
 
@@ -301,6 +320,12 @@ input UpdateAiPreferencesInput {
   aiHashtags: [String!]
   aiCaptionLength: String
   aiIncludeEmojis: Boolean
+}
+
+input CreateInvitationInput {
+  email: String!
+  roleId: ID!
+  businessId: ID!
 }
 
 input CreateRoleInput {
@@ -366,4 +391,20 @@ input CreateAdInput {
   postcode: String
   startDate: DateTime
   endDate: DateTime
+}
+
+input UpdateAdInput {
+  headline: String
+  primaryText: String
+  description: String
+  mediaUrls: [String!]
+  platform: String
+  businessId: ID
+  adAccountId: String
+  pageId: String
+  budget: Float
+  postcode: String
+  startDate: DateTime
+  endDate: DateTime
+  id: ID!
 }

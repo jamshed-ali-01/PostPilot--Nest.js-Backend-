@@ -175,45 +175,63 @@ export class AdsService {
                 }
             }
 
-            // 2. Create Campaign (PAUSED)
-            const campaign = await account.createCampaign(
-                [Campaign.Fields.Id],
-                {
-                    [Campaign.Fields.name]: `Campaign - ${input.headline}`,
-                    [Campaign.Fields.objective]: 'OUTCOME_TRAFFIC', // or OUTCOME_ENGAGEMENT
-                    [Campaign.Fields.status]: 'PAUSED',
-                    [Campaign.Fields.special_ad_categories]: ['NONE'],
-                    'is_adset_budget_sharing_enabled': false,
-                }
-            );
+            // 2. Search for existing Campaign to avoid duplicates (Filter in JS to avoid API syntax errors)
+            const allCampaigns = await account.getCampaigns(['id', 'name']);
+            const existingCampaign = allCampaigns.find(c => c.name === `Campaign - ${input.headline}`);
 
-            // 3. Create AdSet (PAUSED)
-            // Note: Budget needs to be in minimum units (e.g., cents, so $50 = 5000)
+            let campaign;
+            if (existingCampaign) {
+                console.log(`[AdsService] Reusing existing Meta Campaign: ${existingCampaign.id}`);
+                campaign = existingCampaign;
+            } else {
+                console.log(`[AdsService] Creating new Meta Campaign`);
+                campaign = await account.createCampaign(
+                    ['id'],
+                    {
+                        [Campaign.Fields.name]: `Campaign - ${input.headline}`,
+                        [Campaign.Fields.objective]: 'OUTCOME_TRAFFIC',
+                        [Campaign.Fields.status]: 'PAUSED',
+                        [Campaign.Fields.special_ad_categories]: ['NONE'],
+                        'is_adset_budget_sharing_enabled': false,
+                    }
+                );
+            }
+
+            // 3. Create AdSet (PAUSED) settings
             const rawBudget = Math.max(input.budget || 300, 300);
             const dailyBudget = Math.floor(rawBudget * 100);
 
-            // Basic targeting using postcode (if provided and API allows string zip) or broad defaults
             const targeting: any = {
                 geo_locations: {
-                    countries: ['GB'], // Default to GB for now, ideally derived
+                    countries: ['GB'],
                 }
             };
 
-            const adSet = await account.createAdSet(
-                [AdSet.Fields.Id],
-                {
-                    [AdSet.Fields.name]: `AdSet - ${input.headline}`,
-                    [AdSet.Fields.campaign_id]: campaign.id,
-                    [AdSet.Fields.daily_budget]: dailyBudget,
-                    [AdSet.Fields.billing_event]: 'IMPRESSIONS',
-                    [AdSet.Fields.optimization_goal]: 'LINK_CLICKS',
-                    // Use LOWEST_COST_WITHOUT_CAP to avoid needing a manual bid_amount
-                    'bid_strategy': 'LOWEST_COST_WITHOUT_CAP',
-                    [AdSet.Fields.promoted_object]: { page_id: input.pageId },
-                    [AdSet.Fields.targeting]: targeting,
-                    [AdSet.Fields.status]: 'PAUSED',
-                }
-            );
+            // 3. Search for existing AdSet to avoid duplicates (Filter in JS)
+            const allAdSets = await account.getAdSets(['id', 'name']);
+            const existingAdSet = allAdSets.find(as => as.name === `AdSet - ${input.headline}`);
+
+            let adSet;
+            if (existingAdSet) {
+                console.log(`[AdsService] Reusing existing Meta AdSet: ${existingAdSet.id}`);
+                adSet = existingAdSet;
+            } else {
+                console.log(`[AdsService] Creating new Meta AdSet`);
+                adSet = await account.createAdSet(
+                    ['id'],
+                    {
+                        [AdSet.Fields.name]: `AdSet - ${input.headline}`,
+                        [AdSet.Fields.campaign_id]: campaign.id,
+                        [AdSet.Fields.daily_budget]: dailyBudget,
+                        [AdSet.Fields.billing_event]: 'IMPRESSIONS',
+                        [AdSet.Fields.optimization_goal]: 'LINK_CLICKS',
+                        'bid_strategy': 'LOWEST_COST_WITHOUT_CAP',
+                        [AdSet.Fields.promoted_object]: { page_id: input.pageId },
+                        [AdSet.Fields.targeting]: targeting,
+                        [AdSet.Fields.status]: 'PAUSED',
+                    }
+                );
+            }
 
             // 4. Create Ad Creative
             const creativeData: any = {
@@ -243,25 +261,43 @@ export class AdsService {
                 }
             );
 
-            // Save to Database
-            return this.prisma.ad.create({
-                data: {
+            // 5. Create or Update Local Record
+            const adData = {
+                headline: input.headline,
+                primaryText: input.primaryText,
+                description: input.description,
+                mediaUrls: input.mediaUrls || [],
+                platform: input.platform,
+                businessId: input.businessId,
+                status: AdStatus.PAUSED, // Start paused
+                adAccountId: input.adAccountId,
+                pageId: input.pageId,
+                campaignId: campaign.id,
+                adSetId: adSet.id,
+                metaAdId: ad.id,
+                budget: input.budget,
+                postcode: input.postcode,
+                metaError: null, // Clear any previous error
+            };
+
+            const existingAdLocal = await this.prisma.ad.findFirst({
+                where: { 
                     headline: input.headline,
-                    primaryText: input.primaryText,
-                    description: input.description,
-                    mediaUrls: input.mediaUrls || [],
-                    platform: input.platform,
                     businessId: input.businessId,
-                    status: AdStatus.PAUSED, // Start paused
-                    adAccountId: input.adAccountId,
-                    pageId: input.pageId,
-                    campaignId: campaign.id,
-                    adSetId: adSet.id,
-                    metaAdId: ad.id,
-                    budget: input.budget,
-                    postcode: input.postcode,
-                },
+                    status: AdStatus.DRAFT
+                }
             });
+
+            if (existingAdLocal) {
+                console.log(`[AdsService] Updating existing local draft: ${existingAdLocal.id}`);
+                return this.prisma.ad.update({
+                    where: { id: existingAdLocal.id },
+                    data: adData,
+                });
+            } else {
+                console.log(`[AdsService] Creating new local record`);
+                return this.prisma.ad.create({ data: adData });
+            }
 
         } catch (error: any) {
             const metaError = error?.response?.error || error?.response?.data?.error || error;
@@ -269,25 +305,46 @@ export class AdsService {
             
             const friendlyMsg = metaError.error_user_msg || metaError.message || "Meta API Error occurred";
 
-            // Save as DRAFT and store the Meta error so user sees it but record is not lost
-            return (this.prisma.ad as any).create({
-                data: {
+            // Save as DRAFT (Update existing or create new)
+            const draftData = {
+                headline: input.headline,
+                primaryText: input.primaryText,
+                description: input.description,
+                mediaUrls: input.mediaUrls || [],
+                platform: input.platform,
+                businessId: input.businessId,
+                status: AdStatus.DRAFT,
+                adAccountId: input.adAccountId,
+                pageId: input.pageId,
+                budget: input.budget,
+                metaError: friendlyMsg,
+            };
+
+            const existingAdLocal = await this.prisma.ad.findFirst({
+                where: { 
                     headline: input.headline,
-                    primaryText: input.primaryText,
-                    description: input.description,
-                    mediaUrls: input.mediaUrls || [],
-                    platform: input.platform,
                     businessId: input.businessId,
-                    status: AdStatus.DRAFT,
-                    adAccountId: input.adAccountId,
-                    pageId: input.pageId,
-                    budget: input.budget,
-                    startDate: input.startDate,
-                    endDate: input.endDate,
-                    metaError: friendlyMsg,
-                } as any,
+                    status: AdStatus.DRAFT
+                }
             });
+
+            if (existingAdLocal) {
+                return this.prisma.ad.update({
+                    where: { id: existingAdLocal.id },
+                    data: draftData,
+                });
+            } else {
+                return (this.prisma.ad as any).create({ data: draftData });
+            }
         }
+    }
+
+    async update(input: any) {
+        const { id, ...data } = input;
+        return this.prisma.ad.update({
+            where: { id },
+            data,
+        });
     }
 
     async findAllByBusiness(businessId: string) {
@@ -305,6 +362,31 @@ export class AdsService {
     }
 
     async delete(id: string) {
+        const ad = await this.prisma.ad.findUnique({ where: { id } });
+        if (!ad) throw new Error("Ad not found");
+
+        if (ad.campaignId) {
+            try {
+                const fbAccounts = await this.prisma.socialAccount.findMany({
+                    where: { businessId: ad.businessId, platform: 'FACEBOOK' }
+                });
+                
+                const userAccount = fbAccounts.find(acc => acc.accountName.includes('User Account')) || fbAccounts[0];
+                
+                if (userAccount?.accessToken) {
+                    const bizSdk = require('facebook-nodejs-business-sdk');
+                    const AdsApi = bizSdk.FacebookAdsApi.init(userAccount.accessToken);
+                    const Campaign = bizSdk.Campaign;
+                    
+                    console.log(`[AdsService] Deleting Meta Campaign via SDK: ${ad.campaignId}`);
+                    const campaign = new Campaign(ad.campaignId);
+                    await campaign.delete();
+                }
+            } catch (error) {
+                console.error("[AdsService] Meta deletion sync failed:", error);
+            }
+        }
+
         return this.prisma.ad.delete({ where: { id } });
     }
 }

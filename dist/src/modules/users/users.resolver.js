@@ -31,6 +31,9 @@ let UsersResolver = class UsersResolver {
     async updateAiPreferences(user, input) {
         return this.usersService.updateAiPreferences(user.id, input);
     }
+    async findAllByBusiness(businessId) {
+        return this.usersService.findAllByBusiness(businessId);
+    }
 };
 exports.UsersResolver = UsersResolver;
 __decorate([
@@ -49,6 +52,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, update_ai_preferences_input_1.UpdateAiPreferencesInput]),
     __metadata("design:returntype", Promise)
 ], UsersResolver.prototype, "updateAiPreferences", null);
+__decorate([
+    (0, graphql_1.Query)(() => [user_entity_1.User], { name: 'businessUsers' }),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard),
+    __param(0, (0, graphql_1.Args)('businessId', { type: () => graphql_1.ID })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], UsersResolver.prototype, "findAllByBusiness", null);
 exports.UsersResolver = UsersResolver = __decorate([
     (0, graphql_1.Resolver)(() => user_entity_1.User),
     __metadata("design:paramtypes", [users_service_1.UsersService])

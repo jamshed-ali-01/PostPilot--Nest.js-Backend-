@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateRoleInput = void 0;
 const graphql_1 = require("@nestjs/graphql");
+const class_validator_1 = require("class-validator");
 let CreateRoleInput = class CreateRoleInput {
     name;
     description;
@@ -20,18 +21,25 @@ let CreateRoleInput = class CreateRoleInput {
 exports.CreateRoleInput = CreateRoleInput;
 __decorate([
     (0, graphql_1.Field)(),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateRoleInput.prototype, "name", void 0);
 __decorate([
     (0, graphql_1.Field)({ nullable: true }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateRoleInput.prototype, "description", void 0);
 __decorate([
     (0, graphql_1.Field)(() => [String], { defaultValue: [] }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsString)({ each: true }),
     __metadata("design:type", Array)
 ], CreateRoleInput.prototype, "permissionIds", void 0);
 __decorate([
     (0, graphql_1.Field)({ nullable: true }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateRoleInput.prototype, "businessId", void 0);
 exports.CreateRoleInput = CreateRoleInput = __decorate([

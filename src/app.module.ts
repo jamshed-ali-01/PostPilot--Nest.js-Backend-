@@ -19,6 +19,7 @@ import { AppService } from './app.service';
 import { AppResolver } from './app.resolver';
 import { StripeModule } from './modules/stripe/stripe.module';
 import { AdsModule } from './modules/ads/ads.module';
+import { InvitationsModule } from './modules/invitations/invitations.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { AdsModule } from './modules/ads/ads.module';
     SuperAdminModule,
     StripeModule,
     AdsModule,
+    InvitationsModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],

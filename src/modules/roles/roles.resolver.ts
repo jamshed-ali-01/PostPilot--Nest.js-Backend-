@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
 import { RolesService } from './roles.service';
 import { Role } from './entities/role.entity';
 import { Permission } from './entities/permission.entity';
@@ -7,6 +7,7 @@ import { CreateRoleInput } from './dto/create-role.input';
 @Resolver(() => Role)
 export class RolesResolver {
     constructor(private readonly rolesService: RolesService) { }
+    // Forced schema update trigger
 
     @Mutation(() => Role)
     async createRole(@Args('input') input: CreateRoleInput) {
@@ -15,8 +16,8 @@ export class RolesResolver {
 
     @Mutation(() => Boolean)
     async assignRoleToUser(
-        @Args('userId') userId: string,
-        @Args('roleId') roleId: string,
+        @Args('userId', { type: () => ID }) userId: string,
+        @Args('roleId', { type: () => ID }) roleId: string,
     ) {
         await this.rolesService.assignToUser(userId, roleId);
         return true;
@@ -28,7 +29,7 @@ export class RolesResolver {
     }
 
     @Query(() => [Role], { name: 'businessRoles' })
-    async getBusinessRoles(@Args('businessId') businessId: string) {
+    async getBusinessRoles(@Args('businessId', { type: () => ID }) businessId: string) {
         return this.rolesService.findAllByBusiness(businessId);
     }
 
@@ -43,5 +44,19 @@ export class RolesResolver {
         @Args('description', { nullable: true }) description?: string,
     ) {
         return this.rolesService.createPermission(name, description);
+    }
+
+    @Mutation(() => Role)
+    async updateRole(
+        @Args('id', { type: () => ID }) id: string,
+        @Args('input') input: CreateRoleInput,
+    ) {
+        return this.rolesService.update(id, input);
+    }
+
+    @Mutation(() => Boolean)
+    async deleteRole(@Args('id', { type: () => ID }) id: string) {
+        await this.rolesService.delete(id);
+        return true;
     }
 }

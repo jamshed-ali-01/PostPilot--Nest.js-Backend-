@@ -27,6 +27,7 @@ model Business {
   integrations Integration[]
   socialAccounts SocialAccount[]
   ads            Ad[]
+  invitations    Invitation[]
   
   // Stripe Integration
   stripeCustomerId     String?
@@ -68,7 +69,7 @@ model SystemAdmin {
 
 model Role {
   id           String       @id @default(auto()) @map("_id") @db.ObjectId
-  name         String       @unique
+  name         String       
   description  String?
   business     Business?    @relation(fields: [businessId], references: [id], onDelete: Cascade)
   businessId   String?      @db.ObjectId
@@ -76,6 +77,9 @@ model Role {
   permissions  Permission[] @relation(fields: [permissionIds], references: [id])
   userIds      String[]     @db.ObjectId
   users        User[]       @relation(fields: [userIds], references: [id])
+  invitations  Invitation[]
+
+  @@unique([name, businessId])
 }
 
 model Permission {
@@ -84,6 +88,22 @@ model Permission {
   description String?
   roleIds     String[] @db.ObjectId
   roles       Role[]   @relation(fields: [roleIds], references: [id])
+}
+
+model Invitation {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  token      String   @unique
+  email      String
+  roleId     String   @db.ObjectId
+  role       Role     @relation(fields: [roleId], references: [id])
+  businessId String   @db.ObjectId
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  expiresAt  DateTime
+  acceptedAt DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([email, businessId])
 }
 
 enum PostStatus {

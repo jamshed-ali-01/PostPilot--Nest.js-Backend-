@@ -56,18 +56,18 @@ export declare class RolesService {
     })[]>;
     assignToUser(userId: string, roleId: string): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
+        businessId: string;
+        roleIds: string[];
         email: string;
         password: string;
         firstName: string | null;
         lastName: string | null;
-        businessId: string;
-        roleIds: string[];
         aiTone: string | null;
         aiHashtags: string[];
         aiCaptionLength: string | null;
         aiIncludeEmojis: boolean | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     findPermissions(): Promise<{
         id: string;
@@ -75,4 +75,33 @@ export declare class RolesService {
         description: string | null;
         roleIds: string[];
     }[]>;
+    findPermissionByName(name: string): Promise<{
+        id: string;
+        name: string;
+        description: string | null;
+        roleIds: string[];
+    } | null>;
+    update(id: string, updateRoleInput: Partial<CreateRoleInput>): Promise<{
+        permissions: {
+            id: string;
+            name: string;
+            description: string | null;
+            roleIds: string[];
+        }[];
+    } & {
+        id: string;
+        name: string;
+        description: string | null;
+        businessId: string | null;
+        permissionIds: string[];
+        userIds: string[];
+    }>;
+    delete(id: string): Promise<{
+        id: string;
+        name: string;
+        description: string | null;
+        businessId: string | null;
+        permissionIds: string[];
+        userIds: string[];
+    }>;
 }

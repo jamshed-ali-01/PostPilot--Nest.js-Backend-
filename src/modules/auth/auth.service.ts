@@ -5,6 +5,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { LoginInput, RegisterInput } from './dto/auth-inputs';
 import { StripeService } from '../stripe/stripe.service';
+import { InvitationsService } from '../invitations/invitations.service';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +16,7 @@ export class AuthService {
         private prisma: PrismaService,
         @Inject(forwardRef(() => StripeService))
         private stripeService: StripeService,
+        private invitationsService: InvitationsService,
     ) { }
 
     async validateUser(email: string, pass: string): Promise<any> {
@@ -139,6 +141,35 @@ export class AuthService {
     }
 
 
+
+    async registerByInvite(input: RegisterInput, token: string) {
+        const invitation = await this.invitationsService.findByToken(token);
+        const hashedPassword = await bcrypt.hash(input.password, 10);
+
+        return await this.prisma.$transaction(async (tx) => {
+            // 1. Create User
+            const user = await tx.user.create({
+                data: {
+                    email: invitation.email,
+                    password: hashedPassword,
+                    firstName: input.firstName,
+                    lastName: input.lastName,
+                    businessId: invitation.businessId,
+                    roles: {
+                        connect: [{ id: invitation.roleId }]
+                    }
+                }
+            });
+
+            // 2. Mark invitation as accepted
+            await tx.invitation.update({
+                where: { token },
+                data: { acceptedAt: new Date() },
+            });
+
+            return user;
+        });
+    }
 
     async getMe(userId: string) {
         // First check if this ID belongs to a SystemAdmin

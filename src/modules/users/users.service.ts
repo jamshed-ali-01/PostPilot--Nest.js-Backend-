@@ -1,6 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
+// Assuming UpdateAiPreferencesInput is defined elsewhere or needs to be added.
+// For the purpose of this edit, we'll assume it's a type that maps to the properties
+// expected by the updateAiPreferences method. If it's not defined, this will cause a type error.
+// For example:
+// interface UpdateAiPreferencesInput {
+//     tone?: string;
+//     hashtags?: string[];
+//     captionLength?: string;
+//     includeEmojis?: boolean;
+// }
+
 @Injectable()
 export class UsersService {
     constructor(private prisma: PrismaService) { }
@@ -29,6 +40,13 @@ export class UsersService {
         return this.prisma.user.update({
             where: { id: userId },
             data,
+        });
+    }
+
+    async findAllByBusiness(businessId: string) {
+        return this.prisma.user.findMany({
+            where: { businessId },
+            include: { roles: true }
         });
     }
 }

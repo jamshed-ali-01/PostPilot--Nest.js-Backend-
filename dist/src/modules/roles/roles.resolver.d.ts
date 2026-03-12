@@ -61,4 +61,20 @@ export declare class RolesResolver {
         description: string | null;
         roleIds: string[];
     }>;
+    updateRole(id: string, input: CreateRoleInput): Promise<{
+        permissions: {
+            id: string;
+            name: string;
+            description: string | null;
+            roleIds: string[];
+        }[];
+    } & {
+        id: string;
+        name: string;
+        description: string | null;
+        businessId: string | null;
+        permissionIds: string[];
+        userIds: string[];
+    }>;
+    deleteRole(id: string): Promise<boolean>;
 }

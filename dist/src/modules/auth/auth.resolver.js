@@ -17,6 +17,7 @@ const graphql_1 = require("@nestjs/graphql");
 const auth_service_1 = require("./auth.service");
 const auth_inputs_1 = require("./dto/auth-inputs");
 const auth_inputs_2 = require("./dto/auth-inputs");
+const user_entity_1 = require("../users/entities/user.entity");
 const business_entity_1 = require("../businesses/entities/business.entity");
 const common_1 = require("@nestjs/common");
 const gql_auth_guard_1 = require("../../common/guards/gql-auth.guard");
@@ -128,6 +129,9 @@ let AuthResolver = class AuthResolver {
     async initiateRegister(registerInput) {
         return this.authService.initiateRegister(registerInput);
     }
+    async registerByInvite(input, token) {
+        return this.authService.registerByInvite(input, token);
+    }
     async getMe(user) {
         return this.authService.getMe(user.id);
     }
@@ -147,6 +151,14 @@ __decorate([
     __metadata("design:paramtypes", [auth_inputs_2.RegisterInput]),
     __metadata("design:returntype", Promise)
 ], AuthResolver.prototype, "initiateRegister", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => user_entity_1.User),
+    __param(0, (0, graphql_1.Args)('input')),
+    __param(1, (0, graphql_1.Args)('token')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [auth_inputs_2.RegisterInput, String]),
+    __metadata("design:returntype", Promise)
+], AuthResolver.prototype, "registerByInvite", null);
 __decorate([
     (0, graphql_1.Query)(() => AuthUser, { name: 'me' }),
     (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard),

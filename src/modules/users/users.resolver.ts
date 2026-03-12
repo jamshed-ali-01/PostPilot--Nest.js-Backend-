@@ -1,4 +1,4 @@
-import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
+import { Resolver, Query, Args, Mutation, ID } from '@nestjs/graphql';
 import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
 import { UseGuards } from '@nestjs/common';
@@ -22,5 +22,11 @@ export class UsersResolver {
         @Args('input') input: UpdateAiPreferencesInput
     ) {
         return this.usersService.updateAiPreferences(user.id, input);
+    }
+
+    @Query(() => [User], { name: 'businessUsers' })
+    @UseGuards(GqlAuthGuard)
+    async findAllByBusiness(@Args('businessId', { type: () => ID }) businessId: string) {
+        return this.usersService.findAllByBusiness(businessId);
     }
 }

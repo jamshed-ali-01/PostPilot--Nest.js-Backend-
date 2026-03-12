@@ -7,12 +7,14 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt.strategy';
 import { StripeModule } from '../stripe/stripe.module';
+import { InvitationsModule } from '../invitations/invitations.module';
 
 @Module({
     imports: [
         UsersModule,
         PassportModule,
         forwardRef(() => StripeModule),
+        InvitationsModule,
         JwtModule.registerAsync({
             imports: [ConfigModule],
             useFactory: async (configService: ConfigService) => ({

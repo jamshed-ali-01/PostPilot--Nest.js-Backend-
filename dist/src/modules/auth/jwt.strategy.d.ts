@@ -14,27 +14,12 @@ export declare class JwtStrategy extends JwtStrategy_base {
         isSystemAdmin: boolean;
         id: string;
         name: string | null;
-        createdAt: Date;
-        updatedAt: Date;
         email: string;
         password: string;
+        createdAt: Date;
+        updatedAt: Date;
     } | {
         isSystemAdmin: boolean;
-        business: {
-            id: string;
-            name: string;
-            createdAt: Date;
-            updatedAt: Date;
-            logo: string | null;
-            theme: string | null;
-            isActive: boolean;
-            isSubscriptionActive: boolean;
-            stripeCustomerId: string | null;
-            stripeSubscriptionId: string | null;
-            stripePriceId: string | null;
-            trialEndsAt: Date | null;
-            subscriptionPlanId: string | null;
-        } | null;
         roles: ({
             permissions: {
                 id: string;
@@ -50,19 +35,34 @@ export declare class JwtStrategy extends JwtStrategy_base {
             permissionIds: string[];
             userIds: string[];
         })[];
+        business: {
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            logo: string | null;
+            theme: string | null;
+            isActive: boolean;
+            isSubscriptionActive: boolean;
+            subscriptionPlanId: string | null;
+            stripeCustomerId: string | null;
+            stripeSubscriptionId: string | null;
+            stripePriceId: string | null;
+            trialEndsAt: Date | null;
+        } | null;
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
+        roleIds: string[];
+        businessId: string;
         email: string;
         password: string;
         firstName: string | null;
         lastName: string | null;
-        businessId: string;
-        roleIds: string[];
         aiTone: string | null;
         aiHashtags: string[];
         aiCaptionLength: string | null;
         aiIncludeEmojis: boolean | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
 }
 export {};

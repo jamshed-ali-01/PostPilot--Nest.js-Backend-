@@ -41,6 +41,12 @@ let UsersService = class UsersService {
             data,
         });
     }
+    async findAllByBusiness(businessId) {
+        return this.prisma.user.findMany({
+            where: { businessId },
+            include: { roles: true }
+        });
+    }
 };
 exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([

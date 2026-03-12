@@ -42,6 +42,13 @@ let RolesResolver = class RolesResolver {
     async createPermission(name, description) {
         return this.rolesService.createPermission(name, description);
     }
+    async updateRole(id, input) {
+        return this.rolesService.update(id, input);
+    }
+    async deleteRole(id) {
+        await this.rolesService.delete(id);
+        return true;
+    }
 };
 exports.RolesResolver = RolesResolver;
 __decorate([
@@ -53,8 +60,8 @@ __decorate([
 ], RolesResolver.prototype, "createRole", null);
 __decorate([
     (0, graphql_1.Mutation)(() => Boolean),
-    __param(0, (0, graphql_1.Args)('userId')),
-    __param(1, (0, graphql_1.Args)('roleId')),
+    __param(0, (0, graphql_1.Args)('userId', { type: () => graphql_1.ID })),
+    __param(1, (0, graphql_1.Args)('roleId', { type: () => graphql_1.ID })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
@@ -67,7 +74,7 @@ __decorate([
 ], RolesResolver.prototype, "getGlobalRoles", null);
 __decorate([
     (0, graphql_1.Query)(() => [role_entity_1.Role], { name: 'businessRoles' }),
-    __param(0, (0, graphql_1.Args)('businessId')),
+    __param(0, (0, graphql_1.Args)('businessId', { type: () => graphql_1.ID })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
@@ -86,6 +93,21 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], RolesResolver.prototype, "createPermission", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => role_entity_1.Role),
+    __param(0, (0, graphql_1.Args)('id', { type: () => graphql_1.ID })),
+    __param(1, (0, graphql_1.Args)('input')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, create_role_input_1.CreateRoleInput]),
+    __metadata("design:returntype", Promise)
+], RolesResolver.prototype, "updateRole", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => Boolean),
+    __param(0, (0, graphql_1.Args)('id', { type: () => graphql_1.ID })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], RolesResolver.prototype, "deleteRole", null);
 exports.RolesResolver = RolesResolver = __decorate([
     (0, graphql_1.Resolver)(() => role_entity_1.Role),
     __metadata("design:paramtypes", [roles_service_1.RolesService])

@@ -6,8 +6,8 @@ export declare class TestimonialsService {
     create(input: CreateTestimonialInput): Promise<{
         id: string;
         name: string;
-        createdAt: Date;
         businessId: string;
+        createdAt: Date;
         content: string;
         status: import(".prisma/client").$Enums.TestimonialStatus;
         area: string;
@@ -15,30 +15,30 @@ export declare class TestimonialsService {
     findAllByBusiness(businessId: string): Promise<{
         id: string;
         name: string;
-        createdAt: Date;
         businessId: string;
+        createdAt: Date;
         content: string;
         status: import(".prisma/client").$Enums.TestimonialStatus;
         area: string;
     }[]>;
     approveAndConvertToPost(id: string, authorId: string): Promise<{
         id: string;
+        businessId: string | null;
         createdAt: Date;
         updatedAt: Date;
-        businessId: string | null;
         content: string;
         mediaUrls: string[];
-        status: import(".prisma/client").$Enums.PostStatus;
         scheduledAt: Date | null;
-        publishedAt: Date | null;
         targetingRegions: string[];
         platformIds: string[];
+        authorId: string | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        publishedAt: Date | null;
         reach: number;
         impressions: number;
         likes: number;
         comments: number;
         shares: number;
         engagement: number;
-        authorId: string | null;
     }>;
 }

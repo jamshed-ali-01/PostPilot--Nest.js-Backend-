@@ -53,17 +53,20 @@ const users_service_1 = require("../users/users.service");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const bcrypt = __importStar(require("bcrypt"));
 const stripe_service_1 = require("../stripe/stripe.service");
+const invitations_service_1 = require("../invitations/invitations.service");
 let AuthService = AuthService_1 = class AuthService {
     usersService;
     jwtService;
     prisma;
     stripeService;
+    invitationsService;
     logger = new common_1.Logger(AuthService_1.name);
-    constructor(usersService, jwtService, prisma, stripeService) {
+    constructor(usersService, jwtService, prisma, stripeService, invitationsService) {
         this.usersService = usersService;
         this.jwtService = jwtService;
         this.prisma = prisma;
         this.stripeService = stripeService;
+        this.invitationsService = invitationsService;
     }
     async validateUser(email, pass) {
         console.log(`[AuthService] Validating user: ${email}`);
@@ -158,6 +161,29 @@ let AuthService = AuthService_1 = class AuthService {
             return user;
         });
     }
+    async registerByInvite(input, token) {
+        const invitation = await this.invitationsService.findByToken(token);
+        const hashedPassword = await bcrypt.hash(input.password, 10);
+        return await this.prisma.$transaction(async (tx) => {
+            const user = await tx.user.create({
+                data: {
+                    email: invitation.email,
+                    password: hashedPassword,
+                    firstName: input.firstName,
+                    lastName: input.lastName,
+                    businessId: invitation.businessId,
+                    roles: {
+                        connect: [{ id: invitation.roleId }]
+                    }
+                }
+            });
+            await tx.invitation.update({
+                where: { token },
+                data: { acceptedAt: new Date() },
+            });
+            return user;
+        });
+    }
     async getMe(userId) {
         const sysAdmin = await this.prisma.systemAdmin.findUnique({
             where: { id: userId }
@@ -190,6 +216,7 @@ exports.AuthService = AuthService = AuthService_1 = __decorate([
     __metadata("design:paramtypes", [users_service_1.UsersService,
         jwt_1.JwtService,
         prisma_service_1.PrismaService,
-        stripe_service_1.StripeService])
+        stripe_service_1.StripeService,
+        invitations_service_1.InvitationsService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map
