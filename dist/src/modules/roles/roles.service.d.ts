@@ -56,8 +56,8 @@ export declare class RolesService {
     })[]>;
     assignToUser(userId: string, roleId: string): Promise<{
         id: string;
-        businessId: string;
         roleIds: string[];
+        businessId: string;
         email: string;
         password: string;
         firstName: string | null;
