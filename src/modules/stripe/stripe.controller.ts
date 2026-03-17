@@ -26,6 +26,10 @@ export class StripeController {
         @Headers('stripe-signature') signature: string,
         @RawBody() rawBody: Buffer,
     ) {
+        const fs = await import('fs');
+        const logPath = './stripe-webhook.log';
+        fs.appendFileSync(logPath, `[${new Date().toISOString()}] Webhook received: ${req.url}, sig: ${signature ? 'PRESENT' : 'MISSING'}\n`);
+
         let event: Stripe.Event;
 
         // Skip webhook signature verification if we are strictly local/testing without a key.
@@ -38,27 +42,35 @@ export class StripeController {
                 );
             } catch (err) {
                 this.logger.error(`Webhook signature verification failed: ${err.message}`);
+                fs.appendFileSync(logPath, `[ERROR] Signature verification failed: ${err.message}\n`);
                 return res.status(400).send(`Webhook Error: ${err.message}`);
             }
         } else {
             // Mock event decoding if no secret provided
             event = req.body as Stripe.Event;
             this.logger.warn("Skipped Stripe Webhook Signature Verification due to missing SECRET env.");
+            fs.appendFileSync(logPath, `[WARN] Skipped signature verification\n`);
         }
+
+        fs.appendFileSync(logPath, `[INFO] Event type: ${event.type}\n`);
 
         try {
             switch (event.type) {
                 case 'checkout.session.completed': {
                     const session = event.data.object as Stripe.Checkout.Session;
-                    // The metadata we passed during creation is under session.metadata, not subscription_data.metadata
+                    fs.appendFileSync(logPath, `[INFO] Session metadata: ${JSON.stringify(session.metadata)}\n`);
+                    
                     const businessId = session.metadata?.businessId || session.client_reference_id;
                     const planId = session.metadata?.planId;
                     const isNewReg = session.metadata?.type === 'new_reg';
 
                     if (isNewReg) {
+                        fs.appendFileSync(logPath, `[INFO] Starting completeRegistration for ${session.metadata?.email}\n`);
                         await this.authService.completeRegistration(session.metadata);
                         this.logger.log(`Completed new registration for ${session.metadata?.email} via checkout session.`);
+                        fs.appendFileSync(logPath, `[SUCCESS] Registration completed for ${session.metadata?.email}\n`);
                     } else if (businessId) {
+                        fs.appendFileSync(logPath, `[INFO] Activating business ${businessId}\n`);
                         await (this.prisma.business as any).update({
                             where: { id: businessId },
                             data: {
@@ -69,6 +81,7 @@ export class StripeController {
                             } as any,
                         });
                         this.logger.log(`Activated business ${businessId} via checkout session.`);
+                        fs.appendFileSync(logPath, `[SUCCESS] Business ${businessId} activated\n`);
                     }
                     break;
                 }
@@ -88,6 +101,7 @@ export class StripeController {
                             } as any,
                         });
                         this.logger.log(`Updated subscription status for business ${business.id}`);
+                        fs.appendFileSync(logPath, `[INFO] Subscription updated for business ${business.id}, status: ${subscription.status}\n`);
                     }
                     break;
                 }
@@ -105,6 +119,7 @@ export class StripeController {
                             } as any,
                         });
                         this.logger.log(`Deactivated business ${business.id} due to canceled subscription.`);
+                        fs.appendFileSync(logPath, `[INFO] Subscription deleted for business ${business.id}\n`);
                     }
                     break;
                 }
@@ -115,6 +130,7 @@ export class StripeController {
             res.status(200).send({ received: true });
         } catch (error) {
             this.logger.error(`Error processing webhook: ${error.message}`);
+            fs.appendFileSync(logPath, `[CRITICAL ERROR] ${error.message}\nSTACK: ${error.stack}\n`);
             res.status(500).send('Internal Server Error');
         }
     }

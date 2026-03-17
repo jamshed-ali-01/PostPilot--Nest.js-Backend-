@@ -5,18 +5,18 @@ export declare class TestimonialsService {
     constructor(prisma: PrismaService);
     create(input: CreateTestimonialInput): Promise<{
         id: string;
-        name: string;
         businessId: string;
         createdAt: Date;
+        name: string;
         content: string;
         status: import(".prisma/client").$Enums.TestimonialStatus;
         area: string;
     }>;
     findAllByBusiness(businessId: string): Promise<{
         id: string;
-        name: string;
         businessId: string;
         createdAt: Date;
+        name: string;
         content: string;
         status: import(".prisma/client").$Enums.TestimonialStatus;
         area: string;

@@ -1,0 +1,410 @@
+
+> server@0.0.1 start:dev
+> nest start --watch
+
+[2J[3J[H[[90m9:59:16 PM[0m] Starting compilation in watch mode...
+
+[96msrc/modules/invitations/invitations.resolver.ts[0m:[93m7[0m:[93m2[0m - [91merror[0m[90m TS2304: [0mCannot find name 'Resolver'.
+
+[7m7[0m @Resolver(() => Invitation)
+[7m [0m [91m ~~~~~~~~[0m
+
+[96msrc/modules/invitations/invitations.resolver.ts[0m:[93m11[0m:[93m6[0m - [91merror[0m[90m TS2304: [0mCannot find name 'Mutation'.
+
+[7m11[0m     @Mutation(() => Invitation)
+[7m  [0m [91m     ~~~~~~~~[0m
+
+[96msrc/modules/invitations/invitations.resolver.ts[0m:[93m13[0m:[93m29[0m - [91merror[0m[90m TS2304: [0mCannot find name 'Args'.
+
+[7m13[0m     async createInvitation(@Args('input') input: CreateInvitationInput) {
+[7m  [0m [91m                            ~~~~[0m
+
+[96msrc/modules/invitations/invitations.resolver.ts[0m:[93m17[0m:[93m6[0m - [91merror[0m[90m TS2304: [0mCannot find name 'Query'.
+
+[7m17[0m     @Query(() => Invitation)
+[7m  [0m [91m     ~~~~~[0m
+
+[96msrc/modules/invitations/invitations.resolver.ts[0m:[93m18[0m:[93m26[0m - [91merror[0m[90m TS2304: [0mCannot find name 'Args'.
+
+[7m18[0m     async getInvitation(@Args('token') token: string) {
+[7m  [0m [91m                         ~~~~[0m
+
+[96msrc/modules/invitations/invitations.resolver.ts[0m:[93m22[0m:[93m6[0m - [91merror[0m[90m TS2304: [0mCannot find name 'Query'.
+
+[7m22[0m     @Query(() => [Invitation])
+[7m  [0m [91m     ~~~~~[0m
+
+[96msrc/modules/invitations/invitations.resolver.ts[0m:[93m24[0m:[93m32[0m - [91merror[0m[90m TS2304: [0mCannot find name 'Args'.
+
+[7m24[0m     async businessInvitations(@Args('businessId', { type: () => ID }) businessId: string) {
+[7m  [0m [91m                               ~~~~[0m
+
+[96msrc/modules/invitations/invitations.resolver.ts[0m:[93m24[0m:[93m65[0m - [91merror[0m[90m TS2304: [0mCannot find name 'ID'.
+
+[7m24[0m     async businessInvitations(@Args('businessId', { type: () => ID }) businessId: string) {
+[7m  [0m [91m                                                                ~~[0m
+
+[96msrc/modules/invitations/invitations.service.ts[0m:[93m6[0m:[93m2[0m - [91merror[0m[90m TS2304: [0mCannot find name 'Injectable'.
+
+[7m6[0m @Injectable()
+[7m [0m [91m ~~~~~~~~~~[0m
+
+[96msrc/modules/invitations/invitations.service.ts[0m:[93m20[0m:[93m34[0m - [91merror[0m[90m TS2304: [0mCannot find name 'NotFoundException'.
+
+[7m20[0m         if (!business) throw new NotFoundException('Business not found');
+[7m  [0m [91m                                 ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/invitations/invitations.service.ts[0m:[93m25[0m:[93m23[0m - [91merror[0m[90m TS2304: [0mCannot find name 'ConflictException'.
+
+[7m25[0m             throw new ConflictException('User with this email is a System Admin.');
+[7m  [0m [91m                      ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/invitations/invitations.service.ts[0m:[93m32[0m:[93m27[0m - [91merror[0m[90m TS2304: [0mCannot find name 'ConflictException'.
+
+[7m32[0m                 throw new ConflictException('User is already a member of this team.');
+[7m  [0m [91m                          ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/invitations/invitations.service.ts[0m:[93m37[0m:[93m23[0m - [91merror[0m[90m TS2304: [0mCannot find name 'ConflictException'.
+
+[7m37[0m             throw new ConflictException('User with this email is already registered.');
+[7m  [0m [91m                      ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/invitations/invitations.service.ts[0m:[93m75[0m:[93m23[0m - [91merror[0m[90m TS2304: [0mCannot find name 'NotFoundException'.
+
+[7m75[0m             throw new NotFoundException('Invitation not found.');
+[7m  [0m [91m                      ~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/invitations/invitations.service.ts[0m:[93m79[0m:[93m23[0m - [91merror[0m[90m TS2304: [0mCannot find name 'BadRequestException'.
+
+[7m79[0m             throw new BadRequestException('Invitation has already been accepted.');
+[7m  [0m [91m                      ~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/invitations/invitations.service.ts[0m:[93m83[0m:[93m23[0m - [91merror[0m[90m TS2304: [0mCannot find name 'BadRequestException'.
+
+[7m83[0m             throw new BadRequestException('Invitation has expired.');
+[7m  [0m [91m                      ~~~~~~~~~~~~~~~~~~~[0m
+
+[[90m9:59:29 PM[0m] Found 16 errors. Watching for file changes.
+
+[2J[3J[H[[90m9:59:32 PM[0m] File change detected. Starting incremental compilation...
+
+[96msrc/modules/invitations/invitations.resolver.ts[0m:[93m7[0m:[93m2[0m - [91merror[0m[90m TS2304: [0mCannot find name 'Resolver'.
+
+[7m7[0m @Resolver(() => Invitation)
+[7m [0m [91m ~~~~~~~~[0m
+
+[96msrc/modules/invitations/invitations.resolver.ts[0m:[93m11[0m:[93m6[0m - [91merror[0m[90m TS2304: [0mCannot find name 'Mutation'.
+
+[7m11[0m     @Mutation(() => Invitation)
+[7m  [0m [91m     ~~~~~~~~[0m
+
+[96msrc/modules/invitations/invitations.resolver.ts[0m:[93m13[0m:[93m29[0m - [91merror[0m[90m TS2304: [0mCannot find name 'Args'.
+
+[7m13[0m     async createInvitation(@Args('input') input: CreateInvitationInput) {
+[7m  [0m [91m                            ~~~~[0m
+
+[96msrc/modules/invitations/invitations.resolver.ts[0m:[93m17[0m:[93m6[0m - [91merror[0m[90m TS2304: [0mCannot find name 'Query'.
+
+[7m17[0m     @Query(() => Invitation)
+[7m  [0m [91m     ~~~~~[0m
+
+[96msrc/modules/invitations/invitations.resolver.ts[0m:[93m18[0m:[93m26[0m - [91merror[0m[90m TS2304: [0mCannot find name 'Args'.
+
+[7m18[0m     async getInvitation(@Args('token') token: string) {
+[7m  [0m [91m                         ~~~~[0m
+
+[96msrc/modules/invitations/invitations.resolver.ts[0m:[93m22[0m:[93m6[0m - [91merror[0m[90m TS2304: [0mCannot find name 'Query'.
+
+[7m22[0m     @Query(() => [Invitation])
+[7m  [0m [91m     ~~~~~[0m
+
+[96msrc/modules/invitations/invitations.resolver.ts[0m:[93m24[0m:[93m32[0m - [91merror[0m[90m TS2304: [0mCannot find name 'Args'.
+
+[7m24[0m     async businessInvitations(@Args('businessId', { type: () => ID }) businessId: string) {
+[7m  [0m [91m                               ~~~~[0m
+
+[96msrc/modules/invitations/invitations.resolver.ts[0m:[93m24[0m:[93m65[0m - [91merror[0m[90m TS2304: [0mCannot find name 'ID'.
+
+[7m24[0m     async businessInvitations(@Args('businessId', { type: () => ID }) businessId: string) {
+[7m  [0m [91m                                                                ~~[0m
+
+[[90m9:59:37 PM[0m] Found 8 errors. Watching for file changes.
+
+[2J[3J[H[[90m9:59:37 PM[0m] File change detected. Starting incremental compilation...
+
+[[90m9:59:41 PM[0m] Found 0 errors. Watching for file changes.
+
+
+> server@0.0.1 start:dev
+> nest start --watch
+
+[2J[3J[H[[90m10:15:44 PM[0m] Starting compilation in watch mode...
+
+[[90m10:16:02 PM[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +73ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +7ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mMailModule dependencies initialized[39m[38;5;3m +2ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +4ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRolesModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJwtModule dependencies initialized[39m[38;5;3m +6ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSubscriptionPlansModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mGraphQLSchemaBuilderModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAdsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mBusinessesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mServiceAreasModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTestimonialsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSuperAdminModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPostsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mInvitationsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSocialAccountsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mStripeModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mGraphQLModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAppController {/}:[39m[38;5;3m +14ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/, GET} route[39m[38;5;3m +10ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/uploads/:filename, GET} route[39m[38;5;3m +2ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mStripeController {/stripe}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/stripe/webhook, POST} route[39m[38;5;3m +2ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSocialAccountsController {/social-accounts}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:08 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/social-accounts/callback, GET} route[39m[38;5;3m +2ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:09 PM [32m    LOG[39m [38;5;3m[GraphQLModule] [39m[32mMapped {/graphql, POST} route[39m[38;5;3m +537ms[39m
+[32m[Nest] 11436  - [39m03/17/2026, 10:16:09 PM [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +6ms[39m
+[31m[Nest] 11436  - [39m03/17/2026, 10:16:09 PM [31m  ERROR[39m [38;5;3m[NestApplication] [39m[31mError: listen EADDRINUSE: address already in use 0.0.0.0:3000[39m[38;5;3m +276ms[39m
+node:net:1940
+    const ex = new UVExceptionWithHostPort(err, 'listen', address, port);
+               ^
+
+Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at node:net:2206:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+
+Node.js v22.17.0
+
+> server@0.0.1 start:dev
+> nest start --watch
+
+[2J[3J[H[[90m10:17:32 PM[0m] Starting compilation in watch mode...
+
+[[90m10:17:50 PM[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +101ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +7ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mMailModule dependencies initialized[39m[38;5;3m +2ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +4ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRolesModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJwtModule dependencies initialized[39m[38;5;3m +3ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSubscriptionPlansModule dependencies initialized[39m[38;5;3m +2ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mGraphQLSchemaBuilderModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAdsModule dependencies initialized[39m[38;5;3m +7ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mBusinessesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mServiceAreasModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTestimonialsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSuperAdminModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPostsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mInvitationsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSocialAccountsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mStripeModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mGraphQLModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAppController {/}:[39m[38;5;3m +17ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/, GET} route[39m[38;5;3m +9ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/uploads/:filename, GET} route[39m[38;5;3m +4ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mStripeController {/stripe}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/stripe/webhook, POST} route[39m[38;5;3m +3ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSocialAccountsController {/social-accounts}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:55 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/social-accounts/callback, GET} route[39m[38;5;3m +5ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:56 PM [32m    LOG[39m [38;5;3m[GraphQLModule] [39m[32mMapped {/graphql, POST} route[39m[38;5;3m +379ms[39m
+[32m[Nest] 4536  - [39m03/17/2026, 10:17:56 PM [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +3ms[39m
+[31m[Nest] 4536  - [39m03/17/2026, 10:17:56 PM [31m  ERROR[39m [38;5;3m[NestApplication] [39m[31mError: listen EADDRINUSE: address already in use 0.0.0.0:3000[39m[38;5;3m +127ms[39m
+node:net:1940
+    const ex = new UVExceptionWithHostPort(err, 'listen', address, port);
+               ^
+
+Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at node:net:2206:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+
+Node.js v22.17.0
+
+> server@0.0.1 start:dev
+> nest start --watch
+
+[2J[3J[H[[90m10:23:13 PM[0m] Starting compilation in watch mode...
+
+[[90m10:23:29 PM[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +162ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +2ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +13ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mMailModule dependencies initialized[39m[38;5;3m +3ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +8ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRolesModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJwtModule dependencies initialized[39m[38;5;3m +6ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSubscriptionPlansModule dependencies initialized[39m[38;5;3m +3ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mGraphQLSchemaBuilderModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAdsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mBusinessesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mServiceAreasModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTestimonialsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSuperAdminModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPostsModule dependencies initialized[39m[38;5;3m +3ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mInvitationsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSocialAccountsModule dependencies initialized[39m[38;5;3m +6ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mStripeModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mGraphQLModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAppController {/}:[39m[38;5;3m +15ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/, GET} route[39m[38;5;3m +19ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/uploads/:filename, GET} route[39m[38;5;3m +4ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mStripeController {/stripe}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/stripe/webhook, POST} route[39m[38;5;3m +2ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSocialAccountsController {/social-accounts}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:36 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/social-accounts/callback, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:37 PM [32m    LOG[39m [38;5;3m[GraphQLModule] [39m[32mMapped {/graphql, POST} route[39m[38;5;3m +424ms[39m
+[32m[Nest] 11880  - [39m03/17/2026, 10:23:37 PM [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +3ms[39m
+🚀 Server is running on: http://localhost:3000/graphiql
+
+> server@0.0.1 start:dev
+> nest start --watch
+
+[2J[3J[H[[90m10:25:32 PM[0m] Starting compilation in watch mode...
+
+[[90m10:25:45 PM[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +50ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +4ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mMailModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +3ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRolesModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJwtModule dependencies initialized[39m[38;5;3m +3ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSubscriptionPlansModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mGraphQLSchemaBuilderModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAdsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mBusinessesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mServiceAreasModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTestimonialsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSuperAdminModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPostsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mInvitationsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSocialAccountsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mStripeModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mGraphQLModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAppController {/}:[39m[38;5;3m +8ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/, GET} route[39m[38;5;3m +5ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/uploads/:filename, GET} route[39m[38;5;3m +2ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mStripeController {/stripe}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/stripe/webhook, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSocialAccountsController {/social-accounts}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:49 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/social-accounts/callback, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:50 PM [32m    LOG[39m [38;5;3m[GraphQLModule] [39m[32mMapped {/graphql, POST} route[39m[38;5;3m +222ms[39m
+[32m[Nest] 10296  - [39m03/17/2026, 10:25:50 PM [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +2ms[39m
+[31m[Nest] 10296  - [39m03/17/2026, 10:25:50 PM [31m  ERROR[39m [38;5;3m[NestApplication] [39m[31mError: listen EADDRINUSE: address already in use 0.0.0.0:3000[39m[38;5;3m +79ms[39m
+node:net:1940
+    const ex = new UVExceptionWithHostPort(err, 'listen', address, port);
+               ^
+
+Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at node:net:2206:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+
+Node.js v22.17.0
+[2J[3J[H[[90m10:26:01 PM[0m] File change detected. Starting incremental compilation...
+
+[[90m10:26:06 PM[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 844  - [39m03/17/2026, 10:26:11 PM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +135ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +8ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mMailModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +4ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRolesModule dependencies initialized[39m[38;5;3m +2ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJwtModule dependencies initialized[39m[38;5;3m +4ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSubscriptionPlansModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mGraphQLSchemaBuilderModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAdsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mBusinessesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mServiceAreasModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTestimonialsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSuperAdminModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPostsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mInvitationsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSocialAccountsModule dependencies initialized[39m[38;5;3m +2ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mStripeModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mGraphQLModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAppController {/}:[39m[38;5;3m +14ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/, GET} route[39m[38;5;3m +15ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/uploads/:filename, GET} route[39m[38;5;3m +2ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mStripeController {/stripe}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/stripe/webhook, POST} route[39m[38;5;3m +2ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSocialAccountsController {/social-accounts}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/social-accounts/callback, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[GraphQLModule] [39m[32mMapped {/graphql, POST} route[39m[38;5;3m +314ms[39m
+[32m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +4ms[39m
+[31m[Nest] 844  - [39m03/17/2026, 10:26:12 PM [31m  ERROR[39m [38;5;3m[NestApplication] [39m[31mError: listen EADDRINUSE: address already in use 0.0.0.0:3001[39m[38;5;3m +109ms[39m
+node:net:1940
+    const ex = new UVExceptionWithHostPort(err, 'listen', address, port);
+               ^
+
+Error: listen EADDRINUSE: address already in use 0.0.0.0:3001
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at node:net:2206:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3001
+}
+
+Node.js v22.17.0

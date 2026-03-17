@@ -8,6 +8,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SuperAdminResolver = void 0;
 const graphql_1 = require("@nestjs/graphql");
@@ -16,6 +19,8 @@ const super_admin_service_js_1 = require("./super-admin.service.js");
 const business_entity_js_1 = require("../businesses/entities/business.entity.js");
 const user_entity_js_1 = require("../users/entities/user.entity.js");
 const global_stats_entity_js_1 = require("./entities/global-stats.entity.js");
+const system_settings_entity_js_1 = require("./entities/system-settings.entity.js");
+const update_system_settings_input_js_1 = require("./dto/update-system-settings.input.js");
 const gql_auth_guard_js_1 = require("../../common/guards/gql-auth.guard.js");
 const rbac_guard_js_1 = require("../../common/guards/rbac.guard.js");
 let SuperAdminResolver = class SuperAdminResolver {
@@ -31,6 +36,12 @@ let SuperAdminResolver = class SuperAdminResolver {
     }
     async getGlobalStats() {
         return this.superAdminService.getGlobalStats();
+    }
+    async getSystemSettings() {
+        return this.superAdminService.getSystemSettings();
+    }
+    async updateSystemSettings(input) {
+        return this.superAdminService.updateSystemSettings(input);
     }
 };
 exports.SuperAdminResolver = SuperAdminResolver;
@@ -52,6 +63,19 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], SuperAdminResolver.prototype, "getGlobalStats", null);
+__decorate([
+    (0, graphql_1.Query)(() => [system_settings_entity_js_1.SystemSettings], { name: 'adminSystemSettings' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], SuperAdminResolver.prototype, "getSystemSettings", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => system_settings_entity_js_1.SystemSettings, { name: 'adminUpdateSystemSettings' }),
+    __param(0, (0, graphql_1.Args)('input')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [update_system_settings_input_js_1.UpdateSystemSettingsInput]),
+    __metadata("design:returntype", Promise)
+], SuperAdminResolver.prototype, "updateSystemSettings", null);
 exports.SuperAdminResolver = SuperAdminResolver = __decorate([
     (0, graphql_1.Resolver)(),
     (0, common_1.UseGuards)(gql_auth_guard_js_1.GqlAuthGuard, rbac_guard_js_1.RbacGuard),

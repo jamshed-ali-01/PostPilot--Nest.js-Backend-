@@ -14,6 +14,9 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RolesResolver = void 0;
 const graphql_1 = require("@nestjs/graphql");
+const common_1 = require("@nestjs/common");
+const gql_auth_guard_1 = require("../../common/guards/gql-auth.guard");
+const current_user_decorator_1 = require("../../common/decorators/current-user.decorator");
 const roles_service_1 = require("./roles.service");
 const role_entity_1 = require("./entities/role.entity");
 const permission_entity_1 = require("./entities/permission.entity");
@@ -26,8 +29,8 @@ let RolesResolver = class RolesResolver {
     async createRole(input) {
         return this.rolesService.create(input);
     }
-    async assignRoleToUser(userId, roleId) {
-        await this.rolesService.assignToUser(userId, roleId);
+    async assignRoleToUser(userId, roleId, user) {
+        await this.rolesService.assignToUser(userId, roleId, user.id);
         return true;
     }
     async getGlobalRoles() {
@@ -60,10 +63,12 @@ __decorate([
 ], RolesResolver.prototype, "createRole", null);
 __decorate([
     (0, graphql_1.Mutation)(() => Boolean),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard),
     __param(0, (0, graphql_1.Args)('userId', { type: () => graphql_1.ID })),
     __param(1, (0, graphql_1.Args)('roleId', { type: () => graphql_1.ID })),
+    __param(2, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", Promise)
 ], RolesResolver.prototype, "assignRoleToUser", null);
 __decorate([

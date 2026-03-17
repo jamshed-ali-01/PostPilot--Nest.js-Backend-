@@ -1,18 +1,19 @@
 import { SuperAdminService } from './super-admin.service.js';
+import { UpdateSystemSettingsInput } from './dto/update-system-settings.input.js';
 export declare class SuperAdminResolver {
     private readonly superAdminService;
     constructor(superAdminService: SuperAdminService);
     getAllBusinesses(): Promise<({
         _count: {
-            users: number;
             posts: number;
+            users: number;
             testimonials: number;
         };
     } & {
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         logo: string | null;
         theme: string | null;
         isActive: boolean;
@@ -24,19 +25,11 @@ export declare class SuperAdminResolver {
         trialEndsAt: Date | null;
     })[]>;
     getAllUsers(): Promise<({
-        roles: {
-            id: string;
-            name: string;
-            description: string | null;
-            businessId: string | null;
-            permissionIds: string[];
-            userIds: string[];
-        }[];
         business: {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             logo: string | null;
             theme: string | null;
             isActive: boolean;
@@ -47,14 +40,22 @@ export declare class SuperAdminResolver {
             stripePriceId: string | null;
             trialEndsAt: Date | null;
         } | null;
+        roles: {
+            id: string;
+            businessId: string | null;
+            name: string;
+            description: string | null;
+            permissionIds: string[];
+            userIds: string[];
+        }[];
     } & {
         id: string;
-        roleIds: string[];
-        businessId: string;
         email: string;
         password: string;
         firstName: string | null;
         lastName: string | null;
+        businessId: string;
+        roleIds: string[];
         aiTone: string | null;
         aiHashtags: string[];
         aiCaptionLength: string | null;
@@ -67,5 +68,19 @@ export declare class SuperAdminResolver {
         userCount: number;
         postCount: number;
         testimonialCount: number;
+    }>;
+    getSystemSettings(): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        key: string;
+        value: import("@prisma/client/runtime/library").JsonValue;
+    }[]>;
+    updateSystemSettings(input: UpdateSystemSettingsInput): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        key: string;
+        value: import("@prisma/client/runtime/library").JsonValue;
     }>;
 }

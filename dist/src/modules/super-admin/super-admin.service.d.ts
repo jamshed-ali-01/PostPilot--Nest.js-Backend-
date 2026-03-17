@@ -4,15 +4,15 @@ export declare class SuperAdminService {
     constructor(prisma: PrismaService);
     getAllBusinesses(): Promise<({
         _count: {
-            users: number;
             posts: number;
+            users: number;
             testimonials: number;
         };
     } & {
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         logo: string | null;
         theme: string | null;
         isActive: boolean;
@@ -24,19 +24,11 @@ export declare class SuperAdminService {
         trialEndsAt: Date | null;
     })[]>;
     getAllUsers(): Promise<({
-        roles: {
-            id: string;
-            name: string;
-            description: string | null;
-            businessId: string | null;
-            permissionIds: string[];
-            userIds: string[];
-        }[];
         business: {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             logo: string | null;
             theme: string | null;
             isActive: boolean;
@@ -47,14 +39,22 @@ export declare class SuperAdminService {
             stripePriceId: string | null;
             trialEndsAt: Date | null;
         } | null;
+        roles: {
+            id: string;
+            businessId: string | null;
+            name: string;
+            description: string | null;
+            permissionIds: string[];
+            userIds: string[];
+        }[];
     } & {
         id: string;
-        roleIds: string[];
-        businessId: string;
         email: string;
         password: string;
         firstName: string | null;
         lastName: string | null;
+        businessId: string;
+        roleIds: string[];
         aiTone: string | null;
         aiHashtags: string[];
         aiCaptionLength: string | null;
@@ -70,23 +70,40 @@ export declare class SuperAdminService {
     }>;
     createGlobalPermission(name: string, description?: string): Promise<{
         id: string;
+        roleIds: string[];
         name: string;
         description: string | null;
-        roleIds: string[];
     }>;
     createGlobalRole(name: string, description: string, permissionIds: string[]): Promise<{
         permissions: {
             id: string;
+            roleIds: string[];
             name: string;
             description: string | null;
-            roleIds: string[];
         }[];
     } & {
         id: string;
+        businessId: string | null;
         name: string;
         description: string | null;
-        businessId: string | null;
         permissionIds: string[];
         userIds: string[];
+    }>;
+    getSystemSettings(): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        key: string;
+        value: import("@prisma/client/runtime/library").JsonValue;
+    }[]>;
+    updateSystemSettings(input: {
+        key: string;
+        value: any;
+    }): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        key: string;
+        value: import("@prisma/client/runtime/library").JsonValue;
     }>;
 }

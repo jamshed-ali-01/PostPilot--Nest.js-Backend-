@@ -67,6 +67,14 @@ model SystemAdmin {
   updatedAt DateTime @updatedAt
 }
 
+model SystemSettings {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  key       String   @unique // e.g., "SMTP_CONFIG"
+  value     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Role {
   id           String       @id @default(auto()) @map("_id") @db.ObjectId
   name         String       

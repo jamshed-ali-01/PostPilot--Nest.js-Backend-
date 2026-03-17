@@ -58,7 +58,23 @@ let RolesService = class RolesService {
         console.log(`[RolesService] Found ${roles.length} roles.`);
         return roles;
     }
-    async assignToUser(userId, roleId) {
+    async assignToUser(userId, roleId, currentUserId) {
+        if (userId === currentUserId) {
+            const user = await this.prisma.user.findUnique({
+                where: { id: userId },
+                include: { roles: true }
+            });
+            const isOwner = user?.roles.some(r => r.name === 'Business Owner' || r.name.startsWith('OWNER_'));
+            if (isOwner) {
+                throw new common_1.BadRequestException('As a Business Owner, you cannot change your own role.');
+            }
+        }
+        const role = await this.prisma.role.findUnique({ where: { id: roleId } });
+        if (!role)
+            throw new common_1.NotFoundException('Role not found');
+        if (role.name === 'Business Owner' || role.name.startsWith('OWNER_')) {
+            throw new common_1.BadRequestException('The "Business Owner" role cannot be manually assigned. It is uniquely assigned during registration.');
+        }
         return this.prisma.user.update({
             where: { id: userId },
             data: {

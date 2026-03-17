@@ -4,6 +4,8 @@ import { SuperAdminService } from './super-admin.service.js';
 import { Business } from '../businesses/entities/business.entity.js';
 import { User } from '../users/entities/user.entity.js';
 import { GlobalStats } from './entities/global-stats.entity.js';
+import { SystemSettings } from './entities/system-settings.entity.js';
+import { UpdateSystemSettingsInput } from './dto/update-system-settings.input.js';
 import { GqlAuthGuard } from '../../common/guards/gql-auth.guard.js';
 import { RbacGuard } from '../../common/guards/rbac.guard.js';
 
@@ -25,5 +27,15 @@ export class SuperAdminResolver {
     @Query(() => GlobalStats, { name: 'adminGlobalStats' })
     async getGlobalStats() {
         return this.superAdminService.getGlobalStats();
+    }
+
+    @Query(() => [SystemSettings], { name: 'adminSystemSettings' })
+    async getSystemSettings() {
+        return this.superAdminService.getSystemSettings();
+    }
+
+    @Mutation(() => SystemSettings, { name: 'adminUpdateSystemSettings' })
+    async updateSystemSettings(@Args('input') input: UpdateSystemSettingsInput) {
+        return this.superAdminService.updateSystemSettings(input);
     }
 }

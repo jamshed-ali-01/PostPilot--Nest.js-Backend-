@@ -1,0 +1,10 @@
+{
+  "query": "mutation CreateInvitation($input: CreateInvitationInput!) { createInvitation(input: $input) { id } }",
+  "variables": {
+    "input": {
+      "email": "test@test.com",
+      "roleId": "65f123456789012345678901",
+      "businessId": ""
+    }
+  }
+}

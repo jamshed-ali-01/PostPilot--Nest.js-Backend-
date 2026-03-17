@@ -23,9 +23,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const sysAdmin = await this.prisma.systemAdmin.findUnique({
       where: { email: payload.email }
     });
-    if (sysAdmin) return { ...sysAdmin, isSystemAdmin: true };
-
+    
     const user = await this.usersService.findByEmail(payload.email);
+
+    if (sysAdmin && user) {
+      return { ...user, ...sysAdmin, isSystemAdmin: true };
+    }
+    
+    if (sysAdmin) return { ...sysAdmin, isSystemAdmin: true };
     if (user) return { ...user, isSystemAdmin: false };
 
     throw new UnauthorizedException();

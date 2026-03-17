@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateRoleInput } from './dto/create-role.input';
 
@@ -52,7 +52,26 @@ export class RolesService {
         return roles;
     }
 
-    async assignToUser(userId: string, roleId: string) {
+    async assignToUser(userId: string, roleId: string, currentUserId?: string) {
+        // Prevent users from changing their own role if they are an owner
+        if (userId === currentUserId) {
+            const user = await this.prisma.user.findUnique({
+                where: { id: userId },
+                include: { roles: true }
+            });
+            const isOwner = user?.roles.some(r => r.name === 'Business Owner' || r.name.startsWith('OWNER_'));
+            if (isOwner) {
+                throw new BadRequestException('As a Business Owner, you cannot change your own role.');
+            }
+        }
+
+        const role = await this.prisma.role.findUnique({ where: { id: roleId } });
+        if (!role) throw new NotFoundException('Role not found');
+
+        if (role.name === 'Business Owner' || role.name.startsWith('OWNER_')) {
+            throw new BadRequestException('The "Business Owner" role cannot be manually assigned. It is uniquely assigned during registration.');
+        }
+
         return this.prisma.user.update({
             where: { id: userId },
             data: {

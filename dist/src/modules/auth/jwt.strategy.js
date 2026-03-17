@@ -34,9 +34,12 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
         const sysAdmin = await this.prisma.systemAdmin.findUnique({
             where: { email: payload.email }
         });
+        const user = await this.usersService.findByEmail(payload.email);
+        if (sysAdmin && user) {
+            return { ...user, ...sysAdmin, isSystemAdmin: true };
+        }
         if (sysAdmin)
             return { ...sysAdmin, isSystemAdmin: true };
-        const user = await this.usersService.findByEmail(payload.email);
         if (user)
             return { ...user, isSystemAdmin: false };
         throw new common_1.UnauthorizedException();

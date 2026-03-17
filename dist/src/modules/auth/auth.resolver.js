@@ -35,6 +35,8 @@ let AuthUser = class AuthUser {
     aiHashtags;
     aiCaptionLength;
     aiIncludeEmojis;
+    permissions;
+    roles;
 };
 exports.AuthUser = AuthUser;
 __decorate([
@@ -85,9 +87,32 @@ __decorate([
     (0, graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Boolean)
 ], AuthUser.prototype, "aiIncludeEmojis", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => [String], { nullable: true }),
+    __metadata("design:type", Array)
+], AuthUser.prototype, "permissions", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => [RoleDto], { nullable: true }),
+    __metadata("design:type", Array)
+], AuthUser.prototype, "roles", void 0);
 exports.AuthUser = AuthUser = __decorate([
     (0, graphql_1.ObjectType)()
 ], AuthUser);
+let RoleDto = class RoleDto {
+    id;
+    name;
+};
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", String)
+], RoleDto.prototype, "id", void 0);
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", String)
+], RoleDto.prototype, "name", void 0);
+RoleDto = __decorate([
+    (0, graphql_1.ObjectType)()
+], RoleDto);
 let AuthResponse = class AuthResponse {
     access_token;
     user;
@@ -135,6 +160,9 @@ let AuthResolver = class AuthResolver {
     async getMe(user) {
         return this.authService.getMe(user.id);
     }
+    async confirmRegistration(sessionId) {
+        return this.authService.confirmRegistrationBySession(sessionId);
+    }
 };
 exports.AuthResolver = AuthResolver;
 __decorate([
@@ -167,6 +195,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthResolver.prototype, "getMe", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => Boolean),
+    __param(0, (0, graphql_1.Args)('sessionId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AuthResolver.prototype, "confirmRegistration", null);
 exports.AuthResolver = AuthResolver = __decorate([
     (0, graphql_1.Resolver)(),
     __metadata("design:paramtypes", [auth_service_1.AuthService])

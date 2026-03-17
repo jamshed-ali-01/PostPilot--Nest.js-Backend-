@@ -4,26 +4,11 @@ export declare class UsersResolver {
     private readonly usersService;
     constructor(usersService: UsersService);
     findByEmail(email: string): Promise<({
-        roles: ({
-            permissions: {
-                id: string;
-                name: string;
-                description: string | null;
-                roleIds: string[];
-            }[];
-        } & {
-            id: string;
-            name: string;
-            description: string | null;
-            businessId: string | null;
-            permissionIds: string[];
-            userIds: string[];
-        })[];
         business: {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             logo: string | null;
             theme: string | null;
             isActive: boolean;
@@ -34,14 +19,29 @@ export declare class UsersResolver {
             stripePriceId: string | null;
             trialEndsAt: Date | null;
         } | null;
+        roles: ({
+            permissions: {
+                id: string;
+                roleIds: string[];
+                name: string;
+                description: string | null;
+            }[];
+        } & {
+            id: string;
+            businessId: string | null;
+            name: string;
+            description: string | null;
+            permissionIds: string[];
+            userIds: string[];
+        })[];
     } & {
         id: string;
-        roleIds: string[];
-        businessId: string;
         email: string;
         password: string;
         firstName: string | null;
         lastName: string | null;
+        businessId: string;
+        roleIds: string[];
         aiTone: string | null;
         aiHashtags: string[];
         aiCaptionLength: string | null;
@@ -51,12 +51,12 @@ export declare class UsersResolver {
     }) | null>;
     updateAiPreferences(user: any, input: UpdateAiPreferencesInput): Promise<{
         id: string;
-        roleIds: string[];
-        businessId: string;
         email: string;
         password: string;
         firstName: string | null;
         lastName: string | null;
+        businessId: string;
+        roleIds: string[];
         aiTone: string | null;
         aiHashtags: string[];
         aiCaptionLength: string | null;
@@ -67,20 +67,20 @@ export declare class UsersResolver {
     findAllByBusiness(businessId: string): Promise<({
         roles: {
             id: string;
+            businessId: string | null;
             name: string;
             description: string | null;
-            businessId: string | null;
             permissionIds: string[];
             userIds: string[];
         }[];
     } & {
         id: string;
-        roleIds: string[];
-        businessId: string;
         email: string;
         password: string;
         firstName: string | null;
         lastName: string | null;
+        businessId: string;
+        roleIds: string[];
         aiTone: string | null;
         aiHashtags: string[];
         aiCaptionLength: string | null;
@@ -88,4 +88,5 @@ export declare class UsersResolver {
         createdAt: Date;
         updatedAt: Date;
     })[]>;
+    removeTeamMember(userId: string, user: any): Promise<boolean>;
 }

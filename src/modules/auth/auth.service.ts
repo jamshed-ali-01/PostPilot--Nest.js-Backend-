@@ -1,5 +1,6 @@
 import { Injectable, UnauthorizedException, ConflictException, InternalServerErrorException, Logger, Inject, forwardRef } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import * as fs from 'fs';
 import { UsersService } from '../users/users.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
@@ -56,15 +57,18 @@ export class AuthService {
         }
 
         const payload = { email: user.email, sub: user.id, isSystemAdmin: !!user.isSystemAdmin };
+        // Call getMe to get full user profile with roles and permissions
+        const fullUser = await this.getMe(user.id);
         return {
             access_token: this.jwtService.sign(payload),
-            user,
+            user: fullUser,
         };
     }
 
 
     async initiateRegister(input: RegisterInput) {
-        const existingUser = await this.usersService.findByEmail(input.email);
+        const email = input.email.toLowerCase().trim();
+        const existingUser = await this.usersService.findByEmail(email);
         if (existingUser) {
             throw new ConflictException('User already exists');
         }
@@ -98,8 +102,14 @@ export class AuthService {
 
             const bizId = business.id;
 
-            // 2. Permissions
-            const perms = ['CREATE_POST', 'PUBLISH_POST', 'VIEW_ANALYTICS', 'ADMIN_SETTINGS'];
+            // 2. Permissions - upsert ALL system permissions
+            const perms = [
+                'CREATE_POST', 'EDIT_POST', 'DELETE_POST', 'PUBLISH_POST', 'SCHEDULE_POST',
+                'VIEW_POSTS', 'VIEW_ANALYTICS', 'VIEW_ADS', 'CREATE_AD', 'EDIT_AD', 'DELETE_AD',
+                'INVITE_USER', 'REMOVE_USERS', 'MANAGE_TEAM', 'VIEW_TEAM',
+                'MANAGE_SETTINGS', 'MANAGE_BILLING', 'ADMIN_SETTINGS',
+                'MANAGE_INTEGRATIONS', 'MANAGE_SERVICE_AREAS'
+            ];
             for (const p of perms) {
                 await tx.permission.upsert({
                     where: { name: p },
@@ -124,7 +134,7 @@ export class AuthService {
             // 4. Create User
             const user = await tx.user.create({
                 data: {
-                    email,
+                    email: email.toLowerCase().trim(),
                     password, // Already hashed from initiation
                     firstName,
                     lastName,
@@ -150,7 +160,7 @@ export class AuthService {
             // 1. Create User
             const user = await tx.user.create({
                 data: {
-                    email: invitation.email,
+                    email: invitation.email.toLowerCase().trim(),
                     password: hashedPassword,
                     firstName: input.firstName,
                     lastName: input.lastName,
@@ -177,28 +187,91 @@ export class AuthService {
             where: { id: userId }
         });
 
+        // Search by ID or Email to find the corresponding Business User
+        const user = await this.prisma.user.findFirst({
+            where: {
+                OR: [
+                    { id: userId },
+                    { email: sysAdmin?.email }
+                ]
+            },
+            include: { business: true, roles: { include: { permissions: true } } }
+        });
+
+        if (sysAdmin && user) {
+            const permissions = new Set<string>();
+            user.roles?.forEach(r => r.permissions?.forEach(p => permissions.add(p.name)));
+            
+            return {
+                ...user,
+                ...sysAdmin,
+                isSystemAdmin: true,
+                firstName: user.firstName || sysAdmin.name || 'System',
+                lastName: user.lastName || 'Admin',
+                permissions: Array.from(permissions)
+            };
+        }
+
         if (sysAdmin) {
             return {
                 ...sysAdmin,
                 isSystemAdmin: true,
                 firstName: sysAdmin.name || 'System',
-                lastName: 'Admin'
+                lastName: 'Admin',
+                permissions: [] // System admins get all permissions via business owner role if merged
             };
         }
-
-        // If not, check if it's a regular Business User
-        const user = await this.prisma.user.findUnique({
-            where: { id: userId },
-            include: { business: true }
-        });
 
         if (!user) {
             throw new Error('User not found');
         }
 
+        const permissions = new Set<string>();
+        user.roles?.forEach(r => r.permissions?.forEach(p => permissions.add(p.name)));
+
         return {
             ...user,
-            isSystemAdmin: false, // For regular users
+            isSystemAdmin: false,
+            permissions: Array.from(permissions)
         };
+    }
+
+    async confirmRegistrationBySession(sessionId: string) {
+        this.logger.log(`[confirmRegistration] Checking session: ${sessionId}`);
+        try {
+            const Stripe = (await import('stripe')).default;
+            const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', { apiVersion: '2025-02-24.acacia' as any });
+            const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+            if (session.metadata?.type !== 'new_reg') {
+                this.logger.log(`[confirmRegistration] Session ${sessionId} is not a new_reg session. Skipping.`);
+                return false;
+            }
+
+            const email = session.metadata?.email;
+            if (!email) {
+                this.logger.error(`[confirmRegistration] No email found in session metadata.`);
+                return false;
+            }
+
+            // Check if user already exists (webhook may have already processed this)
+            const existingUser = await this.prisma.user.findUnique({ where: { email: email.toLowerCase().trim() } });
+            if (existingUser) {
+                this.logger.log(`[confirmRegistration] User ${email} already exists. Skipping duplicate registration.`);
+                return true;
+            }
+
+            if (session.payment_status !== 'paid' && session.status !== 'complete') {
+                this.logger.warn(`[confirmRegistration] Session ${sessionId} not paid yet. Status: ${session.payment_status}`);
+                return false;
+            }
+
+            await this.completeRegistration(session.metadata);
+            this.logger.log(`[confirmRegistration] Registration completed for ${email}`);
+            return true;
+        } catch (error) {
+            this.logger.error(`[confirmRegistration] Error: ${error.message}`);
+            return false;
+        }
     }
 }

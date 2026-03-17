@@ -45,6 +45,21 @@ export class AuthUser {
 
     @Field({ nullable: true })
     aiIncludeEmojis?: boolean;
+
+    @Field(() => [String], { nullable: true })
+    permissions?: string[];
+
+    @Field(() => [RoleDto], { nullable: true })
+    roles?: RoleDto[];
+}
+
+@ObjectType()
+class RoleDto {
+    @Field()
+    id: string;
+
+    @Field()
+    name: string;
 }
 
 @ObjectType()
@@ -74,8 +89,6 @@ export class AuthResolver {
         return this.authService.login(loginInput);
     }
 
-
-
     @Mutation(() => AuthInitiateResponse)
     async initiateRegister(@Args('input') registerInput: RegisterInput) {
         return this.authService.initiateRegister(registerInput);
@@ -93,5 +106,10 @@ export class AuthResolver {
     @UseGuards(GqlAuthGuard)
     async getMe(@CurrentUser() user: any) {
         return this.authService.getMe(user.id);
+    }
+
+    @Mutation(() => Boolean)
+    async confirmRegistration(@Args('sessionId') sessionId: string) {
+        return this.authService.confirmRegistrationBySession(sessionId);
     }
 }

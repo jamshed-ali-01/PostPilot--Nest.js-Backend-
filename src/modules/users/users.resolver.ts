@@ -29,4 +29,14 @@ export class UsersResolver {
     async findAllByBusiness(@Args('businessId', { type: () => ID }) businessId: string) {
         return this.usersService.findAllByBusiness(businessId);
     }
+
+    @Mutation(() => Boolean)
+    @UseGuards(GqlAuthGuard)
+    async removeTeamMember(
+        @Args('userId', { type: () => ID }) userId: string,
+        @CurrentUser() user: any
+    ) {
+        await this.usersService.removeUser(userId, user.businessId);
+        return true;
+    }
 }

@@ -20,6 +20,7 @@ import { AppResolver } from './app.resolver';
 import { StripeModule } from './modules/stripe/stripe.module';
 import { AdsModule } from './modules/ads/ads.module';
 import { InvitationsModule } from './modules/invitations/invitations.module';
+import { MailModule } from './modules/mail/mail.module.js';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { InvitationsModule } from './modules/invitations/invitations.module';
     StripeModule,
     AdsModule,
     InvitationsModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],

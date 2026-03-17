@@ -25,6 +25,8 @@ let User = class User {
     aiHashtags;
     aiCaptionLength;
     aiIncludeEmojis;
+    createdAt;
+    updatedAt;
 };
 exports.User = User;
 __decorate([
@@ -71,6 +73,14 @@ __decorate([
     (0, graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Boolean)
 ], User.prototype, "aiIncludeEmojis", void 0);
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", Date)
+], User.prototype, "createdAt", void 0);
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", Date)
+], User.prototype, "updatedAt", void 0);
 exports.User = User = __decorate([
     (0, graphql_1.ObjectType)()
 ], User);

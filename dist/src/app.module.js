@@ -29,6 +29,7 @@ const app_resolver_1 = require("./app.resolver");
 const stripe_module_1 = require("./modules/stripe/stripe.module");
 const ads_module_1 = require("./modules/ads/ads.module");
 const invitations_module_1 = require("./modules/invitations/invitations.module");
+const mail_module_js_1 = require("./modules/mail/mail.module.js");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -61,6 +62,7 @@ exports.AppModule = AppModule = __decorate([
             stripe_module_1.StripeModule,
             ads_module_1.AdsModule,
             invitations_module_1.InvitationsModule,
+            mail_module_js_1.MailModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, app_resolver_1.AppResolver],

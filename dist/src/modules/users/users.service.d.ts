@@ -3,26 +3,11 @@ export declare class UsersService {
     private prisma;
     constructor(prisma: PrismaService);
     findByEmail(email: string): Promise<({
-        roles: ({
-            permissions: {
-                id: string;
-                name: string;
-                description: string | null;
-                roleIds: string[];
-            }[];
-        } & {
-            id: string;
-            name: string;
-            description: string | null;
-            businessId: string | null;
-            permissionIds: string[];
-            userIds: string[];
-        })[];
         business: {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             logo: string | null;
             theme: string | null;
             isActive: boolean;
@@ -33,14 +18,29 @@ export declare class UsersService {
             stripePriceId: string | null;
             trialEndsAt: Date | null;
         } | null;
+        roles: ({
+            permissions: {
+                id: string;
+                roleIds: string[];
+                name: string;
+                description: string | null;
+            }[];
+        } & {
+            id: string;
+            businessId: string | null;
+            name: string;
+            description: string | null;
+            permissionIds: string[];
+            userIds: string[];
+        })[];
     } & {
         id: string;
-        roleIds: string[];
-        businessId: string;
         email: string;
         password: string;
         firstName: string | null;
         lastName: string | null;
+        businessId: string;
+        roleIds: string[];
         aiTone: string | null;
         aiHashtags: string[];
         aiCaptionLength: string | null;
@@ -56,19 +56,11 @@ export declare class UsersService {
         lastName?: string;
         roleIds?: string[];
     }): Promise<{
-        roles: {
-            id: string;
-            name: string;
-            description: string | null;
-            businessId: string | null;
-            permissionIds: string[];
-            userIds: string[];
-        }[];
         business: {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             logo: string | null;
             theme: string | null;
             isActive: boolean;
@@ -79,14 +71,22 @@ export declare class UsersService {
             stripePriceId: string | null;
             trialEndsAt: Date | null;
         } | null;
+        roles: {
+            id: string;
+            businessId: string | null;
+            name: string;
+            description: string | null;
+            permissionIds: string[];
+            userIds: string[];
+        }[];
     } & {
         id: string;
-        roleIds: string[];
-        businessId: string;
         email: string;
         password: string;
         firstName: string | null;
         lastName: string | null;
+        businessId: string;
+        roleIds: string[];
         aiTone: string | null;
         aiHashtags: string[];
         aiCaptionLength: string | null;
@@ -101,12 +101,12 @@ export declare class UsersService {
         aiIncludeEmojis?: boolean;
     }): Promise<{
         id: string;
-        roleIds: string[];
-        businessId: string;
         email: string;
         password: string;
         firstName: string | null;
         lastName: string | null;
+        businessId: string;
+        roleIds: string[];
         aiTone: string | null;
         aiHashtags: string[];
         aiCaptionLength: string | null;
@@ -117,20 +117,20 @@ export declare class UsersService {
     findAllByBusiness(businessId: string): Promise<({
         roles: {
             id: string;
+            businessId: string | null;
             name: string;
             description: string | null;
-            businessId: string | null;
             permissionIds: string[];
             userIds: string[];
         }[];
     } & {
         id: string;
-        roleIds: string[];
-        businessId: string;
         email: string;
         password: string;
         firstName: string | null;
         lastName: string | null;
+        businessId: string;
+        roleIds: string[];
         aiTone: string | null;
         aiHashtags: string[];
         aiCaptionLength: string | null;
@@ -138,4 +138,19 @@ export declare class UsersService {
         createdAt: Date;
         updatedAt: Date;
     })[]>;
+    removeUser(userId: string, businessId: string): Promise<{
+        id: string;
+        email: string;
+        password: string;
+        firstName: string | null;
+        lastName: string | null;
+        businessId: string;
+        roleIds: string[];
+        aiTone: string | null;
+        aiHashtags: string[];
+        aiCaptionLength: string | null;
+        aiIncludeEmojis: boolean | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
 }

@@ -36,4 +36,10 @@ export class User {
 
     @Field({ nullable: true })
     aiIncludeEmojis?: boolean;
+
+    @Field()
+    createdAt: Date;
+
+    @Field()
+    updatedAt: Date;
 }

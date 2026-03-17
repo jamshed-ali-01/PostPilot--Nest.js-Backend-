@@ -13,33 +13,16 @@ export declare class JwtStrategy extends JwtStrategy_base {
     validate(payload: any): Promise<{
         isSystemAdmin: boolean;
         id: string;
-        name: string | null;
         email: string;
         password: string;
         createdAt: Date;
         updatedAt: Date;
-    } | {
-        isSystemAdmin: boolean;
-        roles: ({
-            permissions: {
-                id: string;
-                name: string;
-                description: string | null;
-                roleIds: string[];
-            }[];
-        } & {
-            id: string;
-            name: string;
-            description: string | null;
-            businessId: string | null;
-            permissionIds: string[];
-            userIds: string[];
-        })[];
+        name: string | null;
         business: {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             logo: string | null;
             theme: string | null;
             isActive: boolean;
@@ -50,13 +33,76 @@ export declare class JwtStrategy extends JwtStrategy_base {
             stripePriceId: string | null;
             trialEndsAt: Date | null;
         } | null;
-        id: string;
-        roleIds: string[];
+        roles: ({
+            permissions: {
+                id: string;
+                roleIds: string[];
+                name: string;
+                description: string | null;
+            }[];
+        } & {
+            id: string;
+            businessId: string | null;
+            name: string;
+            description: string | null;
+            permissionIds: string[];
+            userIds: string[];
+        })[];
+        firstName: string | null;
+        lastName: string | null;
         businessId: string;
+        roleIds: string[];
+        aiTone: string | null;
+        aiHashtags: string[];
+        aiCaptionLength: string | null;
+        aiIncludeEmojis: boolean | null;
+    } | {
+        isSystemAdmin: boolean;
+        id: string;
+        email: string;
+        password: string;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string | null;
+    } | {
+        isSystemAdmin: boolean;
+        business: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            logo: string | null;
+            theme: string | null;
+            isActive: boolean;
+            isSubscriptionActive: boolean;
+            subscriptionPlanId: string | null;
+            stripeCustomerId: string | null;
+            stripeSubscriptionId: string | null;
+            stripePriceId: string | null;
+            trialEndsAt: Date | null;
+        } | null;
+        roles: ({
+            permissions: {
+                id: string;
+                roleIds: string[];
+                name: string;
+                description: string | null;
+            }[];
+        } & {
+            id: string;
+            businessId: string | null;
+            name: string;
+            description: string | null;
+            permissionIds: string[];
+            userIds: string[];
+        })[];
+        id: string;
         email: string;
         password: string;
         firstName: string | null;
         lastName: string | null;
+        businessId: string;
+        roleIds: string[];
         aiTone: string | null;
         aiHashtags: string[];
         aiCaptionLength: string | null;

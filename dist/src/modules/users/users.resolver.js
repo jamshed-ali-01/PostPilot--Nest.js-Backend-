@@ -34,6 +34,10 @@ let UsersResolver = class UsersResolver {
     async findAllByBusiness(businessId) {
         return this.usersService.findAllByBusiness(businessId);
     }
+    async removeTeamMember(userId, user) {
+        await this.usersService.removeUser(userId, user.businessId);
+        return true;
+    }
 };
 exports.UsersResolver = UsersResolver;
 __decorate([
@@ -60,6 +64,15 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], UsersResolver.prototype, "findAllByBusiness", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => Boolean),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard),
+    __param(0, (0, graphql_1.Args)('userId', { type: () => graphql_1.ID })),
+    __param(1, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], UsersResolver.prototype, "removeTeamMember", null);
 exports.UsersResolver = UsersResolver = __decorate([
     (0, graphql_1.Resolver)(() => user_entity_1.User),
     __metadata("design:paramtypes", [users_service_1.UsersService])

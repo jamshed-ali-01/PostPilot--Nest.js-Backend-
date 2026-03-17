@@ -68,6 +68,16 @@ let SuperAdminService = class SuperAdminService {
             include: { permissions: true }
         });
     }
+    async getSystemSettings() {
+        return this.prisma.systemSettings.findMany();
+    }
+    async updateSystemSettings(input) {
+        return this.prisma.systemSettings.upsert({
+            where: { key: input.key },
+            update: { value: input.value },
+            create: { key: input.key, value: input.value }
+        });
+    }
 };
 exports.SuperAdminService = SuperAdminService;
 exports.SuperAdminService = SuperAdminService = __decorate([

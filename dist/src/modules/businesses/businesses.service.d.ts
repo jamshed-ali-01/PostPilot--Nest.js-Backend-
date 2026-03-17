@@ -4,9 +4,9 @@ export declare class BusinessesService {
     constructor(prisma: PrismaService);
     create(name: string): Promise<{
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         logo: string | null;
         theme: string | null;
         isActive: boolean;
@@ -19,9 +19,9 @@ export declare class BusinessesService {
     }>;
     toggleActiveStatus(id: string, isActive: boolean): Promise<{
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         logo: string | null;
         theme: string | null;
         isActive: boolean;
@@ -34,9 +34,9 @@ export declare class BusinessesService {
     }>;
     toggleSubscription(id: string, isSubscriptionActive: boolean): Promise<{
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         logo: string | null;
         theme: string | null;
         isActive: boolean;
@@ -49,9 +49,9 @@ export declare class BusinessesService {
     }>;
     purchaseSubscription(id: string, planId: string): Promise<{
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         logo: string | null;
         theme: string | null;
         isActive: boolean;
@@ -65,20 +65,20 @@ export declare class BusinessesService {
     findOne(id: string): Promise<({
         roles: {
             id: string;
+            businessId: string | null;
             name: string;
             description: string | null;
-            businessId: string | null;
             permissionIds: string[];
             userIds: string[];
         }[];
         users: {
             id: string;
-            roleIds: string[];
-            businessId: string;
             email: string;
             password: string;
             firstName: string | null;
             lastName: string | null;
+            businessId: string;
+            roleIds: string[];
             aiTone: string | null;
             aiHashtags: string[];
             aiCaptionLength: string | null;
@@ -88,9 +88,9 @@ export declare class BusinessesService {
         }[];
     } & {
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         logo: string | null;
         theme: string | null;
         isActive: boolean;
@@ -102,14 +102,24 @@ export declare class BusinessesService {
         trialEndsAt: Date | null;
     }) | null>;
     findAll(): Promise<({
+        subscriptionPlan: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            description: string | null;
+            price: number;
+            features: string[];
+            isPopular: boolean;
+        } | null;
         users: {
             id: string;
-            roleIds: string[];
-            businessId: string;
             email: string;
             password: string;
             firstName: string | null;
             lastName: string | null;
+            businessId: string;
+            roleIds: string[];
             aiTone: string | null;
             aiHashtags: string[];
             aiCaptionLength: string | null;
@@ -117,21 +127,11 @@ export declare class BusinessesService {
             createdAt: Date;
             updatedAt: Date;
         }[];
-        subscriptionPlan: {
-            id: string;
-            name: string;
-            description: string | null;
-            createdAt: Date;
-            updatedAt: Date;
-            price: number;
-            features: string[];
-            isPopular: boolean;
-        } | null;
     } & {
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         logo: string | null;
         theme: string | null;
         isActive: boolean;
@@ -144,9 +144,9 @@ export declare class BusinessesService {
     })[]>;
     deleteBusiness(id: string): Promise<{
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         logo: string | null;
         theme: string | null;
         isActive: boolean;
