@@ -6,10 +6,12 @@ export declare class UsersResolver {
     findByEmail(email: string): Promise<({
         business: {
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             name: string;
             logo: string | null;
+            phone: string | null;
             theme: string | null;
             isActive: boolean;
             isSubscriptionActive: boolean;

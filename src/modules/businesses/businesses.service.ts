@@ -60,4 +60,11 @@ export class BusinessesService {
             where: { id },
         });
     }
+
+    async updateBusiness(id: string, data: { name?: string; logo?: string; phone?: string; email?: string }) {
+        return (this.prisma.business as any).update({
+            where: { id },
+            data: data as any,
+        });
+    }
 }

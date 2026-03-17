@@ -4,10 +4,12 @@ export declare class BusinessesResolver {
     constructor(businessesService: BusinessesService);
     createBusiness(name: string): Promise<{
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         logo: string | null;
+        phone: string | null;
         theme: string | null;
         isActive: boolean;
         isSubscriptionActive: boolean;
@@ -19,10 +21,12 @@ export declare class BusinessesResolver {
     }>;
     toggleActiveStatus(businessId: string, isActive: boolean, user: any): Promise<{
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         logo: string | null;
+        phone: string | null;
         theme: string | null;
         isActive: boolean;
         isSubscriptionActive: boolean;
@@ -34,10 +38,12 @@ export declare class BusinessesResolver {
     }>;
     toggleBusinessSubscription(businessId: string, isSubscriptionActive: boolean, user: any): Promise<{
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         logo: string | null;
+        phone: string | null;
         theme: string | null;
         isActive: boolean;
         isSubscriptionActive: boolean;
@@ -49,10 +55,12 @@ export declare class BusinessesResolver {
     }>;
     purchaseSubscription(planId: string, user: any): Promise<{
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         logo: string | null;
+        phone: string | null;
         theme: string | null;
         isActive: boolean;
         isSubscriptionActive: boolean;
@@ -90,10 +98,12 @@ export declare class BusinessesResolver {
         }[];
     } & {
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         logo: string | null;
+        phone: string | null;
         theme: string | null;
         isActive: boolean;
         isSubscriptionActive: boolean;
@@ -103,6 +113,48 @@ export declare class BusinessesResolver {
         stripePriceId: string | null;
         trialEndsAt: Date | null;
     })[]>;
+    getBusinessProfile(user: any): Promise<({
+        roles: {
+            id: string;
+            businessId: string | null;
+            name: string;
+            description: string | null;
+            permissionIds: string[];
+            userIds: string[];
+        }[];
+        users: {
+            id: string;
+            email: string;
+            password: string;
+            firstName: string | null;
+            lastName: string | null;
+            businessId: string;
+            roleIds: string[];
+            aiTone: string | null;
+            aiHashtags: string[];
+            aiCaptionLength: string | null;
+            aiIncludeEmojis: boolean | null;
+            createdAt: Date;
+            updatedAt: Date;
+        }[];
+    } & {
+        id: string;
+        email: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        logo: string | null;
+        phone: string | null;
+        theme: string | null;
+        isActive: boolean;
+        isSubscriptionActive: boolean;
+        subscriptionPlanId: string | null;
+        stripeCustomerId: string | null;
+        stripeSubscriptionId: string | null;
+        stripePriceId: string | null;
+        trialEndsAt: Date | null;
+    }) | null>;
+    updateBusiness(name: string, logo: string, phone: string, email: string, user: any): Promise<any>;
     findOne(id: string): Promise<({
         roles: {
             id: string;
@@ -129,10 +181,12 @@ export declare class BusinessesResolver {
         }[];
     } & {
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         logo: string | null;
+        phone: string | null;
         theme: string | null;
         isActive: boolean;
         isSubscriptionActive: boolean;

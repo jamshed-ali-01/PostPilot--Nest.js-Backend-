@@ -61,6 +61,12 @@ let BusinessesService = class BusinessesService {
             where: { id },
         });
     }
+    async updateBusiness(id, data) {
+        return this.prisma.business.update({
+            where: { id },
+            data: data,
+        });
+    }
 };
 exports.BusinessesService = BusinessesService;
 exports.BusinessesService = BusinessesService = __decorate([

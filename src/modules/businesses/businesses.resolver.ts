@@ -57,6 +57,26 @@ export class BusinessesResolver {
         return this.businessesService.findAll();
     }
 
+    @Query(() => Business, { name: 'businessProfile' })
+    @UseGuards(GqlAuthGuard)
+    async getBusinessProfile(@CurrentUser() user: any) {
+        if (!user.businessId) throw new Error('No business associated');
+        return this.businessesService.findOne(user.businessId);
+    }
+
+    @Mutation(() => Business, { name: 'updateBusiness' })
+    @UseGuards(GqlAuthGuard)
+    async updateBusiness(
+        @Args('name', { nullable: true }) name: string,
+        @Args('logo', { nullable: true }) logo: string,
+        @Args('phone', { nullable: true }) phone: string,
+        @Args('email', { nullable: true }) email: string,
+        @CurrentUser() user: any
+    ) {
+        if (!user.businessId) throw new Error('No business associated');
+        return this.businessesService.updateBusiness(user.businessId, { name, logo, phone, email });
+    }
+
     @Query(() => Business, { name: 'business' })
     async findOne(@Args('id') id: string) {
         return this.businessesService.findOne(id);

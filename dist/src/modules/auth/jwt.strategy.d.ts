@@ -20,10 +20,12 @@ export declare class JwtStrategy extends JwtStrategy_base {
         name: string | null;
         business: {
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             name: string;
             logo: string | null;
+            phone: string | null;
             theme: string | null;
             isActive: boolean;
             isSubscriptionActive: boolean;
@@ -68,10 +70,12 @@ export declare class JwtStrategy extends JwtStrategy_base {
         isSystemAdmin: boolean;
         business: {
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             name: string;
             logo: string | null;
+            phone: string | null;
             theme: string | null;
             isActive: boolean;
             isSubscriptionActive: boolean;

@@ -361,3 +361,11 @@
 [UsersService] Found 3 users
 [UsersService] Finding all users for businessId: "699f4ae941f0a67bb7b65054" at 2026-03-17T20:26:26.297Z
 [UsersService] Found 3 users
+[UsersService] Finding all users for businessId: "699f4ae941f0a67bb7b65054" at 2026-03-17T20:40:42.370Z
+[InvitationsService] Finding invitations for businessId: "699f4ae941f0a67bb7b65054" at 2026-03-17T20:40:42.372Z
+[InvitationsService] Found 0 invitations
+[UsersService] Found 3 users
+[UsersService] Finding all users for businessId: "699f4ae941f0a67bb7b65054" at 2026-03-17T20:52:00.636Z
+[UsersService] Found 3 users
+[InvitationsService] Finding invitations for businessId: "699f4ae941f0a67bb7b65054" at 2026-03-17T20:52:00.651Z
+[InvitationsService] Found 0 invitations

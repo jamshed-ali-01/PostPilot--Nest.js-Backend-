@@ -40,10 +40,12 @@ export declare class AuthResolver {
             name: string | null;
             business: {
                 id: string;
+                email: string | null;
                 createdAt: Date;
                 updatedAt: Date;
                 name: string;
                 logo: string | null;
+                phone: string | null;
                 theme: string | null;
                 isActive: boolean;
                 isSubscriptionActive: boolean;
@@ -90,10 +92,12 @@ export declare class AuthResolver {
             permissions: string[];
             business: {
                 id: string;
+                email: string | null;
                 createdAt: Date;
                 updatedAt: Date;
                 name: string;
                 logo: string | null;
+                phone: string | null;
                 theme: string | null;
                 isActive: boolean;
                 isSubscriptionActive: boolean;
@@ -164,10 +168,12 @@ export declare class AuthResolver {
         name: string | null;
         business: {
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             name: string;
             logo: string | null;
+            phone: string | null;
             theme: string | null;
             isActive: boolean;
             isSubscriptionActive: boolean;
@@ -214,10 +220,12 @@ export declare class AuthResolver {
         permissions: string[];
         business: {
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             name: string;
             logo: string | null;
+            phone: string | null;
             theme: string | null;
             isActive: boolean;
             isSubscriptionActive: boolean;

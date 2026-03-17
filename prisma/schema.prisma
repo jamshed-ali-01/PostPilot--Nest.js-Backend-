@@ -14,6 +14,8 @@ model Business {
   id           String          @id @default(auto()) @map("_id") @db.ObjectId
   name         String
   logo         String?
+  phone        String?
+  email        String?
   theme        String?         @default("light")
   isActive     Boolean         @default(false)
   isSubscriptionActive Boolean @default(false)

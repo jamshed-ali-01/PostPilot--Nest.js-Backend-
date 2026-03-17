@@ -17,6 +17,8 @@ let Business = class Business {
     id;
     name;
     logo;
+    phone;
+    email;
     theme;
     isActive;
     isSubscriptionActive;
@@ -41,6 +43,14 @@ __decorate([
     (0, graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], Business.prototype, "logo", void 0);
+__decorate([
+    (0, graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], Business.prototype, "phone", void 0);
+__decorate([
+    (0, graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], Business.prototype, "email", void 0);
 __decorate([
     (0, graphql_1.Field)(),
     __metadata("design:type", String)

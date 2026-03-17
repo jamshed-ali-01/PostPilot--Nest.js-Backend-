@@ -28,6 +28,8 @@ type Business {
   id: ID!
   name: String!
   logo: String
+  phone: String
+  email: String
   theme: String!
   isActive: Boolean!
   isSubscriptionActive: Boolean!
@@ -266,6 +268,7 @@ type Query {
   businessRoles(businessId: ID!): [Role!]!
   permissions: [Permission!]!
   businesses: [Business!]!
+  businessProfile: Business!
   business(id: String!): Business!
   businessPosts(businessId: ID!): [Post!]!
   pendingPosts(businessId: ID!): [Post!]!
@@ -304,6 +307,7 @@ type Mutation {
   toggleActiveStatus(businessId: String!, isActive: Boolean!): Business!
   toggleBusinessSubscription(businessId: String!, isSubscriptionActive: Boolean!): Business!
   purchaseSubscription(planId: String!): Business!
+  updateBusiness(name: String, logo: String, phone: String, email: String): Business!
   deleteBusiness(businessId: String!): Boolean!
   createPost(input: CreatePostInput!): Post!
   generateAIContent(prompt: String!, tone: String, location: String, imageUrls: [String!]): String!

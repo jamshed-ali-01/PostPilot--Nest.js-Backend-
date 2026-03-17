@@ -48,6 +48,16 @@ let BusinessesResolver = class BusinessesResolver {
     async findAll() {
         return this.businessesService.findAll();
     }
+    async getBusinessProfile(user) {
+        if (!user.businessId)
+            throw new Error('No business associated');
+        return this.businessesService.findOne(user.businessId);
+    }
+    async updateBusiness(name, logo, phone, email, user) {
+        if (!user.businessId)
+            throw new Error('No business associated');
+        return this.businessesService.updateBusiness(user.businessId, { name, logo, phone, email });
+    }
     async findOne(id) {
         return this.businessesService.findOne(id);
     }
@@ -102,6 +112,26 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], BusinessesResolver.prototype, "findAll", null);
+__decorate([
+    (0, graphql_1.Query)(() => business_entity_1.Business, { name: 'businessProfile' }),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], BusinessesResolver.prototype, "getBusinessProfile", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => business_entity_1.Business, { name: 'updateBusiness' }),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard),
+    __param(0, (0, graphql_1.Args)('name', { nullable: true })),
+    __param(1, (0, graphql_1.Args)('logo', { nullable: true })),
+    __param(2, (0, graphql_1.Args)('phone', { nullable: true })),
+    __param(3, (0, graphql_1.Args)('email', { nullable: true })),
+    __param(4, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, String, Object]),
+    __metadata("design:returntype", Promise)
+], BusinessesResolver.prototype, "updateBusiness", null);
 __decorate([
     (0, graphql_1.Query)(() => business_entity_1.Business, { name: 'business' }),
     __param(0, (0, graphql_1.Args)('id')),

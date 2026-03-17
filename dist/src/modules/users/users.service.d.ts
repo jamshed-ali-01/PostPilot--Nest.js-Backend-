@@ -5,10 +5,12 @@ export declare class UsersService {
     findByEmail(email: string): Promise<({
         business: {
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             name: string;
             logo: string | null;
+            phone: string | null;
             theme: string | null;
             isActive: boolean;
             isSubscriptionActive: boolean;
@@ -58,10 +60,12 @@ export declare class UsersService {
     }): Promise<{
         business: {
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             name: string;
             logo: string | null;
+            phone: string | null;
             theme: string | null;
             isActive: boolean;
             isSubscriptionActive: boolean;

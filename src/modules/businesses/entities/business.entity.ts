@@ -13,6 +13,12 @@ export class Business {
     @Field({ nullable: true })
     logo?: string;
 
+    @Field({ nullable: true })
+    phone?: string;
+
+    @Field({ nullable: true })
+    email?: string;
+
     @Field()
     theme: string;
 

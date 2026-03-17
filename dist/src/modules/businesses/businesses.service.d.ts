@@ -4,10 +4,12 @@ export declare class BusinessesService {
     constructor(prisma: PrismaService);
     create(name: string): Promise<{
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         logo: string | null;
+        phone: string | null;
         theme: string | null;
         isActive: boolean;
         isSubscriptionActive: boolean;
@@ -19,10 +21,12 @@ export declare class BusinessesService {
     }>;
     toggleActiveStatus(id: string, isActive: boolean): Promise<{
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         logo: string | null;
+        phone: string | null;
         theme: string | null;
         isActive: boolean;
         isSubscriptionActive: boolean;
@@ -34,10 +38,12 @@ export declare class BusinessesService {
     }>;
     toggleSubscription(id: string, isSubscriptionActive: boolean): Promise<{
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         logo: string | null;
+        phone: string | null;
         theme: string | null;
         isActive: boolean;
         isSubscriptionActive: boolean;
@@ -49,10 +55,12 @@ export declare class BusinessesService {
     }>;
     purchaseSubscription(id: string, planId: string): Promise<{
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         logo: string | null;
+        phone: string | null;
         theme: string | null;
         isActive: boolean;
         isSubscriptionActive: boolean;
@@ -88,10 +96,12 @@ export declare class BusinessesService {
         }[];
     } & {
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         logo: string | null;
+        phone: string | null;
         theme: string | null;
         isActive: boolean;
         isSubscriptionActive: boolean;
@@ -129,10 +139,12 @@ export declare class BusinessesService {
         }[];
     } & {
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         logo: string | null;
+        phone: string | null;
         theme: string | null;
         isActive: boolean;
         isSubscriptionActive: boolean;
@@ -144,10 +156,12 @@ export declare class BusinessesService {
     })[]>;
     deleteBusiness(id: string): Promise<{
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         logo: string | null;
+        phone: string | null;
         theme: string | null;
         isActive: boolean;
         isSubscriptionActive: boolean;
@@ -157,4 +171,10 @@ export declare class BusinessesService {
         stripePriceId: string | null;
         trialEndsAt: Date | null;
     }>;
+    updateBusiness(id: string, data: {
+        name?: string;
+        logo?: string;
+        phone?: string;
+        email?: string;
+    }): Promise<any>;
 }

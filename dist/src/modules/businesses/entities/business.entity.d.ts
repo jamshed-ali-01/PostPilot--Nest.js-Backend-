@@ -4,6 +4,8 @@ export declare class Business {
     id: string;
     name: string;
     logo?: string;
+    phone?: string;
+    email?: string;
     theme: string;
     isActive: boolean;
     isSubscriptionActive: boolean;
