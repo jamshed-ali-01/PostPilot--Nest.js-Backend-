@@ -9,9 +9,9 @@ export declare class PostsResolver {
     createPost(input: CreatePostInput): Promise<{
         business: {
             id: string;
-            email: string | null;
             createdAt: Date;
             updatedAt: Date;
+            email: string | null;
             name: string;
             logo: string | null;
             phone: string | null;
@@ -42,24 +42,21 @@ export declare class PostsResolver {
             })[];
         } & {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            businessId: string;
             email: string;
             password: string;
             firstName: string | null;
             lastName: string | null;
-            businessId: string;
             roleIds: string[];
             aiTone: string | null;
             aiHashtags: string[];
             aiCaptionLength: string | null;
             aiIncludeEmojis: boolean | null;
-            createdAt: Date;
-            updatedAt: Date;
         }) | null;
     } & {
         id: string;
-        businessId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
         content: string;
         mediaUrls: string[];
         status: import(".prisma/client").$Enums.PostStatus;
@@ -73,14 +70,17 @@ export declare class PostsResolver {
         comments: number;
         shares: number;
         engagement: number;
+        createdAt: Date;
+        updatedAt: Date;
+        businessId: string | null;
         authorId: string | null;
     }>;
     getBusinessPosts(businessId: string): Promise<({
         business: {
             id: string;
-            email: string | null;
             createdAt: Date;
             updatedAt: Date;
+            email: string | null;
             name: string;
             logo: string | null;
             phone: string | null;
@@ -95,24 +95,21 @@ export declare class PostsResolver {
         } | null;
         author: {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            businessId: string;
             email: string;
             password: string;
             firstName: string | null;
             lastName: string | null;
-            businessId: string;
             roleIds: string[];
             aiTone: string | null;
             aiHashtags: string[];
             aiCaptionLength: string | null;
             aiIncludeEmojis: boolean | null;
-            createdAt: Date;
-            updatedAt: Date;
         } | null;
     } & {
         id: string;
-        businessId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
         content: string;
         mediaUrls: string[];
         status: import(".prisma/client").$Enums.PostStatus;
@@ -126,29 +123,29 @@ export declare class PostsResolver {
         comments: number;
         shares: number;
         engagement: number;
+        createdAt: Date;
+        updatedAt: Date;
+        businessId: string | null;
         authorId: string | null;
     })[]>;
     getPendingPosts(businessId: string): Promise<({
         author: {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            businessId: string;
             email: string;
             password: string;
             firstName: string | null;
             lastName: string | null;
-            businessId: string;
             roleIds: string[];
             aiTone: string | null;
             aiHashtags: string[];
             aiCaptionLength: string | null;
             aiIncludeEmojis: boolean | null;
-            createdAt: Date;
-            updatedAt: Date;
         } | null;
     } & {
         id: string;
-        businessId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
         content: string;
         mediaUrls: string[];
         status: import(".prisma/client").$Enums.PostStatus;
@@ -162,14 +159,17 @@ export declare class PostsResolver {
         comments: number;
         shares: number;
         engagement: number;
+        createdAt: Date;
+        updatedAt: Date;
+        businessId: string | null;
         authorId: string | null;
     })[]>;
     getPost(id: string): Promise<({
         business: {
             id: string;
-            email: string | null;
             createdAt: Date;
             updatedAt: Date;
+            email: string | null;
             name: string;
             logo: string | null;
             phone: string | null;
@@ -184,24 +184,21 @@ export declare class PostsResolver {
         } | null;
         author: {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            businessId: string;
             email: string;
             password: string;
             firstName: string | null;
             lastName: string | null;
-            businessId: string;
             roleIds: string[];
             aiTone: string | null;
             aiHashtags: string[];
             aiCaptionLength: string | null;
             aiIncludeEmojis: boolean | null;
-            createdAt: Date;
-            updatedAt: Date;
         } | null;
     } & {
         id: string;
-        businessId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
         content: string;
         mediaUrls: string[];
         status: import(".prisma/client").$Enums.PostStatus;
@@ -215,14 +212,14 @@ export declare class PostsResolver {
         comments: number;
         shares: number;
         engagement: number;
+        createdAt: Date;
+        updatedAt: Date;
+        businessId: string | null;
         authorId: string | null;
     }) | null>;
     generateAIContent(user: any, prompt: string, tone?: string, location?: string, imageUrls?: string[]): Promise<string>;
     submitPostForApproval(id: string): Promise<{
         id: string;
-        businessId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
         content: string;
         mediaUrls: string[];
         status: import(".prisma/client").$Enums.PostStatus;
@@ -236,13 +233,13 @@ export declare class PostsResolver {
         comments: number;
         shares: number;
         engagement: number;
+        createdAt: Date;
+        updatedAt: Date;
+        businessId: string | null;
         authorId: string | null;
     }>;
     approvePost(id: string, status: PostStatus): Promise<{
         id: string;
-        businessId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
         content: string;
         mediaUrls: string[];
         status: import(".prisma/client").$Enums.PostStatus;
@@ -256,6 +253,9 @@ export declare class PostsResolver {
         comments: number;
         shares: number;
         engagement: number;
+        createdAt: Date;
+        updatedAt: Date;
+        businessId: string | null;
         authorId: string | null;
     }>;
     getBusinessAnalytics(businessId: string): Promise<{
@@ -272,9 +272,6 @@ export declare class PostsResolver {
     }>;
     deletePost(id: string): Promise<{
         id: string;
-        businessId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
         content: string;
         mediaUrls: string[];
         status: import(".prisma/client").$Enums.PostStatus;
@@ -288,13 +285,13 @@ export declare class PostsResolver {
         comments: number;
         shares: number;
         engagement: number;
+        createdAt: Date;
+        updatedAt: Date;
+        businessId: string | null;
         authorId: string | null;
     }>;
     updatePost(input: UpdatePostInput): Promise<{
         id: string;
-        businessId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
         content: string;
         mediaUrls: string[];
         status: import(".prisma/client").$Enums.PostStatus;
@@ -308,14 +305,14 @@ export declare class PostsResolver {
         comments: number;
         shares: number;
         engagement: number;
+        createdAt: Date;
+        updatedAt: Date;
+        businessId: string | null;
         authorId: string | null;
     }>;
     getPlatforms(post: Post): Promise<string[]>;
     syncPostMetrics(id: string): Promise<{
         id: string;
-        businessId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
         content: string;
         mediaUrls: string[];
         status: import(".prisma/client").$Enums.PostStatus;
@@ -329,6 +326,9 @@ export declare class PostsResolver {
         comments: number;
         shares: number;
         engagement: number;
+        createdAt: Date;
+        updatedAt: Date;
+        businessId: string | null;
         authorId: string | null;
     }>;
     syncBusinessAnalytics(businessId: string): Promise<{

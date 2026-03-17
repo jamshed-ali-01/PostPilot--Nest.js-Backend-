@@ -4,6 +4,9 @@ import { AIService } from './ai.service';
 import { CreatePostInput } from './dto/create-post.input';
 import { PostStatus } from '@prisma/client';
 import { SocialAccountsService } from '../social-accounts/social-accounts.service';
+import * as fs from 'fs';
+import { join } from 'path';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class PostsService {
@@ -43,10 +46,30 @@ export class PostsService {
                 status = hasPublishPermission ? PostStatus.SCHEDULED : PostStatus.PENDING_APPROVAL;
             }
 
+            // Convert any base64 data URLs to disk files before saving to DB
+            const backendUrl = (process.env.BACKEND_URL || 'http://localhost:3000').replace(/\/$/, '');
+            const uploadDir = join(process.cwd(), 'src/uploads');
+            if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+
+            const resolvedMediaUrls = await Promise.all(
+                (input.mediaUrls || []).map(async (url: string) => {
+                    if (url.startsWith('data:')) {
+                        const [meta, data] = url.split(',');
+                        const mime = meta.split(':')[1].split(';')[0];
+                        const ext = mime.split('/')[1]?.split('+')[0] || 'bin';
+                        const filename = `${uuidv4()}.${ext}`;
+                        const filePath = join(uploadDir, filename);
+                        fs.writeFileSync(filePath, Buffer.from(data, 'base64'));
+                        return `${backendUrl}/uploads/${filename}`;
+                    }
+                    return url;
+                })
+            );
+
             const post = await this.prisma.post.create({
                 data: {
                     content: input.content,
-                    mediaUrls: input.mediaUrls,
+                    mediaUrls: resolvedMediaUrls,
                     scheduledAt: input.scheduledAt,
                     targetingRegions: input.targetingRegions,
                     businessId: input.businessId,
@@ -66,7 +89,7 @@ export class PostsService {
                 await this.socialAccountsService.publishToPlatforms(
                     input.platformIds,
                     input.content,
-                    input.mediaUrls
+                    resolvedMediaUrls
                 );
             }
 

@@ -296,24 +296,50 @@ export class SocialAccountsService {
 
             if (account.platform === 'FACEBOOK') {
                 try {
-                    const hasBase64 = mediaUrls.some(url => url.startsWith('data:image'));
-                    if (hasBase64) {
-                        for (const url of mediaUrls) {
-                            if (url.startsWith('data:image')) {
-                                const [meta, data] = url.split(',');
-                                const mime = meta.split(':')[1].split(';')[0];
-                                const binary = Buffer.from(data, 'base64');
-                                const formData = new FormData();
-                                formData.append('source', new Blob([binary], { type: mime }));
-                                formData.append('caption', content);
-                                formData.append('access_token', account.accessToken || '');
-                                const photoUrl = `https://graph.facebook.com/v18.0/${account.accountId}/photos`;
-                                const response = await fetch(photoUrl, { method: 'POST', body: formData });
-                                const result = await response.json();
-                                results.push({ platform: 'FACEBOOK', success: !result.error, data: result });
-                            }
+                    const hasBase64 = mediaUrls.some(url => url.startsWith('data:image') || url.startsWith('data:video'));
+                    const imageUrls = mediaUrls.filter(url => url.startsWith('data:image'));
+
+                    if (imageUrls.length > 0) {
+                        // Step 1: Upload each image as an UNPUBLISHED photo to get photo IDs
+                        const photoIds: string[] = [];
+
+                        for (const url of imageUrls) {
+                            const [meta, data] = url.split(',');
+                            const mime = meta.split(':')[1].split(';')[0];
+                            const binary = Buffer.from(data, 'base64');
+                            const formData = new FormData();
+                            formData.append('source', new Blob([binary], { type: mime }));
+                            formData.append('published', 'false'); // Upload without publishing
+                            formData.append('access_token', account.accessToken || '');
+                            const photoUrl = `https://graph.facebook.com/v18.0/${account.accountId}/photos`;
+                            const res = await fetch(photoUrl, { method: 'POST', body: formData });
+                            const photoData = await res.json();
+                            console.log(`[FB] Uploaded unpublished photo:`, photoData);
+                            if (photoData.id) photoIds.push(photoData.id);
                         }
+
+                        // Step 2: Publish a single feed post with all photo IDs attached
+                        const postUrl = `https://graph.facebook.com/v18.0/${account.accountId}/feed`;
+                        const params = new URLSearchParams();
+                        params.append('message', content);
+                        params.append('access_token', account.accessToken || '');
+
+                        if (photoIds.length >= 1) {
+                            // attached_media must be a JSON-encoded array string
+                            params.append('attached_media', JSON.stringify(photoIds.map(id => ({ media_fbid: id }))));
+                        }
+
+                        const response = await fetch(postUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: params.toString(),
+                        });
+                        const result = await response.json();
+                        console.log(`[FB] Feed post result:`, result);
+                        results.push({ platform: 'FACEBOOK', success: !result.error, data: result });
+
                     } else {
+                        // No base64 — post as text/link
                         const postUrl = `https://graph.facebook.com/v18.0/${account.accountId}/feed`;
                         const response = await fetch(postUrl, {
                             method: 'POST',
@@ -440,107 +466,106 @@ export class SocialAccountsService {
 
             if (account.platform === 'INSTAGRAM') {
                 try {
-                    const hasBase64 = mediaUrls.some(url => url.startsWith('data:image'));
-                    // Use graph.instagram.com for standalone IG tokens
                     const igBaseUrl = 'https://graph.instagram.com/v18.0';
+                    const imageBase64s = mediaUrls.filter(url => url.startsWith('data:image'));
 
-                    if (hasBase64) {
-                        for (const url of mediaUrls) {
-                            if (url.startsWith('data:image')) {
-                                // 1. Save Base64 to Local File (with Square Padding)
-                                const [meta, data] = url.split(',');
-                                const ext = meta.split('/')[1].split(';')[0] || 'jpg';
-                                const filename = `${uuidv4()}.${ext}`;
-                                const filePath = join(process.cwd(), 'src/uploads', filename);
+                    if (imageBase64s.length === 0) {
+                        // No images to post — skip
+                        results.push({ platform: 'INSTAGRAM', success: false, data: { error: 'No image provided' } });
+                        continue;
+                    }
 
-                                const buffer = Buffer.from(data, 'base64');
-                                await sharp(buffer)
-                                    .resize(1080, 1080, {
-                                        fit: 'contain',
-                                        background: { r: 255, g: 255, b: 255, alpha: 1 }
-                                    })
-                                    .toFile(filePath);
+                    // Step 1: Save all images to disk and build public URLs
+                    const publicUrls: string[] = [];
+                    for (const url of imageBase64s) {
+                        const [meta, data] = url.split(',');
+                        const ext = meta.split('/')[1].split(';')[0] || 'jpg';
+                        const filename = `${uuidv4()}.${ext}`;
+                        const filePath = join(process.cwd(), 'src/uploads', filename);
+                        const buffer = Buffer.from(data, 'base64');
+                        await sharp(buffer)
+                            .resize(1080, 1080, { fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 1 } })
+                            .toFile(filePath);
+                        publicUrls.push(`${process.env.BACKEND_URL}/uploads/${filename}`);
+                    }
+                    console.log(`[IG] Public URLs:`, publicUrls);
 
-                                // 2. Generate Public URL
-                                const publicUrl = `${process.env.BACKEND_URL}/uploads/${filename}`;
-                                console.log(`[SocialAccountsService] Generated IG Public URL: ${publicUrl}`);
-
-                                // 3. Create Media Container
-                                const containerUrl = `${igBaseUrl}/${account.accountId}/media`;
-
-                                const containerRes = await fetch(containerUrl, {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({
-                                        caption: content,
-                                        image_url: publicUrl,
-                                        access_token: account.accessToken
-                                    })
-                                });
-
-                                const containerData = await containerRes.json();
-                                console.log(`[SocialAccountsService] IG Media Container:`, containerData);
-
-                                if (containerData.id) {
-                                    // 4. Wait for media to process (common IG requirement)
-                                    console.log(`[SocialAccountsService] Waiting 3s for IG to process media...`);
-                                    await new Promise(resolve => setTimeout(resolve, 3000));
-
-                                    // 5. Publish Media
-                                    const publishUrl = `${igBaseUrl}/${account.accountId}/media_publish`;
-                                    const publishRes = await fetch(publishUrl, {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({
-                                            creation_id: containerData.id,
-                                            access_token: account.accessToken
-                                        })
-                                    });
-                                    const publishData = await publishRes.json();
-                                    console.log(`[SocialAccountsService] IG Media Publish Response:`, publishData);
-                                    results.push({ platform: 'INSTAGRAM', success: !!publishData.id, data: publishData });
-                                } else {
-                                    let errorMsg = containerData.error?.message || 'Failed to create media container';
-                                    if (containerData.error?.code === 36003 || errorMsg.includes('aspect ratio')) {
-                                        errorMsg = "Instagram Aspect Ratio Error: Please use a Square (1:1), Portrait (4:5), or Landscape (1.91:1) image.";
-                                    }
-                                    results.push({ platform: 'INSTAGRAM', success: false, data: { ...containerData, userMessage: errorMsg } });
-                                }
-                                break;
-                            }
-                        }
-                    } else if (mediaUrls.length > 0) {
-                        // Handle public URL
-                        const containerUrl = `${igBaseUrl}/${account.accountId}/media`;
-                        const containerRes = await fetch(containerUrl, {
+                    if (publicUrls.length === 1) {
+                        // Single image post
+                        const containerRes = await fetch(`${igBaseUrl}/${account.accountId}/media`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                caption: content,
-                                image_url: mediaUrls[0],
-                                access_token: account.accessToken
-                            })
+                            body: JSON.stringify({ caption: content, image_url: publicUrls[0], access_token: account.accessToken }),
                         });
                         const containerData = await containerRes.json();
-                        if (containerData.id) {
-                            const publishUrl = `${igBaseUrl}/${account.accountId}/media_publish`;
-                            const publishRes = await fetch(publishUrl, {
+                        console.log(`[IG] Single container:`, containerData);
+                        if (!containerData.id) {
+                            const errorMsg = containerData.error?.message || 'Failed to create media container';
+                            results.push({ platform: 'INSTAGRAM', success: false, data: { ...containerData, userMessage: errorMsg } });
+                            continue;
+                        }
+                        await new Promise(resolve => setTimeout(resolve, 3000));
+                        const publishRes = await fetch(`${igBaseUrl}/${account.accountId}/media_publish`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ creation_id: containerData.id, access_token: account.accessToken }),
+                        });
+                        const publishData = await publishRes.json();
+                        console.log(`[IG] Single publish:`, publishData);
+                        results.push({ platform: 'INSTAGRAM', success: !!publishData.id, data: publishData });
+
+                    } else {
+                        // Carousel post — Step 2: Upload each image as a carousel item
+                        const carouselItemIds: string[] = [];
+                        for (const publicUrl of publicUrls) {
+                            const itemRes = await fetch(`${igBaseUrl}/${account.accountId}/media`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
-                                    creation_id: containerData.id,
-                                    access_token: account.accessToken
-                                })
+                                    image_url: publicUrl,
+                                    is_carousel_item: true,
+                                    access_token: account.accessToken,
+                                }),
                             });
-                            const publishData = await publishRes.json();
-                            results.push({ platform: 'INSTAGRAM', success: !!publishData.id, data: publishData });
-                        } else {
-                            let errorMsg = containerData.error?.message || 'Failed to create media container';
-                            if (containerData.error?.code === 36003 || errorMsg.includes('aspect ratio')) {
-                                errorMsg = "Instagram Aspect Ratio Error: Please use a Square (1:1), Portrait (4:5), or Landscape (1.91:1) image.";
-                            }
-                            results.push({ platform: 'INSTAGRAM', success: false, data: { ...containerData, userMessage: errorMsg } });
+                            const itemData = await itemRes.json();
+                            console.log(`[IG] Carousel item:`, itemData);
+                            if (itemData.id) carouselItemIds.push(itemData.id);
                         }
+
+                        if (carouselItemIds.length < 2) {
+                            results.push({ platform: 'INSTAGRAM', success: false, data: { userMessage: 'Not enough images created for carousel' } });
+                            continue;
+                        }
+
+                        // Step 3: Create carousel container
+                        const carouselRes = await fetch(`${igBaseUrl}/${account.accountId}/media`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                media_type: 'CAROUSEL',
+                                caption: content,
+                                children: carouselItemIds.join(','),
+                                access_token: account.accessToken,
+                            }),
+                        });
+                        const carouselData = await carouselRes.json();
+                        console.log(`[IG] Carousel container:`, carouselData);
+
+                        if (!carouselData.id) {
+                            results.push({ platform: 'INSTAGRAM', success: false, data: { ...carouselData, userMessage: carouselData.error?.message || 'Failed to create carousel' } });
+                            continue;
+                        }
+
+                        // Step 4: Wait and publish
+                        await new Promise(resolve => setTimeout(resolve, 3000));
+                        const publishRes = await fetch(`${igBaseUrl}/${account.accountId}/media_publish`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ creation_id: carouselData.id, access_token: account.accessToken }),
+                        });
+                        const publishData = await publishRes.json();
+                        console.log(`[IG] Carousel publish:`, publishData);
+                        results.push({ platform: 'INSTAGRAM', success: !!publishData.id, data: publishData });
                     }
                 } catch (error) {
                     console.error(`[SocialAccountsService] Instagram Publish Error:`, error);
