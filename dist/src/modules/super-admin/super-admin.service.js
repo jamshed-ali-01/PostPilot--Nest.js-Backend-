@@ -20,6 +20,10 @@ let SuperAdminService = class SuperAdminService {
     async getAllBusinesses() {
         return this.prisma.business.findMany({
             include: {
+                users: {
+                    include: { roles: true }
+                },
+                subscriptionPlan: true,
                 _count: {
                     select: { users: true, posts: true, testimonials: true }
                 }
@@ -77,6 +81,22 @@ let SuperAdminService = class SuperAdminService {
             update: { value: input.value },
             create: { key: input.key, value: input.value }
         });
+    }
+    async toggleActiveStatus(businessId, isActive) {
+        return this.prisma.business.update({
+            where: { id: businessId },
+            data: { isActive }
+        });
+    }
+    async toggleBusinessSubscription(businessId, isSubscriptionActive) {
+        return this.prisma.business.update({
+            where: { id: businessId },
+            data: { isSubscriptionActive }
+        });
+    }
+    async deleteBusiness(businessId) {
+        await this.prisma.business.delete({ where: { id: businessId } });
+        return true;
     }
 };
 exports.SuperAdminService = SuperAdminService;

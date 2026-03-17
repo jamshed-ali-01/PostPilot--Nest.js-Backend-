@@ -6,8 +6,12 @@ export class SuperAdminService {
     constructor(private prisma: PrismaService) { }
 
     async getAllBusinesses() {
-        return this.prisma.business.findMany({
+        return (this.prisma.business as any).findMany({
             include: {
+                users: {
+                    include: { roles: true }
+                },
+                subscriptionPlan: true,
                 _count: {
                     select: { users: true, posts: true, testimonials: true }
                 }
@@ -72,5 +76,24 @@ export class SuperAdminService {
             update: { value: input.value },
             create: { key: input.key, value: input.value }
         });
+    }
+
+    async toggleActiveStatus(businessId: string, isActive: boolean) {
+        return (this.prisma.business as any).update({
+            where: { id: businessId },
+            data: { isActive } as any
+        });
+    }
+
+    async toggleBusinessSubscription(businessId: string, isSubscriptionActive: boolean) {
+        return (this.prisma.business as any).update({
+            where: { id: businessId },
+            data: { isSubscriptionActive } as any
+        });
+    }
+
+    async deleteBusiness(businessId: string) {
+        await (this.prisma.business as any).delete({ where: { id: businessId } });
+        return true;
     }
 }

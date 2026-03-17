@@ -43,6 +43,15 @@ let SuperAdminResolver = class SuperAdminResolver {
     async updateSystemSettings(input) {
         return this.superAdminService.updateSystemSettings(input);
     }
+    async toggleActiveStatus(businessId, isActive) {
+        return this.superAdminService.toggleActiveStatus(businessId, isActive);
+    }
+    async toggleBusinessSubscription(businessId, isSubscriptionActive) {
+        return this.superAdminService.toggleBusinessSubscription(businessId, isSubscriptionActive);
+    }
+    async deleteBusiness(businessId) {
+        return this.superAdminService.deleteBusiness(businessId);
+    }
 };
 exports.SuperAdminResolver = SuperAdminResolver;
 __decorate([
@@ -76,6 +85,29 @@ __decorate([
     __metadata("design:paramtypes", [update_system_settings_input_js_1.UpdateSystemSettingsInput]),
     __metadata("design:returntype", Promise)
 ], SuperAdminResolver.prototype, "updateSystemSettings", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => business_entity_js_1.Business, { name: 'toggleActiveStatus' }),
+    __param(0, (0, graphql_1.Args)('businessId')),
+    __param(1, (0, graphql_1.Args)('isActive')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Boolean]),
+    __metadata("design:returntype", Promise)
+], SuperAdminResolver.prototype, "toggleActiveStatus", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => business_entity_js_1.Business, { name: 'toggleBusinessSubscription' }),
+    __param(0, (0, graphql_1.Args)('businessId')),
+    __param(1, (0, graphql_1.Args)('isSubscriptionActive')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Boolean]),
+    __metadata("design:returntype", Promise)
+], SuperAdminResolver.prototype, "toggleBusinessSubscription", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => Boolean, { name: 'deleteBusiness' }),
+    __param(0, (0, graphql_1.Args)('businessId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], SuperAdminResolver.prototype, "deleteBusiness", null);
 exports.SuperAdminResolver = SuperAdminResolver = __decorate([
     (0, graphql_1.Resolver)(),
     (0, common_1.UseGuards)(gql_auth_guard_js_1.GqlAuthGuard, rbac_guard_js_1.RbacGuard),

@@ -2,27 +2,7 @@ import { PrismaService } from '../../prisma/prisma.service.js';
 export declare class SuperAdminService {
     private prisma;
     constructor(prisma: PrismaService);
-    getAllBusinesses(): Promise<({
-        _count: {
-            posts: number;
-            users: number;
-            testimonials: number;
-        };
-    } & {
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        name: string;
-        logo: string | null;
-        theme: string | null;
-        isActive: boolean;
-        isSubscriptionActive: boolean;
-        subscriptionPlanId: string | null;
-        stripeCustomerId: string | null;
-        stripeSubscriptionId: string | null;
-        stripePriceId: string | null;
-        trialEndsAt: Date | null;
-    })[]>;
+    getAllBusinesses(): Promise<any>;
     getAllUsers(): Promise<({
         business: {
             id: string;
@@ -106,4 +86,7 @@ export declare class SuperAdminService {
         key: string;
         value: import("@prisma/client/runtime/library").JsonValue;
     }>;
+    toggleActiveStatus(businessId: string, isActive: boolean): Promise<any>;
+    toggleBusinessSubscription(businessId: string, isSubscriptionActive: boolean): Promise<any>;
+    deleteBusiness(businessId: string): Promise<boolean>;
 }

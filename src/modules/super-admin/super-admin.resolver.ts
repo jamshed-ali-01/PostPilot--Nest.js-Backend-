@@ -38,4 +38,25 @@ export class SuperAdminResolver {
     async updateSystemSettings(@Args('input') input: UpdateSystemSettingsInput) {
         return this.superAdminService.updateSystemSettings(input);
     }
+
+    @Mutation(() => Business, { name: 'toggleActiveStatus' })
+    async toggleActiveStatus(
+        @Args('businessId') businessId: string,
+        @Args('isActive') isActive: boolean,
+    ) {
+        return this.superAdminService.toggleActiveStatus(businessId, isActive);
+    }
+
+    @Mutation(() => Business, { name: 'toggleBusinessSubscription' })
+    async toggleBusinessSubscription(
+        @Args('businessId') businessId: string,
+        @Args('isSubscriptionActive') isSubscriptionActive: boolean,
+    ) {
+        return this.superAdminService.toggleBusinessSubscription(businessId, isSubscriptionActive);
+    }
+
+    @Mutation(() => Boolean, { name: 'deleteBusiness' })
+    async deleteBusiness(@Args('businessId') businessId: string) {
+        return this.superAdminService.deleteBusiness(businessId);
+    }
 }
