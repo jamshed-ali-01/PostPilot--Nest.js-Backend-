@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Post = void 0;
 const graphql_1 = require("@nestjs/graphql");
+const graphql_scalars_1 = require("graphql-scalars");
 const client_1 = require("@prisma/client");
 const user_entity_1 = require("../../users/entities/user.entity");
 const business_entity_1 = require("../../businesses/entities/business.entity");
@@ -37,6 +38,7 @@ let Post = class Post {
     comments;
     shares;
     engagement;
+    platformErrors;
     createdAt;
     updatedAt;
 };
@@ -117,6 +119,10 @@ __decorate([
     (0, graphql_1.Field)(),
     __metadata("design:type", Number)
 ], Post.prototype, "engagement", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => graphql_scalars_1.GraphQLJSONObject, { nullable: true }),
+    __metadata("design:type", Object)
+], Post.prototype, "platformErrors", void 0);
 __decorate([
     (0, graphql_1.Field)(),
     __metadata("design:type", Date)

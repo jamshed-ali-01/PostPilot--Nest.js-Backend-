@@ -86,11 +86,32 @@ export class PostsService {
             // Handle Instant Publishing
             if (input.publishNow && input.platformIds && input.platformIds.length > 0) {
                 console.log(`[PostsService] Instant publishing triggered for post ${post.id}`);
-                await this.socialAccountsService.publishToPlatforms(
+                const results = await this.socialAccountsService.publishToPlatforms(
                     input.platformIds,
                     input.content,
                     resolvedMediaUrls
                 );
+
+                const platformErrors: any = {};
+                let successCount = 0;
+                results.forEach(r => {
+                    if (r.success) successCount++;
+                    else platformErrors[r.platform] = r.error || 'Unknown error';
+                });
+
+                if (Object.keys(platformErrors).length > 0) {
+                    return this.prisma.post.update({
+                        where: { id: post.id },
+                        data: { 
+                            platformErrors,
+                            status: successCount === 0 ? PostStatus.FAILED : PostStatus.PUBLISHED 
+                        } as any,
+                        include: {
+                            business: true,
+                            author: { include: { roles: { include: { permissions: true } } } },
+                        },
+                    });
+                }
             }
 
             return post;

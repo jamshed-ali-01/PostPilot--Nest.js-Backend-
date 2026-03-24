@@ -119,7 +119,28 @@ let PostsService = class PostsService {
             });
             if (input.publishNow && input.platformIds && input.platformIds.length > 0) {
                 console.log(`[PostsService] Instant publishing triggered for post ${post.id}`);
-                await this.socialAccountsService.publishToPlatforms(input.platformIds, input.content, resolvedMediaUrls);
+                const results = await this.socialAccountsService.publishToPlatforms(input.platformIds, input.content, resolvedMediaUrls);
+                const platformErrors = {};
+                let successCount = 0;
+                results.forEach(r => {
+                    if (r.success)
+                        successCount++;
+                    else
+                        platformErrors[r.platform] = r.error || 'Unknown error';
+                });
+                if (Object.keys(platformErrors).length > 0) {
+                    return this.prisma.post.update({
+                        where: { id: post.id },
+                        data: {
+                            platformErrors,
+                            status: successCount === 0 ? client_1.PostStatus.FAILED : client_1.PostStatus.PUBLISHED
+                        },
+                        include: {
+                            business: true,
+                            author: { include: { roles: { include: { permissions: true } } } },
+                        },
+                    });
+                }
             }
             return post;
         }

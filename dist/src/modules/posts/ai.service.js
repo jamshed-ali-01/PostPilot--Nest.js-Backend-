@@ -46,6 +46,13 @@ Format the response as JSON:
 }`;
     }
     async generateAdContent(prompt, tone = 'professional', platform = 'FACEBOOK') {
+        if (this.provider === 'none') {
+            return {
+                headline: "",
+                primaryText: "",
+                description: "",
+            };
+        }
         const systemPrompt = this.buildAdSystemPrompt(prompt, tone, platform);
         let result;
         if (this.provider === 'openai') {
@@ -91,6 +98,9 @@ Tone: ${tone}
 Write the caption now. Format: caption text first, then hashtags on a new line:`;
     }
     async generateCaption(prompt, tone = 'professional', location, imageUrls, includeEmojis = true, captionLength = 'medium') {
+        if (this.provider === 'none') {
+            return "";
+        }
         const hasImages = imageUrls && imageUrls.length > 0;
         const systemPrompt = this.buildSystemPrompt(prompt, tone, location, hasImages, includeEmojis, captionLength);
         if (this.provider === 'openai') {

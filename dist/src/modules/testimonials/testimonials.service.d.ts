@@ -40,5 +40,6 @@ export declare class TestimonialsService {
         comments: number;
         shares: number;
         engagement: number;
+        platformErrors: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
 }

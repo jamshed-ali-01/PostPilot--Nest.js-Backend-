@@ -12,10 +12,10 @@ import { GoogleGenerativeAI, Part } from '@google/generative-ai';
 export class AIService {
     private openai: OpenAI;
     private gemini: GoogleGenerativeAI;
-    private provider: 'openai' | 'gemini';
+    private provider: 'openai' | 'gemini' | 'none';
 
     constructor() {
-        this.provider = (process.env.AI_PROVIDER as 'openai' | 'gemini') || 'gemini';
+        this.provider = (process.env.AI_PROVIDER as 'openai' | 'gemini' | 'none') || 'gemini';
         this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || '' });
         this.gemini = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
     }
@@ -42,6 +42,13 @@ Format the response as JSON:
     }
 
     async generateAdContent(prompt: string, tone: string = 'professional', platform: string = 'FACEBOOK'): Promise<{ headline: string, primaryText: string, description: string }> {
+        if (this.provider === 'none') {
+            return {
+                headline: "",
+                primaryText: "",
+                description: "",
+            };
+        }
         const systemPrompt = this.buildAdSystemPrompt(prompt, tone, platform);
         let result: string;
 
@@ -91,6 +98,9 @@ Write the caption now. Format: caption text first, then hashtags on a new line:`
     }
 
     async generateCaption(prompt: string, tone: string = 'professional', location?: string, imageUrls?: string[], includeEmojis: boolean = true, captionLength: string = 'medium'): Promise<string> {
+        if (this.provider === 'none') {
+            return "";
+        }
         const hasImages = imageUrls && imageUrls.length > 0;
         const systemPrompt = this.buildSystemPrompt(prompt, tone, location, hasImages, includeEmojis, captionLength);
 

@@ -1,4 +1,5 @@
 import { ObjectType, Field, ID, registerEnumType } from '@nestjs/graphql';
+import { GraphQLJSONObject } from 'graphql-scalars';
 import { PostStatus } from '@prisma/client';
 import { User } from '../../users/entities/user.entity';
 import { Business } from '../../businesses/entities/business.entity';
@@ -65,6 +66,9 @@ export class Post {
 
     @Field()
     engagement: number;
+
+    @Field(() => GraphQLJSONObject, { nullable: true })
+    platformErrors?: any;
 
     @Field()
     createdAt: Date;

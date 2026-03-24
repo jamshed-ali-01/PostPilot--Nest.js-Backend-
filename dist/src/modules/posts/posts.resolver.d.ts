@@ -74,6 +74,7 @@ export declare class PostsResolver {
         comments: number;
         shares: number;
         engagement: number;
+        platformErrors: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
     getBusinessPosts(businessId: string): Promise<({
         business: {
@@ -127,6 +128,7 @@ export declare class PostsResolver {
         comments: number;
         shares: number;
         engagement: number;
+        platformErrors: import("@prisma/client/runtime/library").JsonValue | null;
     })[]>;
     getPendingPosts(businessId: string): Promise<({
         author: {
@@ -163,6 +165,7 @@ export declare class PostsResolver {
         comments: number;
         shares: number;
         engagement: number;
+        platformErrors: import("@prisma/client/runtime/library").JsonValue | null;
     })[]>;
     getPost(id: string): Promise<({
         business: {
@@ -216,6 +219,7 @@ export declare class PostsResolver {
         comments: number;
         shares: number;
         engagement: number;
+        platformErrors: import("@prisma/client/runtime/library").JsonValue | null;
     }) | null>;
     generateAIContent(user: any, prompt: string, tone?: string, location?: string, imageUrls?: string[]): Promise<string>;
     submitPostForApproval(id: string): Promise<{
@@ -237,6 +241,7 @@ export declare class PostsResolver {
         comments: number;
         shares: number;
         engagement: number;
+        platformErrors: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
     approvePost(id: string, status: PostStatus): Promise<{
         id: string;
@@ -257,6 +262,7 @@ export declare class PostsResolver {
         comments: number;
         shares: number;
         engagement: number;
+        platformErrors: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
     getBusinessAnalytics(businessId: string): Promise<{
         totalReach: number;
@@ -289,6 +295,7 @@ export declare class PostsResolver {
         comments: number;
         shares: number;
         engagement: number;
+        platformErrors: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
     updatePost(input: UpdatePostInput): Promise<{
         id: string;
@@ -309,6 +316,7 @@ export declare class PostsResolver {
         comments: number;
         shares: number;
         engagement: number;
+        platformErrors: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
     getPlatforms(post: Post): Promise<string[]>;
     syncPostMetrics(id: string): Promise<{
@@ -330,6 +338,7 @@ export declare class PostsResolver {
         comments: number;
         shares: number;
         engagement: number;
+        platformErrors: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
     syncBusinessAnalytics(businessId: string): Promise<{
         totalReach: number;

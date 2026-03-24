@@ -61,8 +61,22 @@ let AppController = class AppController {
     async getUpload(filename, res) {
         const filePath = (0, path_1.join)(process.cwd(), 'src/uploads', filename);
         if (fs.existsSync(filePath)) {
+            const ext = filename.split('.').pop()?.toLowerCase();
+            const mimeTypes = {
+                'jpg': 'image/jpeg',
+                'jpeg': 'image/jpeg',
+                'png': 'image/png',
+                'gif': 'image/gif',
+                'webp': 'image/webp',
+                'heic': 'image/heic',
+                'mp4': 'video/mp4',
+                'mov': 'video/quicktime',
+                'avi': 'video/x-msvideo',
+                'webm': 'video/webm'
+            };
+            const contentType = (ext && mimeTypes[ext]) || 'application/octet-stream';
             const stream = fs.createReadStream(filePath);
-            return res.type('image/jpeg').send(stream);
+            return res.type(contentType).send(stream);
         }
         return res.status(404).send('File not found');
     }

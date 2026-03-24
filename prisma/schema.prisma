@@ -145,6 +145,7 @@ model Post {
   comments         Int        @default(0)
   shares           Int        @default(0)
   engagement       Float      @default(0.0)
+  platformErrors   Json?
 
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
