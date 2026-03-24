@@ -1,98 +1,115 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# PostPilot Enterprise Backend Engine
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+[![NestJS](https://img.shields.io/badge/Framework-NestJS-E0234E?style=for-the-badge&logo=nestjs)](https://nestjs.com/)
+[![GraphQL](https://img.shields.io/badge/API-GraphQL-E10098?style=for-the-badge&logo=graphql)](https://graphql.org/)
+[![Prisma](https://img.shields.io/badge/ORM-Prisma-2D3748?style=for-the-badge&logo=prisma)](https://www.prisma.io/)
+[![Stripe](https://img.shields.io/badge/Payments-Stripe-626CD9?style=for-the-badge&logo=stripe)](https://stripe.com/)
+[![Facebook](https://img.shields.io/badge/Integration-Facebook-1877F2?style=for-the-badge&logo=facebook)](https://developers.facebook.com/)
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Executive Summary
 
-## Description
+PostPilot is a professional-grade backend infrastructure engineered for automated social media orchestration and enterprise management. Developed with a focus on reliability and scalability, the system provides a robust foundation for multi-platform publishing, sophisticated role-based access control (RBAC), and automated financial billing operations.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+The engine is architected to streamline complex digital marketing workflows, ensuring that businesses can manage their multi-platform presence through a unified, secure, and performant API.
 
-## Project setup
+---
 
-```bash
-$ npm install
+## Technical Ecosystem
+
+The PostPilot backend is built upon a modern, high-performance technology stack designed for enterprise scalability and type-safety.
+
+### Core Framework and Language
+- **NestJS**: A progressive Node.js framework for building efficient and scalable server-side applications.
+- **TypeScript**: The primary programming language, ensuring strict type-safety across the entire codebase.
+- **Fastify/Express**: Underlying high-performance HTTP server engines.
+
+### API and Communication Layer
+- **GraphQL**: Core API technology providing a flexible and efficient data query language.
+- **Mercurius**: A high-performance GraphQL adapter for Fastify, optimized for low-latency interactions.
+- **Nodemailer**: Enterprise-grade email delivery system for transactional and notification workflows.
+
+### Data Management and Persistence
+- **Prisma ORM**: A next-generation Node.js and TypeScript ORM for intuitive and type-safe database access.
+- **Relational Databases**: Support for PostgreSQL and MongoDB through Prisma's unified abstraction layer.
+
+### Security and Identity Architecture
+- **Passport.js**: Comprehensive authentication middleware supporting multiple strategies.
+- **JWT (JSON Web Tokens)**: Stateless authentication mechanism for secure and scalable session management.
+- **Bcrypt**: Industry-standard library for secure password hashing and protection.
+
+### External Integrations and Utilities
+- **Stripe**: Full-stack integration for subscription management, billing, and global payment processing.
+- **Facebook Business SDK**: Official integration for automated publishing and engagement analytics on Meta platforms.
+- **Google Gemini / OpenAI**: Advanced AI integration for supplemental content synthesis and assistance.
+- **Sharp**: High-performance image processing library for asset optimization and transformation.
+
+---
+
+## Core Technical Pillars
+
+### 1. Unified Social Media Orchestration
+The primary function of the PostPilot engine is to manage high-volume interactions across multiple social media platforms through official enterprise SDKs:
+- **Enterprise OAuth Management**: Secure orchestration of authentication flows and long-lived session tokens.
+- **Automated Publishing Pipelines**: High-performance processing and delivery of media assets (images/videos) optimized for platform-specific specifications.
+- **Engagement Analytics Synchronization**: Automated background workers for retrieving and normalizing metrics (reach, impressions, and engagement) into a unified internal dashboard.
+
+### 2. Multi-Tenant Identity and Access Management (IAM)
+A sophisticated security architecture designed for business scalability:
+- **Granular Permission Nodes**: Fine-grained access control (e.g., `APPROVE_POST`, `MANAGE_PLANS`) mapped to dynamically configurable roles.
+- **Invitation Orchestration**: Secure team onboarding via signed cryptographic tokens and expiration logic.
+- **Strict Data Isolation**: Multi-tenant partitioning ensuring absolute data privacy between different business entities within the shared infrastructure.
+
+### 3. Financial Systems and Billing Lifecycle
+End-to-end integration with the Stripe ecosystem for comprehensive SaaS management:
+- **Feature-Tier Enforcement**: Automated entitlement management based on active subscription status.
+- **Lifecycle Webhook Handling**: Real-time synchronization of billing states (renewals, failures, and cancellations) from the payment provider to the internal database.
+- **Secure Checkout Integration**: Managed orchestration of payment sessions for high-security transaction processing.
+
+### 4. Supplemental Content Assistance
+The engine includes a supplemental intelligence layer that utilizes third-party AI APIs to assist users in content creation:
+- **Caption Synthesis**: Automated generation of platform-appropriate copy based on business-specific metadata.
+- **Preference Persistence**: User-level configuration of content parameters (tone, length, and formatting) for consistent content generation.
+
+---
+
+## System Architecture
+
+The project utilizes a **Modular NestJS Architecture** to ensure high maintainability and codebase stability.
+
+```text
+src/
+├── modules/
+│   ├── social-accounts/ # Core platform integrations & OAuth
+│   ├── posts/         # Central logic for publishing workflows
+│   ├── roles/         # Dynamic RBAC engine
+│   ├── stripe/        # Billing & Subscription systems
+│   ├── auth/          # Identity security & Strategy orchestration
+│   ├── businesses/    # Multi-tenant profile management
+│   └── ai/            # Content assistance service
+├── common/            # Shared decorators and interceptors
+└── prisma/            # Database schema and type-safe client
 ```
 
-## Compile and run the project
+---
 
-```bash
-# development
-$ npm run start
+## GraphQL API Specification
 
-# watch mode
-$ npm run start:dev
+The infrastructure exposes a type-safe GraphQL endpoint via **Mercurius**.
 
-# production mode
-$ npm run start:prod
-```
+### Major Operational Nodes
+- `createPost`: Orchestrates the publishing lifecycle, from media attachment to scheduling.
+- `submitPostForApproval`: Transitions content through the internal multi-user review pipeline.
+- `businessAnalytics`: Synchronizes and retrieves aggregated performance data from all connected platforms.
+- `createCheckoutSession`: Generates secure portals for transaction and subscription management.
 
-## Run tests
+---
 
-```bash
-# unit tests
-$ npm run test
+## Security Framework
+- **Authentication**: Stateless JWT-based authentication with strict token validation.
+- **Authorization**: Resolver-level guards enforcing RBAC and cross-tenant data isolation.
+- **Reliable Validation**: Comprehensive input validation using `class-validator` and GraphQL type-guards.
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+---
 
 ## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Proprietary and confidential. Internal use only. Unauthorized distribution is prohibited.
