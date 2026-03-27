@@ -2,8 +2,8 @@
 node_modules/
 
 # Build output
-dist
-build
+# dist
+# build
 
 # Environment variables (VERY IMPORTANT)
 .env
