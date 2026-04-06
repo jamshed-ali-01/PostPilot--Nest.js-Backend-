@@ -41,9 +41,9 @@ export class AuthService {
         }
 
         // 2. Check Business Users Fallback
-        const user = await this.usersService.findByEmail(email);
+        const user = await this.usersService.findByEmail(normalizedEmail);
         if (user && (await bcrypt.compare(pass, user.password))) {
-            console.log(`[AuthService] Found Business User matching: ${email}`);
+            console.log(`[AuthService] Found Business User matching: ${normalizedEmail}`);
             const { password, ...result } = user;
             return { ...result, _type: 'user' };
         }
@@ -188,12 +188,12 @@ export class AuthService {
 
     async getMe(userId: string) {
         // First check if this ID belongs to a SystemAdmin
-        const sysAdmin = await this.prisma.systemAdmin.findUnique({
+        let sysAdmin = await this.prisma.systemAdmin.findUnique({
             where: { id: userId }
         });
 
         // Search by ID or Email to find the corresponding Business User
-        const user = await this.prisma.user.findFirst({
+        let user = await this.prisma.user.findFirst({
             where: {
                 OR: [
                     { id: userId },
@@ -202,6 +202,15 @@ export class AuthService {
             },
             include: { business: true, roles: { include: { permissions: true } } }
         });
+
+        // Enhanced Identity Bridge: If we find one but not the other by ID/Email, we sync them
+        if (!user || !sysAdmin) {
+            const commonEmail = user?.email || sysAdmin?.email;
+            if (commonEmail) {
+                if (!user) user = await this.prisma.user.findUnique({ where: { email: commonEmail }, include: { business: true, roles: { include: { permissions: true } } } });
+                if (!sysAdmin) sysAdmin = await this.prisma.systemAdmin.findUnique({ where: { email: commonEmail } });
+            }
+        }
 
         if (sysAdmin && user) {
             const permissions = new Set<string>();

@@ -84,9 +84,9 @@ let AuthService = AuthService_1 = class AuthService {
                 lastName: 'Admin'
             };
         }
-        const user = await this.usersService.findByEmail(email);
+        const user = await this.usersService.findByEmail(normalizedEmail);
         if (user && (await bcrypt.compare(pass, user.password))) {
-            console.log(`[AuthService] Found Business User matching: ${email}`);
+            console.log(`[AuthService] Found Business User matching: ${normalizedEmail}`);
             const { password, ...result } = user;
             return { ...result, _type: 'user' };
         }
@@ -194,10 +194,10 @@ let AuthService = AuthService_1 = class AuthService {
         });
     }
     async getMe(userId) {
-        const sysAdmin = await this.prisma.systemAdmin.findUnique({
+        let sysAdmin = await this.prisma.systemAdmin.findUnique({
             where: { id: userId }
         });
-        const user = await this.prisma.user.findFirst({
+        let user = await this.prisma.user.findFirst({
             where: {
                 OR: [
                     { id: userId },
@@ -206,6 +206,15 @@ let AuthService = AuthService_1 = class AuthService {
             },
             include: { business: true, roles: { include: { permissions: true } } }
         });
+        if (!user || !sysAdmin) {
+            const commonEmail = user?.email || sysAdmin?.email;
+            if (commonEmail) {
+                if (!user)
+                    user = await this.prisma.user.findUnique({ where: { email: commonEmail }, include: { business: true, roles: { include: { permissions: true } } } });
+                if (!sysAdmin)
+                    sysAdmin = await this.prisma.systemAdmin.findUnique({ where: { email: commonEmail } });
+            }
+        }
         if (sysAdmin && user) {
             const permissions = new Set();
             user.roles?.forEach(r => r.permissions?.forEach(p => permissions.add(p.name)));
