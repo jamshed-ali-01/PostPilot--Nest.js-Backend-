@@ -69,11 +69,12 @@ let AuthService = AuthService_1 = class AuthService {
         this.invitationsService = invitationsService;
     }
     async validateUser(email, pass) {
-        console.log(`[AuthService] Validating user: ${email}`);
-        const sysAdmin = await this.prisma.systemAdmin.findUnique({ where: { email } });
-        console.log(`[AuthService] Searched SystemAdmin for ${email}:`, sysAdmin ? 'Found' : 'Not Found');
+        const normalizedEmail = email.toLowerCase().trim();
+        console.log(`[AuthService] Validating user: ${normalizedEmail}`);
+        const sysAdmin = await this.prisma.systemAdmin.findUnique({ where: { email: normalizedEmail } });
+        console.log(`[AuthService] Searched SystemAdmin for ${normalizedEmail}:`, sysAdmin ? 'Found' : 'Not Found');
         if (sysAdmin && (await bcrypt.compare(pass, sysAdmin.password))) {
-            console.log(`[AuthService] Validated SystemAdmin matching: ${email}`);
+            console.log(`[AuthService] Validated SystemAdmin matching: ${normalizedEmail}`);
             const { password, ...result } = sysAdmin;
             return {
                 ...result,

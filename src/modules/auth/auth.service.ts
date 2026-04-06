@@ -21,14 +21,15 @@ export class AuthService {
     ) { }
 
     async validateUser(email: string, pass: string): Promise<any> {
-        console.log(`[AuthService] Validating user: ${email}`);
+        const normalizedEmail = email.toLowerCase().trim();
+        console.log(`[AuthService] Validating user: ${normalizedEmail}`);
 
         // 1. Check System Admins First
-        const sysAdmin = await this.prisma.systemAdmin.findUnique({ where: { email } });
-        console.log(`[AuthService] Searched SystemAdmin for ${email}:`, sysAdmin ? 'Found' : 'Not Found');
+        const sysAdmin = await this.prisma.systemAdmin.findUnique({ where: { email: normalizedEmail } });
+        console.log(`[AuthService] Searched SystemAdmin for ${normalizedEmail}:`, sysAdmin ? 'Found' : 'Not Found');
 
         if (sysAdmin && (await bcrypt.compare(pass, sysAdmin.password))) {
-            console.log(`[AuthService] Validated SystemAdmin matching: ${email}`);
+            console.log(`[AuthService] Validated SystemAdmin matching: ${normalizedEmail}`);
             const { password, ...result } = sysAdmin;
             return {
                 ...result,
