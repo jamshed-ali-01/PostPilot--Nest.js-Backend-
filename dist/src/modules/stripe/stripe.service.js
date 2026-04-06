@@ -27,8 +27,8 @@ let StripeService = StripeService_1 = class StripeService {
             apiVersion: '2025-02-24.acacia',
         });
     }
-    async createCheckoutSession(businessId, planId) {
-        this.logger.log(`Creating Checkout Session for Custom Plan: ${planId} Business: ${businessId}`);
+    async createCheckoutSession(businessId, planId, email) {
+        this.logger.log(`Creating Checkout Session for Custom Plan: ${planId} Business: ${businessId} User: ${email || 'unknown'}`);
         const business = await this.prisma.business.findUnique({
             where: { id: businessId },
         });
@@ -48,7 +48,7 @@ let StripeService = StripeService_1 = class StripeService {
                 payment_method_types: ['card'],
                 mode: 'subscription',
                 client_reference_id: businessId,
-                customer_email: 'temp@test.com',
+                customer_email: email || 'temp@test.com',
                 metadata: {
                     businessId,
                     planId,

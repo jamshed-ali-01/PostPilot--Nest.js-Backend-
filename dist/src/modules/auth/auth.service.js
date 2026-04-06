@@ -116,6 +116,20 @@ let AuthService = AuthService_1 = class AuthService {
     async completeRegistration(metadata) {
         this.logger.log(`Completing registration for: ${metadata.email}`);
         const { email, password, firstName, lastName, businessName, planId } = metadata;
+        const perms = [
+            'CREATE_POST', 'EDIT_POST', 'DELETE_POST', 'PUBLISH_POST', 'SCHEDULE_POST',
+            'VIEW_POSTS', 'VIEW_ANALYTICS', 'VIEW_ADS', 'CREATE_AD', 'EDIT_AD', 'DELETE_AD',
+            'INVITE_USER', 'REMOVE_USERS', 'MANAGE_TEAM', 'VIEW_TEAM',
+            'MANAGE_SETTINGS', 'MANAGE_BILLING', 'ADMIN_SETTINGS',
+            'MANAGE_INTEGRATIONS', 'MANAGE_SERVICE_AREAS'
+        ];
+        for (const p of perms) {
+            await this.prisma.permission.upsert({
+                where: { name: p },
+                update: {},
+                create: { name: p }
+            });
+        }
         return await this.prisma.$transaction(async (tx) => {
             const trialEndsAt = new Date();
             trialEndsAt.setDate(trialEndsAt.getDate() + 14);
@@ -128,20 +142,6 @@ let AuthService = AuthService_1 = class AuthService {
                 }
             });
             const bizId = business.id;
-            const perms = [
-                'CREATE_POST', 'EDIT_POST', 'DELETE_POST', 'PUBLISH_POST', 'SCHEDULE_POST',
-                'VIEW_POSTS', 'VIEW_ANALYTICS', 'VIEW_ADS', 'CREATE_AD', 'EDIT_AD', 'DELETE_AD',
-                'INVITE_USER', 'REMOVE_USERS', 'MANAGE_TEAM', 'VIEW_TEAM',
-                'MANAGE_SETTINGS', 'MANAGE_BILLING', 'ADMIN_SETTINGS',
-                'MANAGE_INTEGRATIONS', 'MANAGE_SERVICE_AREAS'
-            ];
-            for (const p of perms) {
-                await tx.permission.upsert({
-                    where: { name: p },
-                    update: {},
-                    create: { name: p }
-                });
-            }
             const allPerms = await tx.permission.findMany();
             const role = await tx.role.create({
                 data: {
@@ -167,7 +167,7 @@ let AuthService = AuthService_1 = class AuthService {
             });
             this.logger.log(`Successfully completed registration for user ${user.id} and business ${bizId}`);
             return user;
-        });
+        }, { timeout: 10000 });
     }
     async registerByInvite(input, token) {
         const invitation = await this.invitationsService.findByToken(token);

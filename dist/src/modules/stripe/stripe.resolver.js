@@ -18,7 +18,6 @@ const stripe_service_1 = require("./stripe.service");
 const common_1 = require("@nestjs/common");
 const gql_auth_guard_1 = require("../../common/guards/gql-auth.guard");
 const current_user_decorator_1 = require("../../common/decorators/current-user.decorator");
-const user_entity_1 = require("../users/entities/user.entity");
 let StripeResolver = class StripeResolver {
     stripeService;
     constructor(stripeService) {
@@ -26,7 +25,15 @@ let StripeResolver = class StripeResolver {
     }
     async createCheckoutSession(planId, user) {
         const businessId = user.businessId;
-        return this.stripeService.createCheckoutSession(businessId, planId);
+        const email = user.email;
+        console.log(`[StripeResolver] Initiating checkout: user=${email}, businessId=${businessId}, isAdmin=${!!user.isSystemAdmin}`);
+        if (!businessId) {
+            if (user.isSystemAdmin) {
+                throw new Error('As a System Administrator, you are not directly linked to a business for personal subscriptions. Please log in as a Business Owner to manage a specific account.');
+            }
+            throw new Error('Business ID not found for your account. Please contact support.');
+        }
+        return this.stripeService.createCheckoutSession(businessId, planId, email);
     }
 };
 exports.StripeResolver = StripeResolver;
@@ -36,7 +43,7 @@ __decorate([
     __param(0, (0, graphql_1.Args)('planId')),
     __param(1, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, user_entity_1.User]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], StripeResolver.prototype, "createCheckoutSession", null);
 exports.StripeResolver = StripeResolver = __decorate([

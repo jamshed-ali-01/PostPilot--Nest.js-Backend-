@@ -86,6 +86,24 @@ export class AuthService {
 
         const { email, password, firstName, lastName, businessName, planId } = metadata;
 
+        // 1. Move Permission Upserts OUTSIDE the transaction for speed
+        const perms = [
+            'CREATE_POST', 'EDIT_POST', 'DELETE_POST', 'PUBLISH_POST', 'SCHEDULE_POST',
+            'VIEW_POSTS', 'VIEW_ANALYTICS', 'VIEW_ADS', 'CREATE_AD', 'EDIT_AD', 'DELETE_AD',
+            'INVITE_USER', 'REMOVE_USERS', 'MANAGE_TEAM', 'VIEW_TEAM',
+            'MANAGE_SETTINGS', 'MANAGE_BILLING', 'ADMIN_SETTINGS',
+            'MANAGE_INTEGRATIONS', 'MANAGE_SERVICE_AREAS'
+        ];
+
+        // Do upserts outside the transaction
+        for (const p of perms) {
+            await this.prisma.permission.upsert({
+                where: { name: p },
+                update: {},
+                create: { name: p }
+            });
+        }
+
         return await this.prisma.$transaction(async (tx) => {
             // 1. Create Business
             const trialEndsAt = new Date();
@@ -102,24 +120,10 @@ export class AuthService {
 
             const bizId = business.id;
 
-            // 2. Permissions - upsert ALL system permissions
-            const perms = [
-                'CREATE_POST', 'EDIT_POST', 'DELETE_POST', 'PUBLISH_POST', 'SCHEDULE_POST',
-                'VIEW_POSTS', 'VIEW_ANALYTICS', 'VIEW_ADS', 'CREATE_AD', 'EDIT_AD', 'DELETE_AD',
-                'INVITE_USER', 'REMOVE_USERS', 'MANAGE_TEAM', 'VIEW_TEAM',
-                'MANAGE_SETTINGS', 'MANAGE_BILLING', 'ADMIN_SETTINGS',
-                'MANAGE_INTEGRATIONS', 'MANAGE_SERVICE_AREAS'
-            ];
-            for (const p of perms) {
-                await tx.permission.upsert({
-                    where: { name: p },
-                    update: {},
-                    create: { name: p }
-                });
-            }
+            // 2. Fetch All Permissions (Fast inside tx)
+            const allPerms = await tx.permission.findMany();
 
             // 3. OWNER Role
-            const allPerms = await tx.permission.findMany();
             const role = await tx.role.create({
                 data: {
                     name: `OWNER_${bizId}`,
@@ -147,7 +151,7 @@ export class AuthService {
 
             this.logger.log(`Successfully completed registration for user ${user.id} and business ${bizId}`);
             return user;
-        });
+        }, { timeout: 10000 });
     }
 
 

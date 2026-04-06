@@ -14,8 +14,8 @@ export class StripeService {
         });
     }
 
-    async createCheckoutSession(businessId: string, planId: string): Promise<string> {
-        this.logger.log(`Creating Checkout Session for Custom Plan: ${planId} Business: ${businessId}`);
+    async createCheckoutSession(businessId: string, planId: string, email?: string): Promise<string> {
+        this.logger.log(`Creating Checkout Session for Custom Plan: ${planId} Business: ${businessId} User: ${email || 'unknown'}`);
 
         const business = await (this.prisma.business as any).findUnique({
             where: { id: businessId },
@@ -41,7 +41,7 @@ export class StripeService {
                 payment_method_types: ['card'],
                 mode: 'subscription',
                 client_reference_id: businessId,
-                customer_email: 'temp@test.com', // Typically from the registering user
+                customer_email: email || 'temp@test.com', // User's email from the resolver
                 metadata: {
                     businessId,
                     planId,

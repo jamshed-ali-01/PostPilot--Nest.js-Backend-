@@ -13,10 +13,21 @@ export class StripeResolver {
     @UseGuards(GqlAuthGuard)
     async createCheckoutSession(
         @Args('planId') planId: string,
-        @CurrentUser() user: User,
+        @CurrentUser() user: any,
     ): Promise<string> {
         // Determine the business requesting the checkout
         const businessId = user.businessId;
-        return this.stripeService.createCheckoutSession(businessId, planId);
+        const email = user.email;
+        
+        console.log(`[StripeResolver] Initiating checkout: user=${email}, businessId=${businessId}, isAdmin=${!!user.isSystemAdmin}`);
+        
+        if (!businessId) {
+            if (user.isSystemAdmin) {
+                throw new Error('As a System Administrator, you are not directly linked to a business for personal subscriptions. Please log in as a Business Owner to manage a specific account.');
+            }
+            throw new Error('Business ID not found for your account. Please contact support.');
+        }
+
+        return this.stripeService.createCheckoutSession(businessId, planId, email);
     }
 }
