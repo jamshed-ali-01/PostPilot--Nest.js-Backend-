@@ -103,9 +103,4 @@ export class PostsResolver {
         return this.postsService.syncAllBusinessMetrics(businessId);
     }
 
-    @Mutation(() => BusinessAnalytics)
-    @UseGuards(GqlAuthGuard)
-    async seedDemoData(@Args('businessId', { type: () => ID }) businessId: string) {
-        return this.postsService.seedDemoData(businessId);
-    }
 }

@@ -222,16 +222,22 @@ export class PostsService {
         const pendingPosts = posts.filter(p => p.status === PostStatus.PENDING_APPROVAL).length;
 
         const metrics = posts.reduce((acc, p) => {
-            acc.totalReach += p.reach || 0;
-            acc.impressions += p.impressions || 0;
-            acc.likes += p.likes || 0;
-            acc.comments += p.comments || 0;
-            acc.shares += p.shares || 0;
-            acc.totalEngagement += p.engagement || 0;
+            // Only aggregate metrics for posts that have been verified on Meta/LinkedIn
+            const isVerified = p.status === PostStatus.PUBLISHED && p.platformPostIds && Object.keys(p.platformPostIds as any).length > 0;
+            
+            if (isVerified) {
+                acc.totalReach += p.reach || 0;
+                acc.impressions += p.impressions || 0;
+                acc.likes += p.likes || 0;
+                acc.comments += p.comments || 0;
+                acc.shares += p.shares || 0;
+                acc.totalEngagement += p.engagement || 0;
+                acc.verifiedCount += 1;
+            }
             return acc;
-        }, { totalReach: 0, impressions: 0, likes: 0, comments: 0, shares: 0, totalEngagement: 0 });
+        }, { totalReach: 0, impressions: 0, likes: 0, comments: 0, shares: 0, totalEngagement: 0, verifiedCount: 0 });
 
-        const avgEngagement = publishedPosts > 0 ? metrics.totalEngagement / publishedPosts : 0;
+        const avgEngagement = metrics.verifiedCount > 0 ? metrics.totalEngagement / metrics.verifiedCount : 0;
 
         return {
             totalReach: metrics.totalReach,
@@ -362,42 +368,5 @@ export class PostsService {
             where: { id },
             data,
         });
-    }
-    async seedDemoData(businessId: string) {
-        const posts = await this.prisma.post.findMany({
-            where: { businessId }
-        });
-
-        const areas = ["Croydon", "Bromley", "Lewisham", "Greenwich", "Southwark", "Lambeth"];
-
-        for (const post of posts) {
-            const reach = Math.floor(Math.random() * 5000) + 500;
-            const impressions = Math.floor(reach * (1.2 + Math.random()));
-            const likes = Math.floor(reach * 0.05);
-            const comments = Math.floor(likes * 0.1);
-            const shares = Math.floor(likes * 0.05);
-            const engagement = parseFloat(((likes + comments + shares) / reach * 100).toFixed(2));
-
-            // Randomly assign some areas if none exist
-            const targetingRegions = post.targetingRegions.length > 0
-                ? post.targetingRegions
-                : [areas[Math.floor(Math.random() * areas.length)]];
-
-            await this.prisma.post.update({
-                where: { id: post.id },
-                data: {
-                    reach,
-                    impressions,
-                    likes,
-                    comments,
-                    shares,
-                    engagement,
-                    targetingRegions,
-                    status: PostStatus.PUBLISHED // Make them published for analytics
-                }
-            });
-        }
-
-        return this.getAnalytics(businessId);
     }
 }

@@ -73,9 +73,6 @@ let PostsResolver = class PostsResolver {
     async syncBusinessAnalytics(businessId) {
         return this.postsService.syncAllBusinessMetrics(businessId);
     }
-    async seedDemoData(businessId) {
-        return this.postsService.seedDemoData(businessId);
-    }
 };
 exports.PostsResolver = PostsResolver;
 __decorate([
@@ -185,14 +182,6 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], PostsResolver.prototype, "syncBusinessAnalytics", null);
-__decorate([
-    (0, graphql_1.Mutation)(() => analytics_entity_js_1.BusinessAnalytics),
-    (0, common_1.UseGuards)(gql_auth_guard_js_1.GqlAuthGuard),
-    __param(0, (0, graphql_1.Args)('businessId', { type: () => graphql_1.ID })),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], PostsResolver.prototype, "seedDemoData", null);
 exports.PostsResolver = PostsResolver = __decorate([
     (0, graphql_1.Resolver)(() => post_entity_js_1.Post),
     __metadata("design:paramtypes", [posts_service_js_1.PostsService])

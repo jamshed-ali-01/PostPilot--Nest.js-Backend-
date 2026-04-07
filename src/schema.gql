@@ -320,7 +320,6 @@ type Mutation {
   updatePost(input: UpdatePostInput!): Post!
   syncPostMetrics(id: ID!): Post!
   syncBusinessAnalytics(businessId: ID!): BusinessAnalytics!
-  seedDemoData(businessId: ID!): BusinessAnalytics!
   connectSocialAccount(input: ConnectSocialAccountInput!): SocialAccount!
   disconnectSocialAccount(id: String!): SocialAccount!
   createServiceArea(input: CreateServiceAreaInput!): ServiceArea!

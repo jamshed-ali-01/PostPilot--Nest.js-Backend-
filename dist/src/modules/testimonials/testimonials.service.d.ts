@@ -28,11 +28,12 @@ export declare class TestimonialsService {
         updatedAt: Date;
         content: string;
         mediaUrls: string[];
-        status: import(".prisma/client").$Enums.PostStatus;
         scheduledAt: Date | null;
-        publishedAt: Date | null;
         targetingRegions: string[];
         platformIds: string[];
+        authorId: string | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        publishedAt: Date | null;
         reach: number;
         impressions: number;
         likes: number;
@@ -41,6 +42,5 @@ export declare class TestimonialsService {
         engagement: number;
         platformErrors: import("@prisma/client/runtime/library").JsonValue | null;
         platformPostIds: import("@prisma/client/runtime/library").JsonValue | null;
-        authorId: string | null;
     }>;
 }

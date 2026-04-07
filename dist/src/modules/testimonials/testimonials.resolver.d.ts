@@ -4,34 +4,36 @@ export declare class TestimonialsResolver {
     private readonly testimonialsService;
     constructor(testimonialsService: TestimonialsService);
     submitTestimonial(input: CreateTestimonialInput): Promise<{
-        name: string;
         id: string;
-        content: string;
-        status: import(".prisma/client").$Enums.TestimonialStatus;
         businessId: string;
         createdAt: Date;
+        name: string;
+        content: string;
+        status: import(".prisma/client").$Enums.TestimonialStatus;
         area: string;
     }>;
     findAll(businessId: string): Promise<{
-        name: string;
         id: string;
-        content: string;
-        status: import(".prisma/client").$Enums.TestimonialStatus;
         businessId: string;
         createdAt: Date;
+        name: string;
+        content: string;
+        status: import(".prisma/client").$Enums.TestimonialStatus;
         area: string;
     }[]>;
     approveTestimonial(id: string, user: any): Promise<{
         id: string;
+        businessId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
         content: string;
         mediaUrls: string[];
-        status: import(".prisma/client").$Enums.PostStatus;
         scheduledAt: Date | null;
-        publishedAt: Date | null;
-        businessId: string | null;
-        authorId: string | null;
         targetingRegions: string[];
         platformIds: string[];
+        authorId: string | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        publishedAt: Date | null;
         reach: number;
         impressions: number;
         likes: number;
@@ -40,7 +42,5 @@ export declare class TestimonialsResolver {
         engagement: number;
         platformErrors: import("@prisma/client/runtime/library").JsonValue | null;
         platformPostIds: import("@prisma/client/runtime/library").JsonValue | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
 }
