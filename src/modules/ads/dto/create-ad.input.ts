@@ -66,4 +66,9 @@ export class CreateAdInput {
     @IsDate()
     @Type(() => Date)
     endDate?: Date;
+
+    @Field({ nullable: true })
+    @IsOptional()
+    @IsString()
+    destinationLink?: string;
 }

@@ -26,15 +26,5 @@ export declare class SocialAccountsResolver {
         accountId: string;
         accessToken: string | null;
     }>;
-    disconnectSocialAccount(id: string): Promise<{
-        id: string;
-        businessId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
-        isActive: boolean;
-        platform: string;
-        accountName: string;
-        accountId: string;
-        accessToken: string | null;
-    }>;
+    disconnectSocialAccount(id: string): Promise<void>;
 }

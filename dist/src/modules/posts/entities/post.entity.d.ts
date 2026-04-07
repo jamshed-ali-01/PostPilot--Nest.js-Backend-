@@ -22,6 +22,7 @@ export declare class Post {
     shares: number;
     engagement: number;
     platformErrors?: any;
+    platformPostIds?: any;
     createdAt: Date;
     updatedAt: Date;
 }

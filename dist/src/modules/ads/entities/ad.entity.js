@@ -33,6 +33,7 @@ let Ad = class Ad {
     postcode;
     startDate;
     endDate;
+    destinationLink;
     metaError;
     createdAt;
     updatedAt;
@@ -106,6 +107,10 @@ __decorate([
     (0, graphql_1.Field)({ nullable: true }),
     __metadata("design:type", Date)
 ], Ad.prototype, "endDate", void 0);
+__decorate([
+    (0, graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], Ad.prototype, "destinationLink", void 0);
 __decorate([
     (0, graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)

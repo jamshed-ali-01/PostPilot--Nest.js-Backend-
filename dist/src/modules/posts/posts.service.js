@@ -121,19 +121,26 @@ let PostsService = class PostsService {
                 console.log(`[PostsService] Instant publishing triggered for post ${post.id}`);
                 const results = await this.socialAccountsService.publishToPlatforms(input.platformIds, input.content, resolvedMediaUrls);
                 const platformErrors = {};
+                const platformPostIds = {};
                 let successCount = 0;
                 results.forEach(r => {
-                    if (r.success)
+                    if (r.success) {
                         successCount++;
+                        if (r.data && (r.data.id || r.data.fbid)) {
+                            platformPostIds[r.platform] = r.data.id || r.data.fbid;
+                        }
+                    }
                     else
                         platformErrors[r.platform] = r.error || 'Unknown error';
                 });
-                if (Object.keys(platformErrors).length > 0) {
+                if (successCount > 0 || Object.keys(platformErrors).length > 0) {
                     return this.prisma.post.update({
                         where: { id: post.id },
                         data: {
                             platformErrors,
-                            status: successCount === 0 ? client_1.PostStatus.FAILED : client_1.PostStatus.PUBLISHED
+                            platformPostIds,
+                            status: successCount === 0 ? client_1.PostStatus.FAILED : client_1.PostStatus.PUBLISHED,
+                            publishedAt: successCount > 0 ? new Date() : null
                         },
                         include: {
                             business: true,
@@ -244,20 +251,68 @@ let PostsService = class PostsService {
         };
     }
     async syncPostMetrics(id) {
-        const reach = Math.floor(Math.random() * 5000) + 500;
-        const impressions = Math.floor(reach * (1.2 + Math.random()));
-        const likes = Math.floor(reach * 0.05);
-        const comments = Math.floor(likes * 0.1);
-        const shares = Math.floor(likes * 0.05);
-        const engagement = parseFloat(((likes + comments + shares) / reach * 100).toFixed(2));
+        const post = await this.prisma.post.findUnique({
+            where: { id },
+            include: { business: { include: { socialAccounts: true } } }
+        });
+        if (!post || post.status !== client_1.PostStatus.PUBLISHED || !post.platformPostIds) {
+            return post;
+        }
+        const platformPostIds = post.platformPostIds;
+        let totalReach = 0;
+        let totalImpressions = 0;
+        let totalLikes = 0;
+        let totalComments = 0;
+        let totalShares = 0;
+        for (const [platform, remoteId] of Object.entries(platformPostIds)) {
+            const account = post.business?.socialAccounts.find(a => a.platform === platform && a.isActive);
+            if (!account || !account.accessToken)
+                continue;
+            try {
+                if (platform === 'FACEBOOK') {
+                    const insightsRes = await fetch(`https://graph.facebook.com/v18.0/${remoteId}/insights?metric=post_impressions,post_impressions_unique&access_token=${account.accessToken}`);
+                    const insights = await insightsRes.json();
+                    const fieldsRes = await fetch(`https://graph.facebook.com/v18.0/${remoteId}?fields=likes.summary(true),comments.summary(true),shares&access_token=${account.accessToken}`);
+                    const fields = await fieldsRes.json();
+                    if (insights.data) {
+                        totalImpressions += insights.data.find((m) => m.name === 'post_impressions')?.values[0]?.value || 0;
+                        totalReach += insights.data.find((m) => m.name === 'post_impressions_unique')?.values[0]?.value || 0;
+                    }
+                    totalLikes += fields.likes?.summary?.total_count || 0;
+                    totalComments += fields.comments?.summary?.total_count || 0;
+                    totalShares += fields.shares?.count || 0;
+                }
+                else if (platform === 'LINKEDIN') {
+                    const orgUrn = account.accountId.startsWith('urn:li:organization:') ? account.accountId : null;
+                    if (orgUrn) {
+                        const statsRes = await fetch(`https://api.linkedin.com/v2/organizationalEntityShareStatistics?q=organizationalEntity&organizationalEntity=${orgUrn}&shares[0]=${remoteId}`, { headers: { Authorization: `Bearer ${account.accessToken}` } });
+                        const stats = await statsRes.json();
+                        if (stats.elements?.[0]) {
+                            const e = stats.elements[0].totalShareStatistics;
+                            totalImpressions += e.impressionCount || 0;
+                            totalLikes += e.likeCount || 0;
+                            totalComments += e.commentCount || 0;
+                            totalShares += e.shareCount || 0;
+                            totalReach += e.uniqueImpressionsCount || e.impressionCount || 0;
+                        }
+                    }
+                }
+            }
+            catch (err) {
+                console.error(`[PostsService] Error syncing ${platform} metrics:`, err);
+            }
+        }
+        const engagement = totalReach > 0
+            ? parseFloat(((totalLikes + totalComments + totalShares) / totalReach * 100).toFixed(2))
+            : 0;
         return this.prisma.post.update({
             where: { id },
             data: {
-                reach,
-                impressions,
-                likes,
-                comments,
-                shares,
+                reach: totalReach,
+                impressions: totalImpressions,
+                likes: totalLikes,
+                comments: totalComments,
+                shares: totalShares,
                 engagement
             }
         });

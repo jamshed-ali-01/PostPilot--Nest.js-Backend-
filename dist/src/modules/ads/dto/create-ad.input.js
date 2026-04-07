@@ -26,6 +26,7 @@ let CreateAdInput = class CreateAdInput {
     postcode;
     startDate;
     endDate;
+    destinationLink;
 };
 exports.CreateAdInput = CreateAdInput;
 __decorate([
@@ -103,6 +104,12 @@ __decorate([
     (0, class_transformer_1.Type)(() => Date),
     __metadata("design:type", Date)
 ], CreateAdInput.prototype, "endDate", void 0);
+__decorate([
+    (0, graphql_1.Field)({ nullable: true }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateAdInput.prototype, "destinationLink", void 0);
 exports.CreateAdInput = CreateAdInput = __decorate([
     (0, graphql_1.InputType)()
 ], CreateAdInput);

@@ -146,6 +146,7 @@ model Post {
   shares           Int        @default(0)
   engagement       Float      @default(0.0)
   platformErrors   Json?
+  platformPostIds  Json?      // Stores mapping of platformId -> remotePostId
 
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
@@ -217,6 +218,7 @@ model Ad {
   postcode     String?
   startDate    DateTime?
   endDate      DateTime?
+  destinationLink String?
   metaError    String?
 
   business     Business @relation(fields: [businessId], references: [id], onDelete: Cascade)

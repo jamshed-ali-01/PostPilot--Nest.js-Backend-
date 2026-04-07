@@ -11,4 +11,5 @@ export declare class CreateAdInput {
     postcode?: string;
     startDate?: Date;
     endDate?: Date;
+    destinationLink?: string;
 }

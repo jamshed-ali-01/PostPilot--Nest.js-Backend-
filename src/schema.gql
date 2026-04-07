@@ -84,6 +84,7 @@ type Post {
   shares: Float!
   engagement: Float!
   platformErrors: JSONObject
+  platformPostIds: JSONObject
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -229,6 +230,7 @@ type Ad {
   postcode: String
   startDate: DateTime
   endDate: DateTime
+  destinationLink: String
   metaError: String
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -431,6 +433,7 @@ input CreateAdInput {
   postcode: String
   startDate: DateTime
   endDate: DateTime
+  destinationLink: String
 }
 
 input UpdateAdInput {
@@ -446,5 +449,6 @@ input UpdateAdInput {
   postcode: String
   startDate: DateTime
   endDate: DateTime
+  destinationLink: String
   id: ID!
 }

@@ -273,10 +273,30 @@ let SocialAccountsService = class SocialAccountsService {
         }
     }
     async disconnect(id) {
-        return this.prisma.socialAccount.update({
+        const account = await this.prisma.socialAccount.findUnique({ where: { id } });
+        if (!account)
+            return;
+        await this.prisma.socialAccount.update({
             where: { id },
             data: { isActive: false },
         });
+        if (!account.accountName.includes("(User Account)")) {
+            const userAccount = await this.prisma.socialAccount.findFirst({
+                where: {
+                    businessId: account.businessId,
+                    platform: account.platform,
+                    isActive: true,
+                    accountName: { contains: "(User Account)" }
+                }
+            });
+            if (userAccount) {
+                console.log(`[SocialAccountsService] Cascading disconnect to User Account: ${userAccount.id}`);
+                await this.prisma.socialAccount.update({
+                    where: { id: userAccount.id },
+                    data: { isActive: false }
+                });
+            }
+        }
     }
     async publishToPlatforms(platformIds, content, mediaUrls) {
         const results = [];

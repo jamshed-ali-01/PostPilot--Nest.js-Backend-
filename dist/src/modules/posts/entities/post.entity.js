@@ -39,6 +39,7 @@ let Post = class Post {
     shares;
     engagement;
     platformErrors;
+    platformPostIds;
     createdAt;
     updatedAt;
 };
@@ -123,6 +124,10 @@ __decorate([
     (0, graphql_1.Field)(() => graphql_scalars_1.GraphQLJSONObject, { nullable: true }),
     __metadata("design:type", Object)
 ], Post.prototype, "platformErrors", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => graphql_scalars_1.GraphQLJSONObject, { nullable: true }),
+    __metadata("design:type", Object)
+], Post.prototype, "platformPostIds", void 0);
 __decorate([
     (0, graphql_1.Field)(),
     __metadata("design:type", Date)

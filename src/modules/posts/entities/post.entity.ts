@@ -70,6 +70,9 @@ export class Post {
     @Field(() => GraphQLJSONObject, { nullable: true })
     platformErrors?: any;
 
+    @Field(() => GraphQLJSONObject, { nullable: true })
+    platformPostIds?: any;
+
     @Field()
     createdAt: Date;
 

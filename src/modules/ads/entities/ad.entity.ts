@@ -59,6 +59,9 @@ export class Ad {
     endDate?: Date;
 
     @Field({ nullable: true })
+    destinationLink?: string;
+
+    @Field({ nullable: true })
     metaError?: string;
 
     @Field()

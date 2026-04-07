@@ -38,16 +38,6 @@ export declare class SocialAccountsService {
     }>;
     getAuthUrl(businessId: string | undefined, platform: string): Promise<string>;
     handleOAuthCallback(businessId: string | undefined, platform: string, code: string): Promise<any>;
-    disconnect(id: string): Promise<{
-        id: string;
-        businessId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
-        isActive: boolean;
-        platform: string;
-        accountName: string;
-        accountId: string;
-        accessToken: string | null;
-    }>;
+    disconnect(id: string): Promise<void>;
     publishToPlatforms(platformIds: string[], content: string, mediaUrls: string[]): Promise<any[]>;
 }

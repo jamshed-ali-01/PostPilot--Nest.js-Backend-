@@ -17,6 +17,7 @@ export declare class Ad {
     postcode?: string;
     startDate?: Date;
     endDate?: Date;
+    destinationLink?: string;
     metaError?: string;
     createdAt: Date;
     updatedAt: Date;
