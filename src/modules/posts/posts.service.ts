@@ -263,39 +263,92 @@ export class PostsService {
             return post;
         }
 
-        const platformPostIds = post.platformPostIds as Record<string, string>;
         let totalReach = 0;
         let totalImpressions = 0;
         let totalLikes = 0;
         let totalComments = 0;
         let totalShares = 0;
 
-        for (const [platform, remoteId] of Object.entries(platformPostIds)) {
-            const account = post.business?.socialAccounts.find(a => a.platform === platform && a.isActive);
+        for (const saId of post.platformIds) {
+            const account = post.business?.socialAccounts.find(a => a.id === saId && a.isActive);
             if (!account || !account.accessToken) continue;
+
+            const platform = account.platform;
+            const remoteId = (post.platformPostIds as any)?.[platform];
+            if (!remoteId) continue;
 
             try {
                 if (platform === 'FACEBOOK') {
-                    // Fetch Insights
-                    const insightsRes = await fetch(
-                        `https://graph.facebook.com/v18.0/${remoteId}/insights?metric=post_impressions,post_impressions_unique&access_token=${account.accessToken}`
-                    );
-                    const insights = await insightsRes.json();
+                    console.log(`[PostsService] Syncing Meta stats for post ${id} (Remote: ${remoteId}) using account ${account.accountName}`);
                     
-                    // Fetch Interactions
-                    const fieldsRes = await fetch(
-                        `https://graph.facebook.com/v18.0/${remoteId}?fields=likes.summary(true),comments.summary(true),shares&access_token=${account.accessToken}`
-                    );
-                    const fields = await fieldsRes.json();
+                    try {
+                        console.log(`[PostsService] Fetching Interactions for ${remoteId}...`);
+                        
+                        // 1. Fetch Likes (using connections for better resilience)
+                        const likesRes = await fetch(`https://graph.facebook.com/v19.0/${remoteId}/likes?summary=true&limit=0&access_token=${account.accessToken}`);
+                        const likesData = await likesRes.json();
+                        if (likesData.summary) {
+                            totalLikes += likesData.summary.total_count || 0;
+                        } else if (likesData.error) {
+                            console.warn(`[PostsService] Likes connection failed, trying field fallback...`);
+                            // Fallback to field if connection fails
+                            const fRes = await fetch(`https://graph.facebook.com/v19.0/${remoteId}?fields=reactions.summary(total_count),like_count&access_token=${account.accessToken}`);
+                            const fData = await fRes.json();
+                            totalLikes += fData.reactions?.summary?.total_count ?? fData.like_count ?? 0;
+                        }
 
-                    if (insights.data) {
-                        totalImpressions += insights.data.find((m: any) => m.name === 'post_impressions')?.values[0]?.value || 0;
-                        totalReach += insights.data.find((m: any) => m.name === 'post_impressions_unique')?.values[0]?.value || 0;
+                        // 2. Fetch Comments
+                        const commentsRes = await fetch(`https://graph.facebook.com/v19.0/${remoteId}/comments?summary=true&limit=0&access_token=${account.accessToken}`);
+                        const commentsData = await commentsRes.json();
+                        if (commentsData.summary) {
+                            totalComments += commentsData.summary.total_count || 0;
+                        } else {
+                            const fRes = await fetch(`https://graph.facebook.com/v19.0/${remoteId}?fields=comments_count&access_token=${account.accessToken}`);
+                            const fData = await fRes.json();
+                            totalComments += fData.comments_count || 0;
+                        }
+
+                        // 3. Fetch Shares
+                        const sharesRes = await fetch(`https://graph.facebook.com/v19.0/${remoteId}?fields=shares&access_token=${account.accessToken}`);
+                        const sharesData = await sharesRes.json();
+                        totalShares += sharesData.shares?.count || 0;
+
+                        console.log(`[PostsService] Meta Interactions Success: Likes=${totalLikes}, Comments=${totalComments}`);
+                    } catch (e) {
+                         console.error(`[PostsService] Meta Interactions Exception:`, e);
                     }
-                    totalLikes += fields.likes?.summary?.total_count || 0;
-                    totalComments += fields.comments?.summary?.total_count || 0;
-                    totalShares += fields.shares?.count || 0;
 
+                    // 4. Fetch Insights (Reach/Impressions)
+                    const tryFetchInsights = async (targetId: string, metrics: string) => {
+                         // Adding period=lifetime is often required for post-level insights
+                         const res = await fetch(`https://graph.facebook.com/v19.0/${targetId}/insights?metric=${metrics}&period=lifetime&access_token=${account.accessToken}`);
+                         return await res.json();
+                    };
+
+                    try {
+                        console.log(`[PostsService] Fetching Insights for ${remoteId}...`);
+                        // TRY 1: Standard Post Metrics
+                        let insights = await tryFetchInsights(remoteId, 'post_impressions,post_impressions_unique');
+                        
+                        // TRY 2: Video/Reel/Simplified Metrics Fallback
+                        if (insights.error) {
+                             insights = await tryFetchInsights(remoteId, 'impressions,reach,post_video_views');
+                        }
+
+                        if (insights.error) {
+                            console.warn(`[PostsService] Meta Insights (Reach) may be unavailable for post ${id}:`, insights.error.message);
+                        } else if (insights.data) {
+                            const imp = insights.data.find((m: any) => m.name === 'post_impressions' || m.name === 'impressions')?.values[0]?.value || 0;
+                            const rch = insights.data.find((m: any) => m.name === 'post_impressions_unique' || m.name === 'reach')?.values[0]?.value || 0;
+                            const videoViews = insights.data.find((m: any) => m.name === 'post_video_views')?.values[0]?.value || 0;
+                            
+                            totalImpressions += (imp || videoViews);
+                            totalReach += (rch || imp || videoViews);
+                            console.log(`[PostsService] Meta Insights Success: Reach=${totalReach}, Impressions=${totalImpressions}`);
+                        }
+                    } catch (e) {
+                        console.error(`[PostsService] Meta Insights Exception:`, e);
+                    }
                 } else if (platform === 'LINKEDIN') {
                     // LinkedIn Stats
                     const orgUrn = account.accountId.startsWith('urn:li:organization:') ? account.accountId : null;
@@ -316,7 +369,7 @@ export class PostsService {
                     }
                 }
             } catch (err) {
-                console.error(`[PostsService] Error syncing ${platform} metrics:`, err);
+                console.error(`[PostsService] Error syncing metrics for post ${id}:`, err);
             }
         }
 
