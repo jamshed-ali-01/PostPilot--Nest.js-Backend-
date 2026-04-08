@@ -268,11 +268,15 @@ export class AuthService {
 
             const bizId = business.id;
 
-            // 2. Fetch All Permissions (Fast inside tx)
+            // 2. Fetch All Permissions & Global Roles
             const allPerms = await tx.permission.findMany();
+            const globalRoles = await tx.role.findMany({
+                where: { businessId: null }
+            });
 
-            // 3. OWNER Role
-            const role = await tx.role.create({
+            // 3. Create Local Roles for Business
+            // 3.1 Standard OWNER Role
+            const ownerRole = await tx.role.create({
                 data: {
                     name: `OWNER_${bizId}`,
                     description: 'Full business access',
@@ -283,6 +287,23 @@ export class AuthService {
                 }
             });
 
+            // 3.2 Standard MANAGER & STAFF Roles (copied from global templates)
+            for (const gr of globalRoles) {
+                // Skip the template if it's the owner template (we handled it above)
+                if (gr.name.includes('Owner (Template)')) continue;
+
+                await tx.role.create({
+                    data: {
+                        name: gr.name,
+                        description: gr.description,
+                        businessId: bizId,
+                        permissions: {
+                            connect: gr.permissionIds.map(pid => ({ id: pid }))
+                        }
+                    }
+                });
+            }
+
             // 4. Create User
             const user = await tx.user.create({
                 data: {
@@ -292,7 +313,7 @@ export class AuthService {
                     lastName,
                     businessId: bizId,
                     roles: {
-                        connect: [{ id: role.id }]
+                        connect: [{ id: ownerRole.id }]
                     }
                 } as any
             });

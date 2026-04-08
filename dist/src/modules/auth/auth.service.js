@@ -254,7 +254,10 @@ let AuthService = AuthService_1 = class AuthService {
             });
             const bizId = business.id;
             const allPerms = await tx.permission.findMany();
-            const role = await tx.role.create({
+            const globalRoles = await tx.role.findMany({
+                where: { businessId: null }
+            });
+            const ownerRole = await tx.role.create({
                 data: {
                     name: `OWNER_${bizId}`,
                     description: 'Full business access',
@@ -264,6 +267,20 @@ let AuthService = AuthService_1 = class AuthService {
                     }
                 }
             });
+            for (const gr of globalRoles) {
+                if (gr.name.includes('Owner (Template)'))
+                    continue;
+                await tx.role.create({
+                    data: {
+                        name: gr.name,
+                        description: gr.description,
+                        businessId: bizId,
+                        permissions: {
+                            connect: gr.permissionIds.map(pid => ({ id: pid }))
+                        }
+                    }
+                });
+            }
             const user = await tx.user.create({
                 data: {
                     email: email.toLowerCase().trim(),
@@ -272,7 +289,7 @@ let AuthService = AuthService_1 = class AuthService {
                     lastName,
                     businessId: bizId,
                     roles: {
-                        connect: [{ id: role.id }]
+                        connect: [{ id: ownerRole.id }]
                     }
                 }
             });

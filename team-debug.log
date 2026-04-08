@@ -373,3 +373,15 @@
 [InvitationsService] Finding invitations for businessId: "69d3e83a0f51d2483ead0472" at 2026-04-06T17:38:45.202Z
 [InvitationsService] Found 0 invitations
 [UsersService] Found 1 users
+[UsersService] Finding all users for businessId: "69a9bb6e9f6c27e7392f4c72" at 2026-04-08T17:29:10.893Z
+[InvitationsService] Finding invitations for businessId: "69a9bb6e9f6c27e7392f4c72" at 2026-04-08T17:29:10.923Z
+[UsersService] Found 0 users
+[InvitationsService] Found 0 invitations
+[UsersService] Finding all users for businessId: "69a9bb6e9f6c27e7392f4c72" at 2026-04-08T17:30:55.621Z
+[UsersService] Found 0 users
+[InvitationsService] Finding invitations for businessId: "69a9bb6e9f6c27e7392f4c72" at 2026-04-08T17:30:56.938Z
+[InvitationsService] Found 0 invitations
+[UsersService] Finding all users for businessId: "69a9bb6e9f6c27e7392f4c72" at 2026-04-08T17:38:47.962Z
+[UsersService] Found 0 users
+[InvitationsService] Finding invitations for businessId: "69a9bb6e9f6c27e7392f4c72" at 2026-04-08T17:38:48.541Z
+[InvitationsService] Found 0 invitations
