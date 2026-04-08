@@ -73,25 +73,41 @@ let AuthService = AuthService_1 = class AuthService {
     }
     async validateUser(email, pass) {
         const normalizedEmail = email.toLowerCase().trim();
-        console.log(`[AuthService] Validating user: ${normalizedEmail}`);
+        this.logger.debug(`[validateUser] Login attempt: ${normalizedEmail}`);
         const sysAdmin = await this.prisma.systemAdmin.findUnique({ where: { email: normalizedEmail } });
-        console.log(`[AuthService] Searched SystemAdmin for ${normalizedEmail}:`, sysAdmin ? 'Found' : 'Not Found');
-        if (sysAdmin && (await bcrypt.compare(pass, sysAdmin.password))) {
-            console.log(`[AuthService] Validated SystemAdmin matching: ${normalizedEmail}`);
-            const { password, ...result } = sysAdmin;
-            return {
-                ...result,
-                _type: 'sysadmin',
-                isSystemAdmin: true,
-                firstName: sysAdmin.name || 'System',
-                lastName: 'Admin'
-            };
+        if (sysAdmin) {
+            this.logger.debug(`[validateUser] SystemAdmin record found for: ${normalizedEmail}`);
+            const isValid = await bcrypt.compare(pass, sysAdmin.password);
+            if (isValid) {
+                this.logger.log(`[validateUser] Successful SystemAdmin login: ${normalizedEmail}`);
+                const { password, ...result } = sysAdmin;
+                return {
+                    ...result,
+                    _type: 'sysadmin',
+                    isSystemAdmin: true,
+                    firstName: sysAdmin.name || 'System',
+                    lastName: 'Admin'
+                };
+            }
+            else {
+                this.logger.warn(`[validateUser] Password mismatch for SystemAdmin: ${normalizedEmail}`);
+            }
         }
         const user = await this.usersService.findByEmail(normalizedEmail);
-        if (user && (await bcrypt.compare(pass, user.password))) {
-            console.log(`[AuthService] Found Business User matching: ${normalizedEmail}`);
-            const { password, ...result } = user;
-            return { ...result, _type: 'user' };
+        if (user) {
+            this.logger.debug(`[validateUser] Business User record found for: ${normalizedEmail}`);
+            const isValid = await bcrypt.compare(pass, user.password);
+            if (isValid) {
+                this.logger.log(`[validateUser] Successful Business User login: ${normalizedEmail}`);
+                const { password, ...result } = user;
+                return { ...result, _type: 'user' };
+            }
+            else {
+                this.logger.warn(`[validateUser] Password mismatch for Business User: ${normalizedEmail}`);
+            }
+        }
+        else {
+            this.logger.warn(`[validateUser] No account found for email: ${normalizedEmail}`);
         }
         return null;
     }
@@ -382,29 +398,32 @@ let AuthService = AuthService_1 = class AuthService {
             const session = await stripe.checkout.sessions.retrieve(sessionId);
             if (session.metadata?.type !== 'new_reg') {
                 this.logger.log(`[confirmRegistration] Session ${sessionId} is not a new_reg session. Skipping.`);
-                return false;
+                throw new Error('Invalid session type');
             }
             const email = session.metadata?.email;
             if (!email) {
                 this.logger.error(`[confirmRegistration] No email found in session metadata.`);
-                return false;
+                throw new Error('No email in metadata');
             }
-            const existingUser = await this.prisma.user.findUnique({ where: { email: email.toLowerCase().trim() } });
-            if (existingUser) {
-                this.logger.log(`[confirmRegistration] User ${email} already exists. Skipping duplicate registration.`);
-                return true;
+            let user = await this.prisma.user.findUnique({ where: { email: email.toLowerCase().trim() } });
+            if (!user) {
+                if (session.payment_status !== 'paid' && session.status !== 'complete') {
+                    this.logger.warn(`[confirmRegistration] Session ${sessionId} not paid yet. Status: ${session.payment_status}`);
+                    throw new Error('Payment not completed');
+                }
+                user = await this.completeRegistration(session.metadata);
             }
-            if (session.payment_status !== 'paid' && session.status !== 'complete') {
-                this.logger.warn(`[confirmRegistration] Session ${sessionId} not paid yet. Status: ${session.payment_status}`);
-                return false;
-            }
-            await this.completeRegistration(session.metadata);
-            this.logger.log(`[confirmRegistration] Registration completed for ${email}`);
-            return true;
+            this.logger.log(`[confirmRegistration] Registration ready for ${email}. Issuing token.`);
+            const payload = { email: user.email, sub: user.id, isSystemAdmin: false };
+            const fullUser = await this.getMe(user.id);
+            return {
+                access_token: this.jwtService.sign(payload),
+                user: fullUser,
+            };
         }
         catch (error) {
             this.logger.error(`[confirmRegistration] Error: ${error.message}`);
-            return false;
+            throw new common_1.UnauthorizedException(error.message || 'Registration confirmation failed');
         }
     }
 };

@@ -107,7 +107,7 @@ export class AuthResolver {
         return this.authService.getMe(user.id);
     }
 
-    @Mutation(() => Boolean)
+    @Mutation(() => AuthResponse)
     async confirmRegistration(@Args('sessionId') sessionId: string) {
         return this.authService.confirmRegistrationBySession(sessionId);
     }

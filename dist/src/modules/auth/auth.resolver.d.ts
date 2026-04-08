@@ -263,7 +263,118 @@ export declare class AuthResolver {
         createdAt: Date;
         updatedAt: Date;
     }>;
-    confirmRegistration(sessionId: string): Promise<boolean>;
+    confirmRegistration(sessionId: string): Promise<{
+        access_token: string;
+        user: {
+            isSystemAdmin: boolean;
+            firstName: string;
+            lastName: string;
+            permissions: string[];
+            id: string;
+            email: string;
+            password: string;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string | null;
+            business: {
+                id: string;
+                email: string | null;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                logo: string | null;
+                phone: string | null;
+                theme: string | null;
+                isActive: boolean;
+                isSubscriptionActive: boolean;
+                subscriptionPlanId: string | null;
+                stripeCustomerId: string | null;
+                stripeSubscriptionId: string | null;
+                stripePriceId: string | null;
+                trialEndsAt: Date | null;
+            } | null;
+            roles: ({
+                permissions: {
+                    id: string;
+                    roleIds: string[];
+                    name: string;
+                    description: string | null;
+                }[];
+            } & {
+                id: string;
+                businessId: string | null;
+                name: string;
+                description: string | null;
+                permissionIds: string[];
+                userIds: string[];
+            })[];
+            businessId: string;
+            roleIds: string[];
+            aiTone: string | null;
+            aiHashtags: string[];
+            aiCaptionLength: string | null;
+            aiIncludeEmojis: boolean | null;
+        } | {
+            isSystemAdmin: boolean;
+            firstName: string;
+            lastName: string;
+            permissions: never[];
+            id: string;
+            email: string;
+            password: string;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string | null;
+        } | {
+            isSystemAdmin: boolean;
+            permissions: string[];
+            business: {
+                id: string;
+                email: string | null;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                logo: string | null;
+                phone: string | null;
+                theme: string | null;
+                isActive: boolean;
+                isSubscriptionActive: boolean;
+                subscriptionPlanId: string | null;
+                stripeCustomerId: string | null;
+                stripeSubscriptionId: string | null;
+                stripePriceId: string | null;
+                trialEndsAt: Date | null;
+            } | null;
+            roles: ({
+                permissions: {
+                    id: string;
+                    roleIds: string[];
+                    name: string;
+                    description: string | null;
+                }[];
+            } & {
+                id: string;
+                businessId: string | null;
+                name: string;
+                description: string | null;
+                permissionIds: string[];
+                userIds: string[];
+            })[];
+            id: string;
+            email: string;
+            password: string;
+            firstName: string | null;
+            lastName: string | null;
+            businessId: string;
+            roleIds: string[];
+            aiTone: string | null;
+            aiHashtags: string[];
+            aiCaptionLength: string | null;
+            aiIncludeEmojis: boolean | null;
+            createdAt: Date;
+            updatedAt: Date;
+        };
+    }>;
     sendOtp(email: string): Promise<boolean>;
     verifyOtp(email: string, code: string): Promise<boolean>;
     sendResetPasswordOtp(email: string): Promise<boolean>;

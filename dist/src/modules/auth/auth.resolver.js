@@ -207,7 +207,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthResolver.prototype, "getMe", null);
 __decorate([
-    (0, graphql_1.Mutation)(() => Boolean),
+    (0, graphql_1.Mutation)(() => AuthResponse),
     __param(0, (0, graphql_1.Args)('sessionId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

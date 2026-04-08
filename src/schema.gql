@@ -295,7 +295,7 @@ type Mutation {
   login(input: LoginInput!): AuthResponse!
   initiateRegister(input: RegisterInput!): AuthInitiateResponse!
   registerByInvite(input: RegisterInput!, token: String!): User!
-  confirmRegistration(sessionId: String!): Boolean!
+  confirmRegistration(sessionId: String!): AuthResponse!
   sendOtp(email: String!): Boolean!
   verifyOtp(email: String!, code: String!): Boolean!
   sendResetPasswordOtp(email: String!): Boolean!
