@@ -265,6 +265,7 @@ let AuthService = AuthService_1 = class AuthService {
                     name: businessName,
                     trialEndsAt,
                     isActive: true,
+                    isSubscriptionActive: true,
                     subscriptionPlanId: planId
                 }
             });

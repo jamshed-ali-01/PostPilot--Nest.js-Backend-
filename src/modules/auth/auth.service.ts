@@ -274,6 +274,7 @@ export class AuthService {
                     name: businessName,
                     trialEndsAt,
                     isActive: true, // Mark as active since they just paid
+                    isSubscriptionActive: true,
                     subscriptionPlanId: planId
                 } as any
             });
