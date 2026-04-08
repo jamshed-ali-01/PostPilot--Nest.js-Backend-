@@ -3,7 +3,7 @@ import { ValidationPipe, BadRequestException } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-import { AppModule } from './app.module';
+import { AppModule } from './app.module.js';
 
 const logPath = path.join(process.cwd(), 'invitation-debug.log');
 

@@ -1,6 +1,5 @@
 import { AuthService } from './auth.service';
-import { LoginInput } from './dto/auth-inputs';
-import { RegisterInput } from './dto/auth-inputs';
+import { LoginInput, RegisterInput, ResetPasswordInput } from './dto/auth-inputs.js';
 import { Business } from '../businesses/entities/business.entity';
 export declare class AuthUser {
     id: string;
@@ -265,5 +264,9 @@ export declare class AuthResolver {
         updatedAt: Date;
     }>;
     confirmRegistration(sessionId: string): Promise<boolean>;
+    sendOtp(email: string): Promise<boolean>;
+    verifyOtp(email: string, code: string): Promise<boolean>;
+    sendResetPasswordOtp(email: string): Promise<boolean>;
+    resetPassword(input: ResetPasswordInput): Promise<boolean>;
 }
 export {};

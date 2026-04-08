@@ -54,19 +54,22 @@ const prisma_service_1 = require("../../prisma/prisma.service");
 const bcrypt = __importStar(require("bcrypt"));
 const stripe_service_1 = require("../stripe/stripe.service");
 const invitations_service_1 = require("../invitations/invitations.service");
+const mail_service_1 = require("../mail/mail.service");
 let AuthService = AuthService_1 = class AuthService {
     usersService;
     jwtService;
     prisma;
     stripeService;
     invitationsService;
+    mailService;
     logger = new common_1.Logger(AuthService_1.name);
-    constructor(usersService, jwtService, prisma, stripeService, invitationsService) {
+    constructor(usersService, jwtService, prisma, stripeService, invitationsService, mailService) {
         this.usersService = usersService;
         this.jwtService = jwtService;
         this.prisma = prisma;
         this.stripeService = stripeService;
         this.invitationsService = invitationsService;
+        this.mailService = mailService;
     }
     async validateUser(email, pass) {
         const normalizedEmail = email.toLowerCase().trim();
@@ -110,9 +113,116 @@ let AuthService = AuthService_1 = class AuthService {
         if (existingUser) {
             throw new common_1.ConflictException('User already exists');
         }
+        const otpRecord = await this.prisma.verificationOtp.findFirst({
+            where: {
+                email,
+                type: 'REGISTER',
+                verifiedAt: { not: null },
+                expiresAt: { gt: new Date() }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+        if (!otpRecord) {
+            throw new common_1.UnauthorizedException('Email verification required before registration');
+        }
         const hashedPassword = await bcrypt.hash(input.password, 10);
         const stripeUrl = await this.stripeService.createCheckoutSessionForRegistration(input, hashedPassword);
         return { stripeUrl };
+    }
+    async sendOtp(email) {
+        const normalizedEmail = email.toLowerCase().trim();
+        const existingUser = await this.usersService.findByEmail(normalizedEmail);
+        if (existingUser) {
+            throw new common_1.ConflictException('User already exists');
+        }
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiresAt = new Date();
+        expiresAt.setMinutes(expiresAt.getMinutes() + 10);
+        await this.prisma.verificationOtp.create({
+            data: {
+                email: normalizedEmail,
+                code: otp,
+                type: 'REGISTER',
+                expiresAt,
+            }
+        });
+        await this.mailService.sendOtpEmail(normalizedEmail, otp);
+        return true;
+    }
+    async verifyOtp(email, code) {
+        const normalizedEmail = email.toLowerCase().trim();
+        const record = await this.prisma.verificationOtp.findFirst({
+            where: {
+                email: normalizedEmail,
+                code,
+                type: 'REGISTER',
+                expiresAt: { gt: new Date() }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+        if (!record) {
+            throw new common_1.UnauthorizedException('Invalid or expired verification code');
+        }
+        await this.prisma.verificationOtp.update({
+            where: { id: record.id },
+            data: { verifiedAt: new Date() }
+        });
+        return true;
+    }
+    async sendResetPasswordOtp(email) {
+        const normalizedEmail = email.toLowerCase().trim();
+        const user = await this.prisma.user.findUnique({ where: { email: normalizedEmail } });
+        const sysAdmin = await this.prisma.systemAdmin.findUnique({ where: { email: normalizedEmail } });
+        if (!user && !sysAdmin) {
+            return true;
+        }
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiresAt = new Date();
+        expiresAt.setMinutes(expiresAt.getMinutes() + 10);
+        await this.prisma.verificationOtp.create({
+            data: {
+                email: normalizedEmail,
+                code: otp,
+                type: 'FORGOT_PASSWORD',
+                expiresAt,
+            }
+        });
+        await this.mailService.sendResetPasswordEmail(normalizedEmail, otp);
+        return true;
+    }
+    async resetPassword(email, code, newPassword) {
+        const normalizedEmail = email.toLowerCase().trim();
+        const record = await this.prisma.verificationOtp.findFirst({
+            where: {
+                email: normalizedEmail,
+                code,
+                type: 'FORGOT_PASSWORD',
+                expiresAt: { gt: new Date() }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+        if (!record) {
+            throw new common_1.UnauthorizedException('Invalid or expired reset code');
+        }
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        const user = await this.prisma.user.findUnique({ where: { email: normalizedEmail } });
+        if (user) {
+            await this.prisma.user.update({
+                where: { id: user.id },
+                data: { password: hashedPassword }
+            });
+        }
+        else {
+            const sysAdmin = await this.prisma.systemAdmin.findUnique({ where: { email: normalizedEmail } });
+            if (sysAdmin) {
+                await this.prisma.systemAdmin.update({
+                    where: { id: sysAdmin.id },
+                    data: { password: hashedPassword }
+                });
+            }
+        }
+        await this.prisma.verificationOtp.delete({ where: { id: record.id } });
+        return true;
     }
     async completeRegistration(metadata) {
         this.logger.log(`Completing registration for: ${metadata.email}`);
@@ -289,6 +399,7 @@ exports.AuthService = AuthService = AuthService_1 = __decorate([
         jwt_1.JwtService,
         prisma_service_1.PrismaService,
         stripe_service_1.StripeService,
-        invitations_service_1.InvitationsService])
+        invitations_service_1.InvitationsService,
+        mail_service_1.MailService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

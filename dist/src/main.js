@@ -38,10 +38,10 @@ const common_1 = require("@nestjs/common");
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const platform_fastify_1 = require("@nestjs/platform-fastify");
-const app_module_1 = require("./app.module");
+const app_module_js_1 = require("./app.module.js");
 const logPath = path.join(process.cwd(), 'invitation-debug.log');
 async function bootstrap() {
-    const app = await core_1.NestFactory.create(app_module_1.AppModule, new platform_fastify_1.FastifyAdapter({ bodyLimit: 50 * 1024 * 1024 }), { rawBody: true });
+    const app = await core_1.NestFactory.create(app_module_js_1.AppModule, new platform_fastify_1.FastifyAdapter({ bodyLimit: 50 * 1024 * 1024 }), { rawBody: true });
     app.useGlobalPipes(new common_1.ValidationPipe({
         whitelist: true,
         forbidNonWhitelisted: true,

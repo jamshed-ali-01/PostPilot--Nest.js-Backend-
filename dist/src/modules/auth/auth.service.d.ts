@@ -4,14 +4,16 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { LoginInput, RegisterInput } from './dto/auth-inputs';
 import { StripeService } from '../stripe/stripe.service';
 import { InvitationsService } from '../invitations/invitations.service';
+import { MailService } from '../mail/mail.service';
 export declare class AuthService {
     private usersService;
     private jwtService;
     private prisma;
     private stripeService;
     private invitationsService;
+    private mailService;
     private readonly logger;
-    constructor(usersService: UsersService, jwtService: JwtService, prisma: PrismaService, stripeService: StripeService, invitationsService: InvitationsService);
+    constructor(usersService: UsersService, jwtService: JwtService, prisma: PrismaService, stripeService: StripeService, invitationsService: InvitationsService, mailService: MailService);
     validateUser(email: string, pass: string): Promise<any>;
     login(loginInput: LoginInput): Promise<{
         access_token: string;
@@ -128,6 +130,10 @@ export declare class AuthService {
     initiateRegister(input: RegisterInput): Promise<{
         stripeUrl: string;
     }>;
+    sendOtp(email: string): Promise<boolean>;
+    verifyOtp(email: string, code: string): Promise<boolean>;
+    sendResetPasswordOtp(email: string): Promise<boolean>;
+    resetPassword(email: string, code: string, newPassword: string): Promise<boolean>;
     completeRegistration(metadata: any): Promise<{
         id: string;
         email: string;

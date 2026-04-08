@@ -1,7 +1,6 @@
 import { Resolver, Mutation, Args, ObjectType, Field, Query } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
-import { LoginInput } from './dto/auth-inputs';
-import { RegisterInput } from './dto/auth-inputs';
+import { LoginInput, RegisterInput, ResetPasswordInput } from './dto/auth-inputs.js';
 import { User } from '../users/entities/user.entity';
 import { Business } from '../businesses/entities/business.entity';
 import { UseGuards } from '@nestjs/common';
@@ -111,5 +110,28 @@ export class AuthResolver {
     @Mutation(() => Boolean)
     async confirmRegistration(@Args('sessionId') sessionId: string) {
         return this.authService.confirmRegistrationBySession(sessionId);
+    }
+
+    @Mutation(() => Boolean)
+    async sendOtp(@Args('email') email: string) {
+        return this.authService.sendOtp(email);
+    }
+
+    @Mutation(() => Boolean)
+    async verifyOtp(
+        @Args('email') email: string,
+        @Args('code') code: string
+    ) {
+        return this.authService.verifyOtp(email, code);
+    }
+
+    @Mutation(() => Boolean)
+    async sendResetPasswordOtp(@Args('email') email: string) {
+        return this.authService.sendResetPasswordOtp(email);
+    }
+
+    @Mutation(() => Boolean)
+    async resetPassword(@Args('input') input: ResetPasswordInput) {
+        return this.authService.resetPassword(input.email, input.otp, input.newPassword);
     }
 }

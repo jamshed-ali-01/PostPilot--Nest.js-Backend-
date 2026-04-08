@@ -15,8 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthResolver = exports.AuthUser = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const auth_service_1 = require("./auth.service");
-const auth_inputs_1 = require("./dto/auth-inputs");
-const auth_inputs_2 = require("./dto/auth-inputs");
+const auth_inputs_js_1 = require("./dto/auth-inputs.js");
 const user_entity_1 = require("../users/entities/user.entity");
 const business_entity_1 = require("../businesses/entities/business.entity");
 const common_1 = require("@nestjs/common");
@@ -163,20 +162,32 @@ let AuthResolver = class AuthResolver {
     async confirmRegistration(sessionId) {
         return this.authService.confirmRegistrationBySession(sessionId);
     }
+    async sendOtp(email) {
+        return this.authService.sendOtp(email);
+    }
+    async verifyOtp(email, code) {
+        return this.authService.verifyOtp(email, code);
+    }
+    async sendResetPasswordOtp(email) {
+        return this.authService.sendResetPasswordOtp(email);
+    }
+    async resetPassword(input) {
+        return this.authService.resetPassword(input.email, input.otp, input.newPassword);
+    }
 };
 exports.AuthResolver = AuthResolver;
 __decorate([
     (0, graphql_1.Mutation)(() => AuthResponse),
     __param(0, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [auth_inputs_1.LoginInput]),
+    __metadata("design:paramtypes", [auth_inputs_js_1.LoginInput]),
     __metadata("design:returntype", Promise)
 ], AuthResolver.prototype, "login", null);
 __decorate([
     (0, graphql_1.Mutation)(() => AuthInitiateResponse),
     __param(0, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [auth_inputs_2.RegisterInput]),
+    __metadata("design:paramtypes", [auth_inputs_js_1.RegisterInput]),
     __metadata("design:returntype", Promise)
 ], AuthResolver.prototype, "initiateRegister", null);
 __decorate([
@@ -184,7 +195,7 @@ __decorate([
     __param(0, (0, graphql_1.Args)('input')),
     __param(1, (0, graphql_1.Args)('token')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [auth_inputs_2.RegisterInput, String]),
+    __metadata("design:paramtypes", [auth_inputs_js_1.RegisterInput, String]),
     __metadata("design:returntype", Promise)
 ], AuthResolver.prototype, "registerByInvite", null);
 __decorate([
@@ -202,6 +213,35 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], AuthResolver.prototype, "confirmRegistration", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => Boolean),
+    __param(0, (0, graphql_1.Args)('email')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AuthResolver.prototype, "sendOtp", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => Boolean),
+    __param(0, (0, graphql_1.Args)('email')),
+    __param(1, (0, graphql_1.Args)('code')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], AuthResolver.prototype, "verifyOtp", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => Boolean),
+    __param(0, (0, graphql_1.Args)('email')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AuthResolver.prototype, "sendResetPasswordOtp", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => Boolean),
+    __param(0, (0, graphql_1.Args)('input')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [auth_inputs_js_1.ResetPasswordInput]),
+    __metadata("design:returntype", Promise)
+], AuthResolver.prototype, "resetPassword", null);
 exports.AuthResolver = AuthResolver = __decorate([
     (0, graphql_1.Resolver)(),
     __metadata("design:paramtypes", [auth_service_1.AuthService])

@@ -9,9 +9,9 @@ export declare class PostsResolver {
     createPost(input: CreatePostInput): Promise<{
         business: {
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
-            email: string | null;
             name: string;
             logo: string | null;
             phone: string | null;
@@ -42,30 +42,32 @@ export declare class PostsResolver {
             })[];
         } & {
             id: string;
-            businessId: string;
-            createdAt: Date;
-            updatedAt: Date;
             email: string;
             password: string;
             firstName: string | null;
             lastName: string | null;
+            businessId: string;
             roleIds: string[];
             aiTone: string | null;
             aiHashtags: string[];
             aiCaptionLength: string | null;
             aiIncludeEmojis: boolean | null;
+            createdAt: Date;
+            updatedAt: Date;
         }) | null;
     } & {
         id: string;
+        businessId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
         content: string;
         mediaUrls: string[];
-        status: import(".prisma/client").$Enums.PostStatus;
         scheduledAt: Date | null;
-        publishedAt: Date | null;
-        businessId: string | null;
-        authorId: string | null;
         targetingRegions: string[];
         platformIds: string[];
+        authorId: string | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        publishedAt: Date | null;
         reach: number;
         impressions: number;
         likes: number;
@@ -74,15 +76,13 @@ export declare class PostsResolver {
         engagement: number;
         platformErrors: import("@prisma/client/runtime/library").JsonValue | null;
         platformPostIds: import("@prisma/client/runtime/library").JsonValue | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     getBusinessPosts(businessId: string): Promise<({
         business: {
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
-            email: string | null;
             name: string;
             logo: string | null;
             phone: string | null;
@@ -97,30 +97,32 @@ export declare class PostsResolver {
         } | null;
         author: {
             id: string;
-            businessId: string;
-            createdAt: Date;
-            updatedAt: Date;
             email: string;
             password: string;
             firstName: string | null;
             lastName: string | null;
+            businessId: string;
             roleIds: string[];
             aiTone: string | null;
             aiHashtags: string[];
             aiCaptionLength: string | null;
             aiIncludeEmojis: boolean | null;
+            createdAt: Date;
+            updatedAt: Date;
         } | null;
     } & {
         id: string;
+        businessId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
         content: string;
         mediaUrls: string[];
-        status: import(".prisma/client").$Enums.PostStatus;
         scheduledAt: Date | null;
-        publishedAt: Date | null;
-        businessId: string | null;
-        authorId: string | null;
         targetingRegions: string[];
         platformIds: string[];
+        authorId: string | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        publishedAt: Date | null;
         reach: number;
         impressions: number;
         likes: number;
@@ -129,36 +131,36 @@ export declare class PostsResolver {
         engagement: number;
         platformErrors: import("@prisma/client/runtime/library").JsonValue | null;
         platformPostIds: import("@prisma/client/runtime/library").JsonValue | null;
-        createdAt: Date;
-        updatedAt: Date;
     })[]>;
     getPendingPosts(businessId: string): Promise<({
         author: {
             id: string;
-            businessId: string;
-            createdAt: Date;
-            updatedAt: Date;
             email: string;
             password: string;
             firstName: string | null;
             lastName: string | null;
+            businessId: string;
             roleIds: string[];
             aiTone: string | null;
             aiHashtags: string[];
             aiCaptionLength: string | null;
             aiIncludeEmojis: boolean | null;
+            createdAt: Date;
+            updatedAt: Date;
         } | null;
     } & {
         id: string;
+        businessId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
         content: string;
         mediaUrls: string[];
-        status: import(".prisma/client").$Enums.PostStatus;
         scheduledAt: Date | null;
-        publishedAt: Date | null;
-        businessId: string | null;
-        authorId: string | null;
         targetingRegions: string[];
         platformIds: string[];
+        authorId: string | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        publishedAt: Date | null;
         reach: number;
         impressions: number;
         likes: number;
@@ -167,15 +169,13 @@ export declare class PostsResolver {
         engagement: number;
         platformErrors: import("@prisma/client/runtime/library").JsonValue | null;
         platformPostIds: import("@prisma/client/runtime/library").JsonValue | null;
-        createdAt: Date;
-        updatedAt: Date;
     })[]>;
     getPost(id: string): Promise<({
         business: {
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
-            email: string | null;
             name: string;
             logo: string | null;
             phone: string | null;
@@ -190,30 +190,32 @@ export declare class PostsResolver {
         } | null;
         author: {
             id: string;
-            businessId: string;
-            createdAt: Date;
-            updatedAt: Date;
             email: string;
             password: string;
             firstName: string | null;
             lastName: string | null;
+            businessId: string;
             roleIds: string[];
             aiTone: string | null;
             aiHashtags: string[];
             aiCaptionLength: string | null;
             aiIncludeEmojis: boolean | null;
+            createdAt: Date;
+            updatedAt: Date;
         } | null;
     } & {
         id: string;
+        businessId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
         content: string;
         mediaUrls: string[];
-        status: import(".prisma/client").$Enums.PostStatus;
         scheduledAt: Date | null;
-        publishedAt: Date | null;
-        businessId: string | null;
-        authorId: string | null;
         targetingRegions: string[];
         platformIds: string[];
+        authorId: string | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        publishedAt: Date | null;
         reach: number;
         impressions: number;
         likes: number;
@@ -222,21 +224,21 @@ export declare class PostsResolver {
         engagement: number;
         platformErrors: import("@prisma/client/runtime/library").JsonValue | null;
         platformPostIds: import("@prisma/client/runtime/library").JsonValue | null;
-        createdAt: Date;
-        updatedAt: Date;
     }) | null>;
     generateAIContent(user: any, prompt: string, tone?: string, location?: string, imageUrls?: string[]): Promise<string>;
     submitPostForApproval(id: string): Promise<{
         id: string;
+        businessId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
         content: string;
         mediaUrls: string[];
-        status: import(".prisma/client").$Enums.PostStatus;
         scheduledAt: Date | null;
-        publishedAt: Date | null;
-        businessId: string | null;
-        authorId: string | null;
         targetingRegions: string[];
         platformIds: string[];
+        authorId: string | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        publishedAt: Date | null;
         reach: number;
         impressions: number;
         likes: number;
@@ -245,20 +247,20 @@ export declare class PostsResolver {
         engagement: number;
         platformErrors: import("@prisma/client/runtime/library").JsonValue | null;
         platformPostIds: import("@prisma/client/runtime/library").JsonValue | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     approvePost(id: string, status: PostStatus): Promise<{
         id: string;
+        businessId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
         content: string;
         mediaUrls: string[];
-        status: import(".prisma/client").$Enums.PostStatus;
         scheduledAt: Date | null;
-        publishedAt: Date | null;
-        businessId: string | null;
-        authorId: string | null;
         targetingRegions: string[];
         platformIds: string[];
+        authorId: string | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        publishedAt: Date | null;
         reach: number;
         impressions: number;
         likes: number;
@@ -267,8 +269,6 @@ export declare class PostsResolver {
         engagement: number;
         platformErrors: import("@prisma/client/runtime/library").JsonValue | null;
         platformPostIds: import("@prisma/client/runtime/library").JsonValue | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     getBusinessAnalytics(businessId: string): Promise<{
         totalReach: number;
@@ -284,15 +284,17 @@ export declare class PostsResolver {
     }>;
     deletePost(id: string): Promise<{
         id: string;
+        businessId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
         content: string;
         mediaUrls: string[];
-        status: import(".prisma/client").$Enums.PostStatus;
         scheduledAt: Date | null;
-        publishedAt: Date | null;
-        businessId: string | null;
-        authorId: string | null;
         targetingRegions: string[];
         platformIds: string[];
+        authorId: string | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        publishedAt: Date | null;
         reach: number;
         impressions: number;
         likes: number;
@@ -301,20 +303,20 @@ export declare class PostsResolver {
         engagement: number;
         platformErrors: import("@prisma/client/runtime/library").JsonValue | null;
         platformPostIds: import("@prisma/client/runtime/library").JsonValue | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     updatePost(input: UpdatePostInput): Promise<{
         id: string;
+        businessId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
         content: string;
         mediaUrls: string[];
-        status: import(".prisma/client").$Enums.PostStatus;
         scheduledAt: Date | null;
-        publishedAt: Date | null;
-        businessId: string | null;
-        authorId: string | null;
         targetingRegions: string[];
         platformIds: string[];
+        authorId: string | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        publishedAt: Date | null;
         reach: number;
         impressions: number;
         likes: number;
@@ -323,21 +325,21 @@ export declare class PostsResolver {
         engagement: number;
         platformErrors: import("@prisma/client/runtime/library").JsonValue | null;
         platformPostIds: import("@prisma/client/runtime/library").JsonValue | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     getPlatforms(post: Post): Promise<string[]>;
     syncPostMetrics(id: string): Promise<{
         id: string;
+        businessId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
         content: string;
         mediaUrls: string[];
-        status: import(".prisma/client").$Enums.PostStatus;
         scheduledAt: Date | null;
-        publishedAt: Date | null;
-        businessId: string | null;
-        authorId: string | null;
         targetingRegions: string[];
         platformIds: string[];
+        authorId: string | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        publishedAt: Date | null;
         reach: number;
         impressions: number;
         likes: number;
@@ -346,8 +348,6 @@ export declare class PostsResolver {
         engagement: number;
         platformErrors: import("@prisma/client/runtime/library").JsonValue | null;
         platformPostIds: import("@prisma/client/runtime/library").JsonValue | null;
-        createdAt: Date;
-        updatedAt: Date;
     } | null>;
     syncBusinessAnalytics(businessId: string): Promise<{
         totalReach: number;

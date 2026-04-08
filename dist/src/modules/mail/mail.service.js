@@ -46,6 +46,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MailService = void 0;
 const common_1 = require("@nestjs/common");
 const nodemailer = __importStar(require("nodemailer"));
+const client_ses_1 = require("@aws-sdk/client-ses");
 const prisma_service_js_1 = require("../../prisma/prisma.service.js");
 let MailService = MailService_1 = class MailService {
     prisma;
@@ -53,16 +54,45 @@ let MailService = MailService_1 = class MailService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async getTransporter() {
+    async sendMail(options) {
+        if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY && process.env.AWS_REGION) {
+            this.logger.log('Using Direct AWS SES SDK for sending email');
+            const sesClient = new client_ses_1.SESClient({
+                region: process.env.AWS_REGION,
+                credentials: {
+                    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+                    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+                },
+            });
+            const command = new client_ses_1.SendEmailCommand({
+                Source: options.from,
+                Destination: {
+                    ToAddresses: [options.to],
+                },
+                Message: {
+                    Subject: { Data: options.subject },
+                    Body: {
+                        Html: { Data: options.html },
+                    },
+                },
+            });
+            try {
+                const result = await sesClient.send(command);
+                return { messageId: result.MessageId };
+            }
+            catch (err) {
+                this.logger.error('Direct SES Send Error:', err.stack);
+                throw err;
+            }
+        }
         const smtpConfig = await this.prisma.systemSettings.findUnique({
             where: { key: 'SMTP_CONFIG' },
         });
         if (!smtpConfig) {
-            this.logger.warn('SMTP_CONFIG not found in system settings. Using fallback if available.');
-            throw new Error('SMTP configuration is missing. System Admin must configure SMTP settings.');
+            throw new Error('Email configuration is missing (No AWS SES env or SMTP_CONFIG in DB).');
         }
         const config = smtpConfig.value;
-        return nodemailer.createTransport({
+        const transporter = nodemailer.createTransport({
             host: config.host || 'smtp.gmail.com',
             port: config.port || 587,
             secure: config.secure !== undefined ? config.secure : false,
@@ -71,11 +101,17 @@ let MailService = MailService_1 = class MailService {
                 pass: config.pass,
             },
         });
+        const info = await transporter.sendMail({
+            from: options.from,
+            to: options.to,
+            subject: options.subject,
+            html: options.html,
+        });
+        return info;
     }
     async sendInvitationEmail(to, businessName, inviteLink) {
         try {
-            const transporter = await this.getTransporter();
-            const mailOptions = {
+            const info = await this.sendMail({
                 from: `"PostPilot Team" <no-reply@postpilot.com>`,
                 to,
                 subject: `You've been invited to join ${businessName} on PostPilot`,
@@ -94,13 +130,70 @@ let MailService = MailService_1 = class MailService {
             <p style="font-size: 12px; color: #777;">If you weren't expecting this invitation, you can safely ignore this email.</p>
           </div>
         `,
-            };
-            const info = await transporter.sendMail(mailOptions);
+            });
             this.logger.log(`Invitation email sent to ${to}: ${info.messageId}`);
             return info;
         }
         catch (error) {
             this.logger.error(`Failed to send invitation email to ${to}:`, error.stack);
+        }
+    }
+    async sendOtpEmail(to, otp) {
+        try {
+            const sender = process.env.SES_SENDER_EMAIL || 'no-reply@postpilot.com';
+            const info = await this.sendMail({
+                from: `"PostPilot" <${sender}>`,
+                to,
+                subject: `${otp} is your PostPilot verification code`,
+                html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+            <h2 style="color: #333; text-align: center;">Verify your email</h2>
+            <p>Hello,</p>
+            <p>To continue with your PostPilot registration, please use the following verification code:</p>
+            <div style="text-align: center; margin: 30px 0;">
+              <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #007bff; background: #f0f7ff; padding: 10px 20px; border-radius: 5px; border: 1px dashed #007bff;">${otp}</span>
+            </div>
+            <p>This code will expire in 10 minutes. If you did not request this code, you can safely ignore this email.</p>
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+            <p style="font-size: 12px; color: #777; text-align: center;">&copy; ${new Date().getFullYear()} PostPilot. All rights reserved.</p>
+          </div>
+        `,
+            });
+            this.logger.log(`OTP email sent to ${to}: ${info.messageId}`);
+            return info;
+        }
+        catch (error) {
+            this.logger.error(`Failed to send OTP email to ${to}:`, error.stack);
+            throw error;
+        }
+    }
+    async sendResetPasswordEmail(to, otp) {
+        try {
+            const sender = process.env.SES_SENDER_EMAIL || 'no-reply@postpilot.com';
+            const info = await this.sendMail({
+                from: `"PostPilot" <${sender}>`,
+                to,
+                subject: `${otp} is your password reset code`,
+                html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+            <h2 style="color: #333; text-align: center;">Reset your password</h2>
+            <p>Hello,</p>
+            <p>We received a request to reset your PostPilot account password. Use the code below to complete the reset:</p>
+            <div style="text-align: center; margin: 30px 0;">
+              <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #007bff; background: #f0f7ff; padding: 10px 20px; border-radius: 5px; border: 1px dashed #007bff;">${otp}</span>
+            </div>
+            <p>This code will expire in 10 minutes. If you did not request a password reset, you can safely ignore this email.</p>
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+            <p style="font-size: 12px; color: #777; text-align: center;">&copy; ${new Date().getFullYear()} PostPilot. All rights reserved.</p>
+          </div>
+        `,
+            });
+            this.logger.log(`Reset password email sent to ${to}: ${info.messageId}`);
+            return info;
+        }
+        catch (error) {
+            this.logger.error(`Failed to send reset password email to ${to}:`, error.stack);
+            throw error;
         }
     }
 };

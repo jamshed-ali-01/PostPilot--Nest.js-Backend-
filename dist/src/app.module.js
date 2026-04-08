@@ -12,23 +12,23 @@ const graphql_1 = require("@nestjs/graphql");
 const mercurius_1 = require("@nestjs/mercurius");
 const config_1 = require("@nestjs/config");
 const path_1 = require("path");
-const prisma_module_1 = require("./prisma/prisma.module");
-const roles_module_1 = require("./modules/roles/roles.module");
-const users_module_1 = require("./modules/users/users.module");
-const businesses_module_1 = require("./modules/businesses/businesses.module");
-const posts_module_1 = require("./modules/posts/posts.module");
-const service_areas_module_1 = require("./modules/service-areas/service-areas.module");
-const super_admin_module_1 = require("./modules/super-admin/super-admin.module");
-const auth_module_1 = require("./modules/auth/auth.module");
-const testimonials_module_1 = require("./modules/testimonials/testimonials.module");
-const social_accounts_module_1 = require("./modules/social-accounts/social-accounts.module");
-const subscription_plans_module_1 = require("./modules/subscription-plans/subscription-plans.module");
-const app_controller_1 = require("./app.controller");
-const app_service_1 = require("./app.service");
-const app_resolver_1 = require("./app.resolver");
-const stripe_module_1 = require("./modules/stripe/stripe.module");
-const ads_module_1 = require("./modules/ads/ads.module");
-const invitations_module_1 = require("./modules/invitations/invitations.module");
+const prisma_module_js_1 = require("./prisma/prisma.module.js");
+const roles_module_js_1 = require("./modules/roles/roles.module.js");
+const users_module_js_1 = require("./modules/users/users.module.js");
+const businesses_module_js_1 = require("./modules/businesses/businesses.module.js");
+const posts_module_js_1 = require("./modules/posts/posts.module.js");
+const service_areas_module_js_1 = require("./modules/service-areas/service-areas.module.js");
+const super_admin_module_js_1 = require("./modules/super-admin/super-admin.module.js");
+const auth_module_js_1 = require("./modules/auth/auth.module.js");
+const testimonials_module_js_1 = require("./modules/testimonials/testimonials.module.js");
+const social_accounts_module_js_1 = require("./modules/social-accounts/social-accounts.module.js");
+const subscription_plans_module_js_1 = require("./modules/subscription-plans/subscription-plans.module.js");
+const app_controller_js_1 = require("./app.controller.js");
+const app_service_js_1 = require("./app.service.js");
+const app_resolver_js_1 = require("./app.resolver.js");
+const stripe_module_js_1 = require("./modules/stripe/stripe.module.js");
+const ads_module_js_1 = require("./modules/ads/ads.module.js");
+const invitations_module_js_1 = require("./modules/invitations/invitations.module.js");
 const mail_module_js_1 = require("./modules/mail/mail.module.js");
 let AppModule = class AppModule {
 };
@@ -48,24 +48,24 @@ exports.AppModule = AppModule = __decorate([
                 }),
                 inject: [config_1.ConfigService],
             }),
-            prisma_module_1.PrismaModule,
-            auth_module_1.AuthModule,
-            roles_module_1.RolesModule,
-            users_module_1.UsersModule,
-            businesses_module_1.BusinessesModule,
-            posts_module_1.PostsModule,
-            service_areas_module_1.ServiceAreasModule,
-            testimonials_module_1.TestimonialsModule,
-            social_accounts_module_1.SocialAccountsModule,
-            subscription_plans_module_1.SubscriptionPlansModule,
-            super_admin_module_1.SuperAdminModule,
-            stripe_module_1.StripeModule,
-            ads_module_1.AdsModule,
-            invitations_module_1.InvitationsModule,
+            prisma_module_js_1.PrismaModule,
+            auth_module_js_1.AuthModule,
+            roles_module_js_1.RolesModule,
+            users_module_js_1.UsersModule,
+            businesses_module_js_1.BusinessesModule,
+            posts_module_js_1.PostsModule,
+            service_areas_module_js_1.ServiceAreasModule,
+            testimonials_module_js_1.TestimonialsModule,
+            social_accounts_module_js_1.SocialAccountsModule,
+            subscription_plans_module_js_1.SubscriptionPlansModule,
+            super_admin_module_js_1.SuperAdminModule,
+            stripe_module_js_1.StripeModule,
+            ads_module_js_1.AdsModule,
+            invitations_module_js_1.InvitationsModule,
             mail_module_js_1.MailModule,
         ],
-        controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService, app_resolver_1.AppResolver],
+        controllers: [app_controller_js_1.AppController],
+        providers: [app_service_js_1.AppService, app_resolver_js_1.AppResolver],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

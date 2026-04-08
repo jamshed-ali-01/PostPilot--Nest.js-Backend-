@@ -48,3 +48,19 @@ export class RegisterInput {
     @IsString()
     planId?: string;
 }
+
+@InputType()
+export class ResetPasswordInput {
+    @Field()
+    @IsEmail()
+    email: string;
+
+    @Field()
+    @IsNotEmpty()
+    @IsString()
+    otp: string;
+
+    @Field()
+    @MinLength(6)
+    newPassword: string;
+}

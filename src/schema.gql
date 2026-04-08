@@ -296,6 +296,10 @@ type Mutation {
   initiateRegister(input: RegisterInput!): AuthInitiateResponse!
   registerByInvite(input: RegisterInput!, token: String!): User!
   confirmRegistration(sessionId: String!): Boolean!
+  sendOtp(email: String!): Boolean!
+  verifyOtp(email: String!, code: String!): Boolean!
+  sendResetPasswordOtp(email: String!): Boolean!
+  resetPassword(input: ResetPasswordInput!): Boolean!
   updateAiPreferences(input: UpdateAiPreferencesInput!): User!
   removeTeamMember(userId: ID!): Boolean!
   createCheckoutSession(planId: String!): String!
@@ -349,6 +353,12 @@ input RegisterInput {
   firstName: String
   lastName: String
   planId: String
+}
+
+input ResetPasswordInput {
+  email: String!
+  otp: String!
+  newPassword: String!
 }
 
 input UpdateAiPreferencesInput {

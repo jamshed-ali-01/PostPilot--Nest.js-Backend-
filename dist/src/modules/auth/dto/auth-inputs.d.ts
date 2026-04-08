@@ -11,3 +11,8 @@ export declare class RegisterInput {
     lastName?: string;
     planId?: string;
 }
+export declare class ResetPasswordInput {
+    email: string;
+    otp: string;
+    newPassword: string;
+}

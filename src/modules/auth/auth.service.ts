@@ -7,6 +7,7 @@ import * as bcrypt from 'bcrypt';
 import { LoginInput, RegisterInput } from './dto/auth-inputs';
 import { StripeService } from '../stripe/stripe.service';
 import { InvitationsService } from '../invitations/invitations.service';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +19,7 @@ export class AuthService {
         @Inject(forwardRef(() => StripeService))
         private stripeService: StripeService,
         private invitationsService: InvitationsService,
+        private mailService: MailService,
     ) { }
 
     async validateUser(email: string, pass: string): Promise<any> {
@@ -74,12 +76,157 @@ export class AuthService {
             throw new ConflictException('User already exists');
         }
 
+        // Check if email is verified
+        const otpRecord = await this.prisma.verificationOtp.findFirst({
+            where: {
+                email,
+                type: 'REGISTER',
+                verifiedAt: { not: null },
+                expiresAt: { gt: new Date() }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        if (!otpRecord) {
+            throw new UnauthorizedException('Email verification required before registration');
+        }
+
         const hashedPassword = await bcrypt.hash(input.password, 10);
 
         // Trigger Stripe Checkout with registration metadata
         const stripeUrl = await this.stripeService.createCheckoutSessionForRegistration(input, hashedPassword);
 
         return { stripeUrl };
+    }
+
+    async sendOtp(email: string) {
+        const normalizedEmail = email.toLowerCase().trim();
+        
+        // Check if user already exists
+        const existingUser = await this.usersService.findByEmail(normalizedEmail);
+        if (existingUser) {
+            throw new ConflictException('User already exists');
+        }
+
+        // Generate 6-digit OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiresAt = new Date();
+        expiresAt.setMinutes(expiresAt.getMinutes() + 10);
+
+        // Save to DB
+        await this.prisma.verificationOtp.create({
+            data: {
+                email: normalizedEmail,
+                code: otp,
+                type: 'REGISTER',
+                expiresAt,
+            }
+        });
+
+        // Send Email
+        await this.mailService.sendOtpEmail(normalizedEmail, otp);
+        return true;
+    }
+
+    async verifyOtp(email: string, code: string) {
+        const normalizedEmail = email.toLowerCase().trim();
+        
+        const record = await this.prisma.verificationOtp.findFirst({
+            where: {
+                email: normalizedEmail,
+                code,
+                type: 'REGISTER',
+                expiresAt: { gt: new Date() }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        if (!record) {
+            throw new UnauthorizedException('Invalid or expired verification code');
+        }
+
+        // Mark as verified
+        await this.prisma.verificationOtp.update({
+            where: { id: record.id },
+            data: { verifiedAt: new Date() }
+        });
+
+        return true;
+    }
+
+    async sendResetPasswordOtp(email: string) {
+        const normalizedEmail = email.toLowerCase().trim();
+        
+        // Find user or system admin
+        const user = await this.prisma.user.findUnique({ where: { email: normalizedEmail } });
+        const sysAdmin = await this.prisma.systemAdmin.findUnique({ where: { email: normalizedEmail } });
+
+        if (!user && !sysAdmin) {
+            // For security, we don't say "User not found". 
+            // We just return true as if we sent it.
+            return true;
+        }
+
+        // Generate 6-digit OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiresAt = new Date();
+        expiresAt.setMinutes(expiresAt.getMinutes() + 10);
+
+        // Save to DB
+        await this.prisma.verificationOtp.create({
+            data: {
+                email: normalizedEmail,
+                code: otp,
+                type: 'FORGOT_PASSWORD',
+                expiresAt,
+            }
+        });
+
+        // Send Email
+        await this.mailService.sendResetPasswordEmail(normalizedEmail, otp);
+        return true;
+    }
+
+    async resetPassword(email: string, code: string, newPassword: string) {
+        const normalizedEmail = email.toLowerCase().trim();
+        
+        const record = await this.prisma.verificationOtp.findFirst({
+            where: {
+                email: normalizedEmail,
+                code,
+                type: 'FORGOT_PASSWORD',
+                expiresAt: { gt: new Date() }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        if (!record) {
+            throw new UnauthorizedException('Invalid or expired reset code');
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update User or SystemAdmin
+        const user = await this.prisma.user.findUnique({ where: { email: normalizedEmail } });
+        if (user) {
+            await this.prisma.user.update({
+                where: { id: user.id },
+                data: { password: hashedPassword }
+            });
+        } else {
+            const sysAdmin = await this.prisma.systemAdmin.findUnique({ where: { email: normalizedEmail } });
+            if (sysAdmin) {
+                await this.prisma.systemAdmin.update({
+                    where: { id: sysAdmin.id },
+                    data: { password: hashedPassword }
+                });
+            }
+        }
+
+        // Delete the used OTP
+        await this.prisma.verificationOtp.delete({ where: { id: record.id } });
+
+        return true;
     }
 
     async completeRegistration(metadata: any) {

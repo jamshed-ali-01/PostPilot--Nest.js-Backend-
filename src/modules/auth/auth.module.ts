@@ -8,11 +8,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt.strategy';
 import { StripeModule } from '../stripe/stripe.module';
 import { InvitationsModule } from '../invitations/invitations.module';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
     imports: [
         UsersModule,
         PassportModule,
+        MailModule,
         forwardRef(() => StripeModule),
         InvitationsModule,
         JwtModule.registerAsync({
