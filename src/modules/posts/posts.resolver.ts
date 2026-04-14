@@ -103,4 +103,10 @@ export class PostsResolver {
         return this.postsService.syncAllBusinessMetrics(businessId);
     }
 
+    @Query(() => [Date], { name: 'getRecommendedScheduleTimes' })
+    @UseGuards(GqlAuthGuard)
+    async getRecommendedScheduleTimes(@Args('businessId', { type: () => ID }) businessId: string) {
+        return this.postsService.getRecommendedScheduleTimes(businessId);
+    }
+
 }

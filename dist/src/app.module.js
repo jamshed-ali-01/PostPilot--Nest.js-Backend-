@@ -12,6 +12,7 @@ const graphql_1 = require("@nestjs/graphql");
 const mercurius_1 = require("@nestjs/mercurius");
 const config_1 = require("@nestjs/config");
 const path_1 = require("path");
+const schedule_1 = require("@nestjs/schedule");
 const prisma_module_js_1 = require("./prisma/prisma.module.js");
 const roles_module_js_1 = require("./modules/roles/roles.module.js");
 const users_module_js_1 = require("./modules/users/users.module.js");
@@ -39,6 +40,7 @@ exports.AppModule = AppModule = __decorate([
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
             }),
+            schedule_1.ScheduleModule.forRoot(),
             graphql_1.GraphQLModule.forRootAsync({
                 driver: mercurius_1.MercuriusDriver,
                 useFactory: (configService) => ({

@@ -33,7 +33,7 @@ export class UsersService {
             data,
             include: {
                 business: true,
-                roles: true
+                roles: { include: { permissions: true } }
             },
         });
     }

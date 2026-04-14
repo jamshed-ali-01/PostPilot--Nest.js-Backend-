@@ -25,7 +25,11 @@ let RbacGuard = class RbacGuard {
             return true;
         }
         const ctx = graphql_1.GqlExecutionContext.create(context);
-        const user = ctx.getContext().user;
+        const contextObj = ctx.getContext();
+        const user = contextObj.user ||
+            contextObj.req?.user ||
+            contextObj.request?.user ||
+            contextObj.reply?.request?.user;
         if (!user) {
             return false;
         }

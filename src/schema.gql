@@ -277,6 +277,7 @@ type Query {
   pendingPosts(businessId: ID!): [Post!]!
   post(id: ID!): Post
   businessAnalytics(businessId: ID!): BusinessAnalytics!
+  getRecommendedScheduleTimes(businessId: ID!): [DateTime!]!
   socialAccounts: [SocialAccount!]!
   socialAccountAuthUrl(platform: String!): String!
   businessServiceAreas(businessId: ID!): [ServiceArea!]!

@@ -17,7 +17,12 @@ export class RbacGuard implements CanActivate {
         }
 
         const ctx = GqlExecutionContext.create(context);
-        const user = ctx.getContext().user; // We assume user is attached here by an AuthGuard or Middleware
+        const contextObj = ctx.getContext();
+        // Check all potential locations for the user object in Fastify/Mercurius/Passport
+        const user = contextObj.user || 
+                     contextObj.req?.user || 
+                     contextObj.request?.user || 
+                     contextObj.reply?.request?.user;
 
         if (!user) {
             return false;

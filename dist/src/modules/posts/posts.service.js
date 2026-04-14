@@ -212,12 +212,78 @@ let PostsService = class PostsService {
             throw error;
         }
     }
-    async getOptimalScheduleTime(businessId) {
+    async getRecommendedScheduleTimes(businessId) {
+        const ninetyDaysAgo = new Date();
+        ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+        const posts = await this.prisma.post.findMany({
+            where: {
+                businessId,
+                status: client_1.PostStatus.PUBLISHED,
+                publishedAt: { gte: ninetyDaysAgo },
+            },
+            select: {
+                publishedAt: true,
+                reach: true,
+                engagement: true,
+            },
+        });
+        if (posts.length < 5) {
+            return this.getDefaultOptimalTimes();
+        }
+        const stats = {};
+        posts.forEach(post => {
+            if (!post.publishedAt)
+                return;
+            const date = new Date(post.publishedAt);
+            const day = date.getUTCDay();
+            const hour = date.getUTCHours();
+            const key = `${day}-${hour}`;
+            if (!stats[key]) {
+                stats[key] = { totalReach: 0, count: 0 };
+            }
+            stats[key].totalReach += post.reach || 0;
+            stats[key].count += 1;
+        });
+        const recommendations = Object.entries(stats)
+            .map(([key, data]) => {
+            const [day, hour] = key.split('-').map(Number);
+            return {
+                day,
+                hour,
+                avgReach: data.totalReach / data.count,
+            };
+        })
+            .sort((a, b) => b.avgReach - a.avgReach)
+            .slice(0, 3);
+        return recommendations.map(rec => this.getNextOccurrence(rec.day, rec.hour));
+    }
+    getDefaultOptimalTimes() {
+        const times = [
+            { day: null, hour: 10 },
+            { day: null, hour: 18 },
+            { day: null, hour: 13 },
+        ];
+        return times.map(t => {
+            const date = new Date();
+            date.setUTCHours(t.hour, 0, 0, 0);
+            if (date <= new Date()) {
+                date.setUTCDate(date.getUTCDate() + 1);
+            }
+            return date;
+        });
+    }
+    getNextOccurrence(day, hour) {
         const now = new Date();
-        const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-        const scheduledTime = new Date(tomorrow);
-        scheduledTime.setHours(10, 0, 0, 0);
-        return scheduledTime;
+        const next = new Date(now);
+        next.setUTCHours(hour, 0, 0, 0);
+        while (next <= now || next.getUTCDay() !== day) {
+            next.setUTCDate(next.getUTCDate() + 1);
+        }
+        return next;
+    }
+    async getOptimalScheduleTime(businessId) {
+        const recs = await this.getRecommendedScheduleTimes(businessId);
+        return recs[0];
     }
     async getAnalytics(businessId) {
         const posts = await this.prisma.post.findMany({

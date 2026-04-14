@@ -75,14 +75,21 @@ export declare class UsersService {
             stripePriceId: string | null;
             trialEndsAt: Date | null;
         } | null;
-        roles: {
+        roles: ({
+            permissions: {
+                id: string;
+                roleIds: string[];
+                name: string;
+                description: string | null;
+            }[];
+        } & {
             id: string;
             businessId: string | null;
             name: string;
             description: string | null;
             permissionIds: string[];
             userIds: string[];
-        }[];
+        })[];
     } & {
         id: string;
         email: string;

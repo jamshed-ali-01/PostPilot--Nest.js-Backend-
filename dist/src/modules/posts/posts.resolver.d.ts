@@ -361,4 +361,5 @@ export declare class PostsResolver {
         scheduledPosts: number;
         pendingPosts: number;
     }>;
+    getRecommendedScheduleTimes(businessId: string): Promise<Date[]>;
 }

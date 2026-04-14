@@ -202,13 +202,93 @@ export class PostsService {
         }
     }
 
-    async getOptimalScheduleTime(businessId: string): Promise<Date> {
-        // Mock AI scheduling logic
+    async getRecommendedScheduleTimes(businessId: string): Promise<Date[]> {
+        const ninetyDaysAgo = new Date();
+        ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+
+        const posts = await this.prisma.post.findMany({
+            where: {
+                businessId,
+                status: PostStatus.PUBLISHED,
+                publishedAt: { gte: ninetyDaysAgo },
+            },
+            select: {
+                publishedAt: true,
+                reach: true,
+                engagement: true,
+            },
+        });
+
+        // Fallback for new users or users with very few posts
+        if (posts.length < 5) {
+            return this.getDefaultOptimalTimes();
+        }
+
+        // Group by Day (0-6) and Hour (0-23)
+        const stats: Record<string, { totalReach: number; count: number }> = {};
+
+        posts.forEach(post => {
+            if (!post.publishedAt) return;
+            const date = new Date(post.publishedAt);
+            const day = date.getUTCDay();
+            const hour = date.getUTCHours();
+            const key = `${day}-${hour}`;
+
+            if (!stats[key]) {
+                stats[key] = { totalReach: 0, count: 0 };
+            }
+            stats[key].totalReach += post.reach || 0;
+            stats[key].count += 1;
+        });
+
+        // Calculate averages and sort
+        const recommendations = Object.entries(stats)
+            .map(([key, data]) => {
+                const [day, hour] = key.split('-').map(Number);
+                return {
+                    day,
+                    hour,
+                    avgReach: data.totalReach / data.count,
+                };
+            })
+            .sort((a, b) => b.avgReach - a.avgReach)
+            .slice(0, 3);
+
+        return recommendations.map(rec => this.getNextOccurrence(rec.day, rec.hour));
+    }
+
+    private getDefaultOptimalTimes(): Date[] {
+        const times: { day: number | null; hour: number }[] = [
+            { day: null, hour: 10 }, // Weekdays/Daily 10 AM
+            { day: null, hour: 18 }, // Weekdays/Daily 6 PM
+            { day: null, hour: 13 }, // Weekdays/Daily 1 PM
+        ];
+
+        return times.map(t => {
+            const date = new Date();
+            date.setUTCHours(t.hour, 0, 0, 0);
+            if (date <= new Date()) {
+                date.setUTCDate(date.getUTCDate() + 1);
+            }
+            return date;
+        });
+    }
+
+    private getNextOccurrence(day: number, hour: number): Date {
         const now = new Date();
-        const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-        const scheduledTime = new Date(tomorrow);
-        scheduledTime.setHours(10, 0, 0, 0);
-        return scheduledTime;
+        const next = new Date(now);
+        next.setUTCHours(hour, 0, 0, 0);
+
+        while (next <= now || next.getUTCDay() !== day) {
+            next.setUTCDate(next.getUTCDate() + 1);
+        }
+
+        return next;
+    }
+
+    async getOptimalScheduleTime(businessId: string): Promise<Date> {
+        const recs = await this.getRecommendedScheduleTimes(businessId);
+        return recs[0];
     }
 
     async getAnalytics(businessId: string) {

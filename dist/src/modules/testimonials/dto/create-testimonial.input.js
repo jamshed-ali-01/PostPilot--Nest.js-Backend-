@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateTestimonialInput = void 0;
 const graphql_1 = require("@nestjs/graphql");
+const class_validator_1 = require("class-validator");
 let CreateTestimonialInput = class CreateTestimonialInput {
     name;
     area;
@@ -20,18 +21,26 @@ let CreateTestimonialInput = class CreateTestimonialInput {
 exports.CreateTestimonialInput = CreateTestimonialInput;
 __decorate([
     (0, graphql_1.Field)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateTestimonialInput.prototype, "name", void 0);
 __decorate([
     (0, graphql_1.Field)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateTestimonialInput.prototype, "area", void 0);
 __decorate([
     (0, graphql_1.Field)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateTestimonialInput.prototype, "content", void 0);
 __decorate([
     (0, graphql_1.Field)(() => graphql_1.ID),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateTestimonialInput.prototype, "businessId", void 0);
 exports.CreateTestimonialInput = CreateTestimonialInput = __decorate([

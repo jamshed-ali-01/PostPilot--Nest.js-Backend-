@@ -272,6 +272,9 @@ export declare class PostsService {
         platformPostIds: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
     generateAIContent(userId: string, prompt: string, tone?: string, location?: string, imageUrls?: string[]): Promise<string>;
+    getRecommendedScheduleTimes(businessId: string): Promise<Date[]>;
+    private getDefaultOptimalTimes;
+    private getNextOccurrence;
     getOptimalScheduleTime(businessId: string): Promise<Date>;
     getAnalytics(businessId: string): Promise<{
         totalReach: number;

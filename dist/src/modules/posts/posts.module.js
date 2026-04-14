@@ -11,6 +11,7 @@ const common_1 = require("@nestjs/common");
 const posts_service_1 = require("./posts.service");
 const posts_resolver_1 = require("./posts.resolver");
 const ai_service_1 = require("./ai.service");
+const scheduling_service_js_1 = require("./scheduling.service.js");
 const social_accounts_module_1 = require("../social-accounts/social-accounts.module");
 let PostsModule = class PostsModule {
 };
@@ -18,7 +19,7 @@ exports.PostsModule = PostsModule;
 exports.PostsModule = PostsModule = __decorate([
     (0, common_1.Module)({
         imports: [social_accounts_module_1.SocialAccountsModule],
-        providers: [posts_service_1.PostsService, posts_resolver_1.PostsResolver, ai_service_1.AIService],
+        providers: [posts_service_1.PostsService, posts_resolver_1.PostsResolver, ai_service_1.AIService, scheduling_service_js_1.SchedulingService],
         exports: [posts_service_1.PostsService, ai_service_1.AIService],
     })
 ], PostsModule);

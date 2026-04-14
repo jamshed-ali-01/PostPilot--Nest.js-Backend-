@@ -8,6 +8,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.JwtStrategy = void 0;
 const passport_jwt_1 = require("passport-jwt");
@@ -16,11 +19,13 @@ const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const users_service_1 = require("../users/users.service");
 const prisma_service_1 = require("../../prisma/prisma.service");
+const auth_service_1 = require("./auth.service");
 let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
     configService;
     usersService;
     prisma;
-    constructor(configService, usersService, prisma) {
+    authService;
+    constructor(configService, usersService, prisma, authService) {
         super({
             jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
@@ -29,12 +34,16 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
         this.configService = configService;
         this.usersService = usersService;
         this.prisma = prisma;
+        this.authService = authService;
     }
     async validate(payload) {
         const sysAdmin = await this.prisma.systemAdmin.findUnique({
             where: { email: payload.email }
         });
-        const user = await this.usersService.findByEmail(payload.email);
+        let user = await this.usersService.findByEmail(payload.email);
+        if (sysAdmin && !user) {
+            user = await this.authService.ensureAdminUserRecord(payload.email);
+        }
         if (sysAdmin && user) {
             return { ...user, ...sysAdmin, isSystemAdmin: true };
         }
@@ -48,8 +57,10 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
 exports.JwtStrategy = JwtStrategy;
 exports.JwtStrategy = JwtStrategy = __decorate([
     (0, common_1.Injectable)(),
+    __param(3, (0, common_1.Inject)((0, common_1.forwardRef)(() => auth_service_1.AuthService))),
     __metadata("design:paramtypes", [config_1.ConfigService,
         users_service_1.UsersService,
-        prisma_service_1.PrismaService])
+        prisma_service_1.PrismaService,
+        auth_service_1.AuthService])
 ], JwtStrategy);
 //# sourceMappingURL=jwt.strategy.js.map

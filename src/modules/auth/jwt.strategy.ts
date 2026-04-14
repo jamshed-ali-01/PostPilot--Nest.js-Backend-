@@ -1,9 +1,10 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, Inject, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
 import { PrismaService } from '../../prisma/prisma.service';
+import { AuthService } from './auth.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -11,6 +12,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private configService: ConfigService,
     private usersService: UsersService,
     private prisma: PrismaService,
+    @Inject(forwardRef(() => AuthService))
+    private authService: AuthService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -24,7 +27,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       where: { email: payload.email }
     });
     
-    const user = await this.usersService.findByEmail(payload.email);
+    let user = await this.usersService.findByEmail(payload.email);
+
+    // Identity Bridge: If sysAdmin exists but no user record, create it
+    if (sysAdmin && !user) {
+        user = await this.authService.ensureAdminUserRecord(payload.email);
+    }
 
     if (sysAdmin && user) {
       return { ...user, ...sysAdmin, isSystemAdmin: true };

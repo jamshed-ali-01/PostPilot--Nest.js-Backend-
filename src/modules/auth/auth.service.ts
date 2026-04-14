@@ -136,7 +136,11 @@ export class AuthService {
         });
 
         // Send Email
-        await this.mailService.sendOtpEmail(normalizedEmail, otp);
+        try {
+            await this.mailService.sendOtpEmail(normalizedEmail, otp);
+        } catch (error) {
+            this.logger.warn(`Failed to send OTP email to ${normalizedEmail}. You can find the code in the server logs.`);
+        }
         return true;
     }
 
@@ -195,7 +199,11 @@ export class AuthService {
         });
 
         // Send Email
-        await this.mailService.sendResetPasswordEmail(normalizedEmail, otp);
+        try {
+            await this.mailService.sendResetPasswordEmail(normalizedEmail, otp);
+        } catch (error) {
+            this.logger.warn(`Failed to send reset email to ${normalizedEmail}. You can find the code in the server logs.`);
+        }
         return true;
     }
 
@@ -384,6 +392,16 @@ export class AuthService {
             include: { business: true, roles: { include: { permissions: true } } }
         });
 
+        // Identity Bridge: If sysAdmin exists but no user record, create it
+        if (sysAdmin && !user) {
+            user = await this.ensureAdminUserRecord(sysAdmin.email) as any;
+            // Refetch with includes
+            user = await this.prisma.user.findUnique({
+                where: { id: user?.id },
+                include: { business: true, roles: { include: { permissions: true } } }
+            }) as any;
+        }
+
         // Enhanced Identity Bridge: If we find one but not the other by ID/Email, we sync them
         if (!user || !sysAdmin) {
             const commonEmail = user?.email || sysAdmin?.email;
@@ -429,6 +447,70 @@ export class AuthService {
             isSystemAdmin: false,
             permissions: Array.from(permissions)
         };
+    }
+
+    private async getOrCreateMainBusiness() {
+        let business = await this.prisma.business.findFirst({
+            where: { name: 'PostPilot' }
+        });
+
+        if (!business) {
+            business = await this.prisma.business.create({
+                data: {
+                    name: 'PostPilot',
+                    isActive: true,
+                    isSubscriptionActive: true,
+                    trialEndsAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000) // 1 year trial
+                }
+            });
+            this.logger.log(`Created Main Business: PostPilot (${business.id})`);
+        }
+
+        return business;
+    }
+
+    async ensureAdminUserRecord(email: string) {
+        const business = await this.getOrCreateMainBusiness();
+        const normalizedEmail = email.toLowerCase().trim();
+
+        let user = await this.prisma.user.findUnique({
+            where: { email: normalizedEmail },
+            include: { business: true, roles: { include: { permissions: true } } }
+        });
+
+        if (!user) {
+            // Find or Create OWNER Role for this business
+            let ownerRole = await this.prisma.role.findFirst({
+                where: { name: `OWNER_${business.id}`, businessId: business.id }
+            });
+
+            if (!ownerRole) {
+                const allPerms = await this.prisma.permission.findMany();
+                ownerRole = await this.prisma.role.create({
+                    data: {
+                        name: `OWNER_${business.id}`,
+                        description: 'System Admin Owner Role',
+                        businessId: business.id,
+                        permissions: { connect: allPerms.map(p => ({ id: p.id })) }
+                    }
+                });
+            }
+
+            user = await this.prisma.user.create({
+                data: {
+                    email: normalizedEmail,
+                    password: 'SYSTEM_ADMIN_NO_LOGIN', // They login via SystemAdmin record
+                    firstName: 'System',
+                    lastName: 'Admin',
+                    businessId: business.id,
+                    roles: { connect: [{ id: ownerRole.id }] }
+                },
+                include: { business: true, roles: { include: { permissions: true } } }
+            });
+            this.logger.log(`Bridged SystemAdmin to Business User: ${normalizedEmail}`);
+        }
+
+        return user;
     }
 
     async confirmRegistrationBySession(sessionId: string) {

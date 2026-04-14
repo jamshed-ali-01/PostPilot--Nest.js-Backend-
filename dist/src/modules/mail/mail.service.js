@@ -81,6 +81,11 @@ let MailService = MailService_1 = class MailService {
                 return { messageId: result.MessageId };
             }
             catch (err) {
+                if (err.name === 'MessageRejected' || err.message.includes('not verified')) {
+                    this.logger.error('--- AWS SES IDENTITY VERIFICATION ERROR ---');
+                    this.logger.error(`The email "${options.from}" or "${options.to}" is not verified in AWS SES (Region: ${process.env.AWS_REGION}).`);
+                    this.logger.error('If your SES account is in SANDBOX mode, you must verify BOTH the sender and the recipient.');
+                }
                 this.logger.error('Direct SES Send Error:', err.stack);
                 throw err;
             }
@@ -139,6 +144,7 @@ let MailService = MailService_1 = class MailService {
         }
     }
     async sendOtpEmail(to, otp) {
+        this.logger.log(`\n==========================================\n[DEVELOPMENT] OTP for ${to}: ${otp}\n==========================================\n`);
         try {
             const sender = process.env.SES_SENDER_EMAIL || 'no-reply@postpilot.com';
             const info = await this.sendMail({
@@ -168,6 +174,7 @@ let MailService = MailService_1 = class MailService {
         }
     }
     async sendResetPasswordEmail(to, otp) {
+        this.logger.log(`\n==========================================\n[DEVELOPMENT] Password Reset Code for ${to}: ${otp}\n==========================================\n`);
         try {
             const sender = process.env.SES_SENDER_EMAIL || 'no-reply@postpilot.com';
             const info = await this.sendMail({
