@@ -311,6 +311,9 @@ let AdsService = class AdsService {
             const metaError = error?.response?.error || error?.response?.data?.error || error;
             const friendlyMsg = metaError.error_user_msg || metaError.message || "Meta API Error";
             console.error("[AdsService] Meta Ad Creation Error:", JSON.stringify(metaError, null, 2));
+            if (error.code === 'P2002' || error.message?.includes('foreign key')) {
+                console.error("[AdsService] Database Constraint Error during Ad Creation. Check businessId validity.");
+            }
             const draftData = {
                 headline: input.headline,
                 primaryText: input.primaryText,
