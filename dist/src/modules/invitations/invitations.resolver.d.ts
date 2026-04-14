@@ -5,24 +5,24 @@ export declare class InvitationsResolver {
     constructor(invitationsService: InvitationsService);
     createInvitation(input: CreateInvitationInput, user: any): Promise<{
         id: string;
+        email: string;
+        businessId: string;
         createdAt: Date;
         updatedAt: Date;
-        roleId: string;
-        businessId: string;
-        email: string;
         token: string;
+        roleId: string;
         expiresAt: Date;
         acceptedAt: Date | null;
     }>;
     getInvitation(token: string): Promise<{
         business: {
-            name: string;
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             logo: string | null;
             phone: string | null;
-            email: string | null;
             theme: string | null;
             isActive: boolean;
             isSubscriptionActive: boolean;
@@ -33,41 +33,41 @@ export declare class InvitationsResolver {
             trialEndsAt: Date | null;
         };
         role: {
-            name: string;
             id: string;
             businessId: string | null;
+            name: string;
             description: string | null;
             permissionIds: string[];
             userIds: string[];
         };
     } & {
         id: string;
+        email: string;
+        businessId: string;
         createdAt: Date;
         updatedAt: Date;
-        roleId: string;
-        businessId: string;
-        email: string;
         token: string;
+        roleId: string;
         expiresAt: Date;
         acceptedAt: Date | null;
     }>;
     businessInvitations(businessId: string): Promise<({
         role: {
-            name: string;
             id: string;
             businessId: string | null;
+            name: string;
             description: string | null;
             permissionIds: string[];
             userIds: string[];
         };
     } & {
         id: string;
+        email: string;
+        businessId: string;
         createdAt: Date;
         updatedAt: Date;
-        roleId: string;
-        businessId: string;
-        email: string;
         token: string;
+        roleId: string;
         expiresAt: Date;
         acceptedAt: Date | null;
     })[]>;

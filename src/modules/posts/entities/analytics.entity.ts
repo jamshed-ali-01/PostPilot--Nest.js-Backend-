@@ -31,4 +31,10 @@ export class BusinessAnalytics {
 
     @Field()
     pendingPosts: number;
+
+    @Field(() => String, { nullable: true })
+    bestContentInsight?: string;
+
+    @Field(() => String, { nullable: true })
+    suggestedAction?: string;
 }

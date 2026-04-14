@@ -55,64 +55,101 @@ let MailService = MailService_1 = class MailService {
         this.prisma = prisma;
     }
     async sendMail(options) {
-        if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY && process.env.AWS_REGION) {
-            this.logger.log('Using Direct AWS SES SDK for sending email');
-            const sesClient = new client_ses_1.SESClient({
-                region: process.env.AWS_REGION,
-                credentials: {
-                    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-                    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-                },
-            });
-            const command = new client_ses_1.SendEmailCommand({
-                Source: options.from,
-                Destination: {
-                    ToAddresses: [options.to],
-                },
-                Message: {
-                    Subject: { Data: options.subject },
-                    Body: {
-                        Html: { Data: options.html },
-                    },
-                },
-            });
-            try {
-                const result = await sesClient.send(command);
-                return { messageId: result.MessageId };
-            }
-            catch (err) {
-                if (err.name === 'MessageRejected' || err.message.includes('not verified')) {
-                    this.logger.error('--- AWS SES IDENTITY VERIFICATION ERROR ---');
-                    this.logger.error(`The email "${options.from}" or "${options.to}" is not verified in AWS SES (Region: ${process.env.AWS_REGION}).`);
-                    this.logger.error('If your SES account is in SANDBOX mode, you must verify BOTH the sender and the recipient.');
-                }
-                this.logger.error('Direct SES Send Error:', err.stack);
-                throw err;
+        const provider = process.env.MAIL_PROVIDER || 'fallback';
+        if (provider === 'ses') {
+            return this.sendViaSES(options);
+        }
+        if (provider === 'smtp') {
+            return this.sendViaSMTP(options);
+        }
+        try {
+            if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
+                return await this.sendViaSES(options);
             }
         }
-        const smtpConfig = await this.prisma.systemSettings.findUnique({
-            where: { key: 'SMTP_CONFIG' },
+        catch (err) {
+            this.logger.warn(`AWS SES failed, attempting SMTP fallback. Error: ${err.message}`);
+        }
+        return this.sendViaSMTP(options);
+    }
+    async sendViaSES(options) {
+        if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY || !process.env.AWS_REGION) {
+            throw new Error('AWS SES credentials not configured in environment.');
+        }
+        this.logger.log('Sending email via AWS SES SDK');
+        const sesClient = new client_ses_1.SESClient({
+            region: process.env.AWS_REGION,
+            credentials: {
+                accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+                secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+            },
         });
-        if (!smtpConfig) {
-            throw new Error('Email configuration is missing (No AWS SES env or SMTP_CONFIG in DB).');
+        const command = new client_ses_1.SendEmailCommand({
+            Source: options.from,
+            Destination: {
+                ToAddresses: [options.to],
+            },
+            Message: {
+                Subject: { Data: options.subject },
+                Body: {
+                    Html: { Data: options.html },
+                },
+            },
+        });
+        try {
+            const result = await sesClient.send(command);
+            return { messageId: result.MessageId };
         }
-        const config = smtpConfig.value;
+        catch (err) {
+            if (err.name === 'MessageRejected' || err.message.includes('not verified')) {
+                this.logger.error('--- AWS SES IDENTITY VERIFICATION ERROR ---');
+                this.logger.error(`The email "${options.from}" or "${options.to}" is not verified in AWS SES (Region: ${process.env.AWS_REGION}).`);
+            }
+            throw err;
+        }
+    }
+    async sendViaSMTP(options) {
+        let config = {
+            host: process.env.SMTP_HOST || 'smtp.gmail.com',
+            port: parseInt(process.env.SMTP_PORT || '587'),
+            secure: process.env.SMTP_PORT === '465',
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS,
+        };
+        if (!config.user || !config.pass) {
+            const smtpSettings = await this.prisma.systemSettings.findUnique({
+                where: { key: 'SMTP_CONFIG' },
+            });
+            if (smtpSettings) {
+                const dbConfig = smtpSettings.value;
+                config = {
+                    host: dbConfig.host || config.host,
+                    port: dbConfig.port || config.port,
+                    secure: dbConfig.secure !== undefined ? dbConfig.secure : config.secure,
+                    user: dbConfig.user,
+                    pass: dbConfig.pass,
+                };
+            }
+        }
+        if (!config.user || !config.pass) {
+            throw new Error('SMTP credentials not configured (Check .env or SystemSettings in DB).');
+        }
+        this.logger.log(`Sending email via SMTP (${config.host})`);
         const transporter = nodemailer.createTransport({
-            host: config.host || 'smtp.gmail.com',
-            port: config.port || 587,
-            secure: config.secure !== undefined ? config.secure : false,
+            host: config.host,
+            port: config.port,
+            secure: config.secure,
             auth: {
                 user: config.user,
                 pass: config.pass,
             },
         });
-        const info = await transporter.sendMail({
+        return await transporter.sendMail({
             from: options.from,
             to: options.to,
             subject: options.subject,
             html: options.html,
         });
-        return info;
     }
     async sendInvitationEmail(to, businessName, inviteLink) {
         try {

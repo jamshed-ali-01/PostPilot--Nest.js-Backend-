@@ -22,6 +22,8 @@ let BusinessAnalytics = class BusinessAnalytics {
     publishedPosts;
     scheduledPosts;
     pendingPosts;
+    bestContentInsight;
+    suggestedAction;
 };
 exports.BusinessAnalytics = BusinessAnalytics;
 __decorate([
@@ -64,6 +66,14 @@ __decorate([
     (0, graphql_1.Field)(),
     __metadata("design:type", Number)
 ], BusinessAnalytics.prototype, "pendingPosts", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => String, { nullable: true }),
+    __metadata("design:type", String)
+], BusinessAnalytics.prototype, "bestContentInsight", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => String, { nullable: true }),
+    __metadata("design:type", String)
+], BusinessAnalytics.prototype, "suggestedAction", void 0);
 exports.BusinessAnalytics = BusinessAnalytics = __decorate([
     (0, graphql_1.ObjectType)()
 ], BusinessAnalytics);

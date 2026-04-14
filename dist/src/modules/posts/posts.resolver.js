@@ -18,6 +18,7 @@ const client_1 = require("@prisma/client");
 const posts_service_js_1 = require("./posts.service.js");
 const post_entity_js_1 = require("./entities/post.entity.js");
 const analytics_entity_js_1 = require("./entities/analytics.entity.js");
+const schedule_suggestion_entity_js_1 = require("./entities/schedule-suggestion.entity.js");
 const create_post_input_js_1 = require("./dto/create-post.input.js");
 const update_post_input_js_1 = require("./dto/update-post.input.js");
 const permissions_decorator_js_1 = require("../../common/decorators/permissions.decorator.js");
@@ -186,7 +187,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PostsResolver.prototype, "syncBusinessAnalytics", null);
 __decorate([
-    (0, graphql_1.Query)(() => [Date], { name: 'getRecommendedScheduleTimes' }),
+    (0, graphql_1.Query)(() => [schedule_suggestion_entity_js_1.ScheduleSuggestion], { name: 'getRecommendedScheduleTimes' }),
     (0, common_1.UseGuards)(gql_auth_guard_js_1.GqlAuthGuard),
     __param(0, (0, graphql_1.Args)('businessId', { type: () => graphql_1.ID })),
     __metadata("design:type", Function),

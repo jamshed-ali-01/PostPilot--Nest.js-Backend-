@@ -4,13 +4,15 @@ export declare class MailService {
     private readonly logger;
     constructor(prisma: PrismaService);
     private sendMail;
+    private sendViaSES;
+    private sendViaSMTP;
     sendInvitationEmail(to: string, businessName: string, inviteLink: string): Promise<{
         messageId: string | undefined;
     } | undefined>;
-    sendOtpEmail(to: string, otp: string): Promise<import("nodemailer/lib/smtp-transport/index.js").SentMessageInfo | {
+    sendOtpEmail(to: string, otp: string): Promise<{
         messageId: string | undefined;
     }>;
-    sendResetPasswordEmail(to: string, otp: string): Promise<import("nodemailer/lib/smtp-transport/index.js").SentMessageInfo | {
+    sendResetPasswordEmail(to: string, otp: string): Promise<{
         messageId: string | undefined;
     }>;
 }

@@ -9,4 +9,6 @@ export declare class BusinessAnalytics {
     publishedPosts: number;
     scheduledPosts: number;
     pendingPosts: number;
+    bestContentInsight?: string;
+    suggestedAction?: string;
 }

@@ -3,6 +3,7 @@ import { PostStatus } from '@prisma/client';
 import { PostsService } from './posts.service.js';
 import { Post } from './entities/post.entity.js';
 import { BusinessAnalytics } from './entities/analytics.entity.js';
+import { ScheduleSuggestion } from './entities/schedule-suggestion.entity.js';
 import { CreatePostInput } from './dto/create-post.input.js';
 import { UpdatePostInput } from './dto/update-post.input.js';
 import { Permissions } from '../../common/decorators/permissions.decorator.js';
@@ -103,7 +104,7 @@ export class PostsResolver {
         return this.postsService.syncAllBusinessMetrics(businessId);
     }
 
-    @Query(() => [Date], { name: 'getRecommendedScheduleTimes' })
+    @Query(() => [ScheduleSuggestion], { name: 'getRecommendedScheduleTimes' })
     @UseGuards(GqlAuthGuard)
     async getRecommendedScheduleTimes(@Args('businessId', { type: () => ID }) businessId: string) {
         return this.postsService.getRecommendedScheduleTimes(businessId);
