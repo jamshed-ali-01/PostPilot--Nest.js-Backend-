@@ -62,7 +62,7 @@ let StripeService = StripeService_1 = class StripeService {
                             currency,
                             recurring: { interval: 'month' },
                             product_data: {
-                                name: `PostPilot - ${plan.name} Package`,
+                                name: `Recommend - ${plan.name} Package`,
                                 description: plan.description || undefined,
                             },
                             unit_amount: price,
@@ -117,7 +117,7 @@ let StripeService = StripeService_1 = class StripeService {
                             currency,
                             recurring: { interval: 'month' },
                             product_data: {
-                                name: `PostPilot - ${plan.name} Package`,
+                                name: `Recommend - ${plan.name} Package`,
                                 description: plan.description || undefined,
                             },
                             unit_amount: price,

@@ -189,7 +189,7 @@ let AdsService = class AdsService {
         const AdCreative = bizSdk.AdCreative;
         const Ad = bizSdk.Ad;
         const account = new AdAccount(input.adAccountId);
-        const destinationLink = input.destinationLink || 'https://postpilot.co';
+        const destinationLink = input.destinationLink || 'https://recommend.org.uk';
         try {
             const mediaUrls = input.mediaUrls || [];
             const imageHashes = await Promise.all(mediaUrls.slice(0, 10).map(url => this.uploadImageToMeta(input.adAccountId, fbAccount.accessToken, url)));
@@ -248,7 +248,7 @@ let AdsService = class AdsService {
                         link_data: {
                             link: destinationLink,
                             message: input.primaryText,
-                            caption: 'postpilot.co',
+                            caption: 'recommend.org.uk',
                             child_attachments: imageHashes.map(hash => ({
                                 image_hash: hash,
                                 link: destinationLink,

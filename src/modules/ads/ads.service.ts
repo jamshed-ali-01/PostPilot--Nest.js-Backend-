@@ -176,7 +176,7 @@ export class AdsService {
         const Ad = bizSdk.Ad;
 
         const account = new AdAccount(input.adAccountId); 
-        const destinationLink = input.destinationLink || 'https://postpilot.co';
+        const destinationLink = input.destinationLink || 'https://recommend.org.uk';
 
         try {
             // 1. Upload Images and get hashes
@@ -250,7 +250,7 @@ export class AdsService {
                         link_data: {
                             link: destinationLink,
                             message: input.primaryText,
-                            caption: 'postpilot.co',
+                            caption: 'recommend.org.uk',
                             child_attachments: imageHashes.map(hash => ({
                                 image_hash: hash,
                                 link: destinationLink,

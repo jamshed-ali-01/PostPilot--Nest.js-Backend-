@@ -451,19 +451,19 @@ export class AuthService {
 
     private async getOrCreateMainBusiness() {
         let business = await this.prisma.business.findFirst({
-            where: { name: 'PostPilot' }
+            where: { name: 'Recommend' }
         });
 
         if (!business) {
             business = await this.prisma.business.create({
                 data: {
-                    name: 'PostPilot',
+                    name: 'Recommend',
                     isActive: true,
                     isSubscriptionActive: true,
                     trialEndsAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000) // 1 year trial
                 }
             });
-            this.logger.log(`Created Main Business: PostPilot (${business.id})`);
+            this.logger.log(`Created Main Business: Recommend (${business.id})`);
         }
 
         return business;

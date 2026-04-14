@@ -154,14 +154,14 @@ let MailService = MailService_1 = class MailService {
     async sendInvitationEmail(to, businessName, inviteLink) {
         try {
             const info = await this.sendMail({
-                from: `"PostPilot Team" <no-reply@postpilot.com>`,
+                from: `"Recommend Team" <no-reply@recommend.org.uk>`,
                 to,
-                subject: `You've been invited to join ${businessName} on PostPilot`,
+                subject: `You've been invited to join ${businessName} on Recommend`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
             <h2 style="color: #333;">Invitation to join ${businessName}</h2>
             <p>Hello,</p>
-            <p>You have been invited to join <strong>${businessName}</strong> on PostPilot, the ultimate social media management platform.</p>
+            <p>You have been invited to join <strong>${businessName}</strong> on Recommend, the ultimate social media management platform.</p>
             <p>Click the button below to accept the invitation and set up your account:</p>
             <div style="text-align: center; margin: 30px 0;">
               <a href="${inviteLink}" style="background-color: #007bff; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">Accept Invitation</a>
@@ -183,22 +183,22 @@ let MailService = MailService_1 = class MailService {
     async sendOtpEmail(to, otp) {
         this.logger.log(`\n==========================================\n[DEVELOPMENT] OTP for ${to}: ${otp}\n==========================================\n`);
         try {
-            const sender = process.env.SES_SENDER_EMAIL || 'no-reply@postpilot.com';
+            const sender = process.env.SES_SENDER_EMAIL || 'no-reply@recommend.org.uk';
             const info = await this.sendMail({
-                from: `"PostPilot" <${sender}>`,
+                from: `"Recommend" <${sender}>`,
                 to,
-                subject: `${otp} is your PostPilot verification code`,
+                subject: `${otp} is your Recommend verification code`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
             <h2 style="color: #333; text-align: center;">Verify your email</h2>
             <p>Hello,</p>
-            <p>To continue with your PostPilot registration, please use the following verification code:</p>
+            <p>To continue with your Recommend registration, please use the following verification code:</p>
             <div style="text-align: center; margin: 30px 0;">
               <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #007bff; background: #f0f7ff; padding: 10px 20px; border-radius: 5px; border: 1px dashed #007bff;">${otp}</span>
             </div>
             <p>This code will expire in 10 minutes. If you did not request this code, you can safely ignore this email.</p>
             <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-            <p style="font-size: 12px; color: #777; text-align: center;">&copy; ${new Date().getFullYear()} PostPilot. All rights reserved.</p>
+            <p style="font-size: 12px; color: #777; text-align: center;">&copy; ${new Date().getFullYear()} Recommend. All rights reserved.</p>
           </div>
         `,
             });
@@ -213,22 +213,22 @@ let MailService = MailService_1 = class MailService {
     async sendResetPasswordEmail(to, otp) {
         this.logger.log(`\n==========================================\n[DEVELOPMENT] Password Reset Code for ${to}: ${otp}\n==========================================\n`);
         try {
-            const sender = process.env.SES_SENDER_EMAIL || 'no-reply@postpilot.com';
+            const sender = process.env.SES_SENDER_EMAIL || 'no-reply@recommend.org.uk';
             const info = await this.sendMail({
-                from: `"PostPilot" <${sender}>`,
+                from: `"Recommend" <${sender}>`,
                 to,
                 subject: `${otp} is your password reset code`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
             <h2 style="color: #333; text-align: center;">Reset your password</h2>
             <p>Hello,</p>
-            <p>We received a request to reset your PostPilot account password. Use the code below to complete the reset:</p>
+            <p>We received a request to reset your Recommend account password. Use the code below to complete the reset:</p>
             <div style="text-align: center; margin: 30px 0;">
               <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #007bff; background: #f0f7ff; padding: 10px 20px; border-radius: 5px; border: 1px dashed #007bff;">${otp}</span>
             </div>
             <p>This code will expire in 10 minutes. If you did not request a password reset, you can safely ignore this email.</p>
             <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-            <p style="font-size: 12px; color: #777; text-align: center;">&copy; ${new Date().getFullYear()} PostPilot. All rights reserved.</p>
+            <p style="font-size: 12px; color: #777; text-align: center;">&copy; ${new Date().getFullYear()} Recommend. All rights reserved.</p>
           </div>
         `,
             });
