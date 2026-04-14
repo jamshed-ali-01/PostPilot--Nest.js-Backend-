@@ -48,8 +48,24 @@ export class RolesService {
             },
             include: { permissions: true },
         });
-        console.log(`[RolesService] Found ${roles.length} roles.`);
-        return roles;
+
+        // Deduplicate roles by name - Prefer local business roles over global templates
+        const uniqueRolesMap = new Map();
+        
+        // Sort roles so that those with businessId come last (overwriting globals in the map)
+        const sortedRoles = [...roles].sort((a, b) => {
+            if (a.businessId && !b.businessId) return 1;
+            if (!a.businessId && b.businessId) return -1;
+            return 0;
+        });
+
+        for (const role of sortedRoles) {
+            uniqueRolesMap.set(role.name, role);
+        }
+
+        const uniqueRoles = Array.from(uniqueRolesMap.values());
+        console.log(`[RolesService] Found ${roles.length} roles, deduplicated to ${uniqueRoles.length}.`);
+        return uniqueRoles;
     }
 
     async assignToUser(userId: string, roleId: string, currentUserId?: string) {

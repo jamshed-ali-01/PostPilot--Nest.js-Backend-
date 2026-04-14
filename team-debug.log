@@ -413,3 +413,17 @@
 [UsersService] Found 1 users
 [InvitationsService] Finding invitations for businessId: "69d7d438f39270ef2676e984" at 2026-04-09T18:05:15.542Z
 [InvitationsService] Found 0 invitations
+[InvitationsService] Finding invitations for businessId: "69d7d438f39270ef2676e984" at 2026-04-14T17:05:19.708Z
+[UsersService] Finding all users for businessId: "69d7d438f39270ef2676e984" at 2026-04-14T17:05:19.718Z
+[InvitationsService] Found 0 invitations
+[UsersService] Found 1 users
+[UsersService] Finding all users for businessId: "69d7d438f39270ef2676e984" at 2026-04-14T17:06:41.291Z
+[InvitationsService] Finding invitations for businessId: "69d7d438f39270ef2676e984" at 2026-04-14T17:06:41.428Z
+[InvitationsService] Found 0 invitations
+[UsersService] Found 1 users
+[InvitationsService] Finding invitations for businessId: "69d7d438f39270ef2676e984" at 2026-04-14T17:06:49.279Z
+[InvitationsService] Found 0 invitations
+[UsersService] Finding all users for businessId: "69d7d438f39270ef2676e984" at 2026-04-14T17:08:48.182Z
+[InvitationsService] Finding invitations for businessId: "69d7d438f39270ef2676e984" at 2026-04-14T17:08:48.199Z
+[InvitationsService] Found 0 invitations
+[UsersService] Found 2 users

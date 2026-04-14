@@ -6,15 +6,15 @@ export declare class RolesResolver {
     createRole(input: CreateRoleInput): Promise<{
         permissions: {
             id: string;
-            roleIds: string[];
             name: string;
             description: string | null;
+            roleIds: string[];
         }[];
     } & {
         id: string;
-        businessId: string | null;
         name: string;
         description: string | null;
+        businessId: string | null;
         permissionIds: string[];
         userIds: string[];
     }>;
@@ -22,57 +22,43 @@ export declare class RolesResolver {
     getGlobalRoles(): Promise<({
         permissions: {
             id: string;
-            roleIds: string[];
             name: string;
             description: string | null;
+            roleIds: string[];
         }[];
     } & {
         id: string;
-        businessId: string | null;
         name: string;
         description: string | null;
+        businessId: string | null;
         permissionIds: string[];
         userIds: string[];
     })[]>;
-    getBusinessRoles(businessId: string): Promise<({
-        permissions: {
-            id: string;
-            roleIds: string[];
-            name: string;
-            description: string | null;
-        }[];
-    } & {
-        id: string;
-        businessId: string | null;
-        name: string;
-        description: string | null;
-        permissionIds: string[];
-        userIds: string[];
-    })[]>;
+    getBusinessRoles(businessId: string): Promise<any[]>;
     getPermissions(): Promise<{
         id: string;
-        roleIds: string[];
         name: string;
         description: string | null;
+        roleIds: string[];
     }[]>;
     createPermission(name: string, description?: string): Promise<{
         id: string;
-        roleIds: string[];
         name: string;
         description: string | null;
+        roleIds: string[];
     }>;
     updateRole(id: string, input: CreateRoleInput): Promise<{
         permissions: {
             id: string;
-            roleIds: string[];
             name: string;
             description: string | null;
+            roleIds: string[];
         }[];
     } & {
         id: string;
-        businessId: string | null;
         name: string;
         description: string | null;
+        businessId: string | null;
         permissionIds: string[];
         userIds: string[];
     }>;

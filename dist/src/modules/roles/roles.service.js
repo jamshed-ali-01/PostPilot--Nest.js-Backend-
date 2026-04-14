@@ -55,8 +55,20 @@ let RolesService = class RolesService {
             },
             include: { permissions: true },
         });
-        console.log(`[RolesService] Found ${roles.length} roles.`);
-        return roles;
+        const uniqueRolesMap = new Map();
+        const sortedRoles = [...roles].sort((a, b) => {
+            if (a.businessId && !b.businessId)
+                return 1;
+            if (!a.businessId && b.businessId)
+                return -1;
+            return 0;
+        });
+        for (const role of sortedRoles) {
+            uniqueRolesMap.set(role.name, role);
+        }
+        const uniqueRoles = Array.from(uniqueRolesMap.values());
+        console.log(`[RolesService] Found ${roles.length} roles, deduplicated to ${uniqueRoles.length}.`);
+        return uniqueRoles;
     }
     async assignToUser(userId, roleId, currentUserId) {
         if (userId === currentUserId) {
