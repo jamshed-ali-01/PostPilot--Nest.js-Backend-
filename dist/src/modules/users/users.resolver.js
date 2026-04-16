@@ -31,6 +31,9 @@ let UsersResolver = class UsersResolver {
     async updateAiPreferences(user, input) {
         return this.usersService.updateAiPreferences(user.id, input);
     }
+    async updateBrandColor(user, brandColor) {
+        return this.usersService.updateBrandColor(user.id, brandColor);
+    }
     async findAllByBusiness(businessId) {
         return this.usersService.findAllByBusiness(businessId);
     }
@@ -56,6 +59,15 @@ __decorate([
     __metadata("design:paramtypes", [Object, update_ai_preferences_input_1.UpdateAiPreferencesInput]),
     __metadata("design:returntype", Promise)
 ], UsersResolver.prototype, "updateAiPreferences", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => user_entity_1.User),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, graphql_1.Args)('brandColor')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], UsersResolver.prototype, "updateBrandColor", null);
 __decorate([
     (0, graphql_1.Query)(() => [user_entity_1.User], { name: 'businessUsers' }),
     (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard),

@@ -48,6 +48,7 @@ export declare class UsersResolver {
         aiHashtags: string[];
         aiCaptionLength: string | null;
         aiIncludeEmojis: boolean | null;
+        brandColor: string | null;
         createdAt: Date;
         updatedAt: Date;
     }) | null>;
@@ -63,6 +64,23 @@ export declare class UsersResolver {
         aiHashtags: string[];
         aiCaptionLength: string | null;
         aiIncludeEmojis: boolean | null;
+        brandColor: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    updateBrandColor(user: any, brandColor: string): Promise<{
+        id: string;
+        email: string;
+        password: string;
+        firstName: string | null;
+        lastName: string | null;
+        businessId: string;
+        roleIds: string[];
+        aiTone: string | null;
+        aiHashtags: string[];
+        aiCaptionLength: string | null;
+        aiIncludeEmojis: boolean | null;
+        brandColor: string | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
@@ -87,6 +105,7 @@ export declare class UsersResolver {
         aiHashtags: string[];
         aiCaptionLength: string | null;
         aiIncludeEmojis: boolean | null;
+        brandColor: string | null;
         createdAt: Date;
         updatedAt: Date;
     })[]>;

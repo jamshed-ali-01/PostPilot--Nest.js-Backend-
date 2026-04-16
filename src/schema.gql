@@ -59,6 +59,7 @@ type User {
   aiHashtags: [String!]!
   aiCaptionLength: String
   aiIncludeEmojis: Boolean
+  brandColor: String
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -310,6 +311,7 @@ type Mutation {
   sendResetPasswordOtp(email: String!): Boolean!
   resetPassword(input: ResetPasswordInput!): Boolean!
   updateAiPreferences(input: UpdateAiPreferencesInput!): User!
+  updateBrandColor(brandColor: String!): User!
   removeTeamMember(userId: ID!): Boolean!
   createCheckoutSession(planId: String!): String!
   createInvitation(input: CreateInvitationInput!): Invitation!

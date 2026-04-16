@@ -56,6 +56,7 @@ model User {
   aiHashtags      String[] @default([])
   aiCaptionLength String?  @default("medium")
   aiIncludeEmojis Boolean? @default(true)
+  brandColor      String?  @default("#f97316")
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }

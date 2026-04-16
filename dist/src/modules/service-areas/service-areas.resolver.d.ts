@@ -6,19 +6,19 @@ export declare class ServiceAreasResolver {
     createServiceArea(input: CreateServiceAreaInput): Promise<{
         id: string;
         businessId: string;
-        location: string | null;
         postcode: string;
+        location: string | null;
     }>;
     findAll(businessId: string): Promise<{
         id: string;
         businessId: string;
-        location: string | null;
         postcode: string;
+        location: string | null;
     }[]>;
     removeServiceArea(id: string): Promise<{
         id: string;
         businessId: string;
-        location: string | null;
         postcode: string;
+        location: string | null;
     }>;
 }

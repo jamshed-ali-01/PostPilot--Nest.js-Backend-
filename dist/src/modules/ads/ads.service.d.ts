@@ -12,14 +12,14 @@ export declare class AdsService {
     private createMetaAd;
     update(input: any): Promise<{
         id: string;
-        platform: string;
         businessId: string;
         createdAt: Date;
         updatedAt: Date;
+        description: string | null;
         headline: string;
         primaryText: string;
-        description: string | null;
         mediaUrls: string[];
+        platform: string;
         status: import(".prisma/client").$Enums.AdStatus;
         adAccountId: string | null;
         pageId: string | null;
@@ -35,14 +35,14 @@ export declare class AdsService {
     }>;
     findAllByBusiness(businessId: string): Promise<{
         id: string;
-        platform: string;
         businessId: string;
         createdAt: Date;
         updatedAt: Date;
+        description: string | null;
         headline: string;
         primaryText: string;
-        description: string | null;
         mediaUrls: string[];
+        platform: string;
         status: import(".prisma/client").$Enums.AdStatus;
         adAccountId: string | null;
         pageId: string | null;
@@ -63,14 +63,14 @@ export declare class AdsService {
     }>;
     delete(id: string): Promise<{
         id: string;
-        platform: string;
         businessId: string;
         createdAt: Date;
         updatedAt: Date;
+        description: string | null;
         headline: string;
         primaryText: string;
-        description: string | null;
         mediaUrls: string[];
+        platform: string;
         status: import(".prisma/client").$Enums.AdStatus;
         adAccountId: string | null;
         pageId: string | null;

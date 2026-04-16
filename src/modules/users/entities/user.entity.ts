@@ -37,6 +37,9 @@ export class User {
     @Field({ nullable: true })
     aiIncludeEmojis?: boolean;
 
+    @Field({ nullable: true })
+    brandColor?: string;
+
     @Field()
     createdAt: Date;
 

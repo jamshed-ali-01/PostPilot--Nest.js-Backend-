@@ -39,10 +39,31 @@ export class UsersService {
     }
 
     async updateAiPreferences(userId: string, data: { aiTone?: string, aiHashtags?: string[], aiCaptionLength?: string, aiIncludeEmojis?: boolean }) {
+        const user = await this.resolveUser(userId);
         return this.prisma.user.update({
-            where: { id: userId },
+            where: { id: user.id },
             data,
         });
+    }
+
+    async updateBrandColor(userId: string, brandColor: string) {
+        const user = await this.resolveUser(userId);
+        return this.prisma.user.update({
+            where: { id: user.id },
+            data: { brandColor },
+        });
+    }
+
+    private async resolveUser(userId: string) {
+        let user = await this.prisma.user.findUnique({ where: { id: userId } });
+        if (!user) {
+            const admin = await this.prisma.systemAdmin.findUnique({ where: { id: userId } });
+            if (admin) {
+                user = await this.prisma.user.findUnique({ where: { email: admin.email } });
+            }
+        }
+        if (!user) throw new Error("User record not found");
+        return user;
     }
 
     async findAllByBusiness(businessId: string) {

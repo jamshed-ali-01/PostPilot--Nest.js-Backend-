@@ -60,6 +60,7 @@ export declare class JwtStrategy extends JwtStrategy_base {
         aiHashtags: string[];
         aiCaptionLength: string | null;
         aiIncludeEmojis: boolean | null;
+        brandColor: string | null;
     } | {
         isSystemAdmin: boolean;
         id: string;
@@ -113,6 +114,7 @@ export declare class JwtStrategy extends JwtStrategy_base {
         aiHashtags: string[];
         aiCaptionLength: string | null;
         aiIncludeEmojis: boolean | null;
+        brandColor: string | null;
         createdAt: Date;
         updatedAt: Date;
     }>;

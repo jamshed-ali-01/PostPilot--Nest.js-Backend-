@@ -6,87 +6,88 @@ export declare class RolesService {
     create(createRoleInput: CreateRoleInput): Promise<{
         permissions: {
             id: string;
+            roleIds: string[];
             name: string;
             description: string | null;
-            roleIds: string[];
         }[];
     } & {
         id: string;
+        businessId: string | null;
         name: string;
         description: string | null;
-        businessId: string | null;
         permissionIds: string[];
         userIds: string[];
     }>;
     createPermission(name: string, description?: string): Promise<{
         id: string;
+        roleIds: string[];
         name: string;
         description: string | null;
-        roleIds: string[];
     }>;
     findAllGlobal(): Promise<({
         permissions: {
             id: string;
+            roleIds: string[];
             name: string;
             description: string | null;
-            roleIds: string[];
         }[];
     } & {
         id: string;
+        businessId: string | null;
         name: string;
         description: string | null;
-        businessId: string | null;
         permissionIds: string[];
         userIds: string[];
     })[]>;
     findAllByBusiness(businessId: string): Promise<any[]>;
     assignToUser(userId: string, roleId: string, currentUserId?: string): Promise<{
         id: string;
-        businessId: string;
-        roleIds: string[];
         email: string;
         password: string;
         firstName: string | null;
         lastName: string | null;
+        businessId: string;
+        roleIds: string[];
         aiTone: string | null;
         aiHashtags: string[];
         aiCaptionLength: string | null;
         aiIncludeEmojis: boolean | null;
+        brandColor: string | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
     findPermissions(): Promise<{
         id: string;
+        roleIds: string[];
         name: string;
         description: string | null;
-        roleIds: string[];
     }[]>;
     findPermissionByName(name: string): Promise<{
         id: string;
+        roleIds: string[];
         name: string;
         description: string | null;
-        roleIds: string[];
     } | null>;
     update(id: string, updateRoleInput: Partial<CreateRoleInput>): Promise<{
         permissions: {
             id: string;
+            roleIds: string[];
             name: string;
             description: string | null;
-            roleIds: string[];
         }[];
     } & {
         id: string;
+        businessId: string | null;
         name: string;
         description: string | null;
-        businessId: string | null;
         permissionIds: string[];
         userIds: string[];
     }>;
     delete(id: string): Promise<{
         id: string;
+        businessId: string | null;
         name: string;
         description: string | null;
-        businessId: string | null;
         permissionIds: string[];
         userIds: string[];
     }>;

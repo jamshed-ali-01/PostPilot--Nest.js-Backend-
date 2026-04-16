@@ -7,14 +7,14 @@ export declare class AdsResolver {
     createAd(input: CreateAdInput): Promise<any>;
     getBusinessAds(businessId: string): Promise<{
         id: string;
-        platform: string;
         businessId: string;
         createdAt: Date;
         updatedAt: Date;
+        description: string | null;
         headline: string;
         primaryText: string;
-        description: string | null;
         mediaUrls: string[];
+        platform: string;
         status: import(".prisma/client").$Enums.AdStatus;
         adAccountId: string | null;
         pageId: string | null;
@@ -37,14 +37,14 @@ export declare class AdsResolver {
     }>;
     updateAd(input: UpdateAdInput): Promise<{
         id: string;
-        platform: string;
         businessId: string;
         createdAt: Date;
         updatedAt: Date;
+        description: string | null;
         headline: string;
         primaryText: string;
-        description: string | null;
         mediaUrls: string[];
+        platform: string;
         status: import(".prisma/client").$Enums.AdStatus;
         adAccountId: string | null;
         pageId: string | null;
@@ -60,14 +60,14 @@ export declare class AdsResolver {
     }>;
     deleteAd(id: string): Promise<{
         id: string;
-        platform: string;
         businessId: string;
         createdAt: Date;
         updatedAt: Date;
+        description: string | null;
         headline: string;
         primaryText: string;
-        description: string | null;
         mediaUrls: string[];
+        platform: string;
         status: import(".prisma/client").$Enums.AdStatus;
         adAccountId: string | null;
         pageId: string | null;

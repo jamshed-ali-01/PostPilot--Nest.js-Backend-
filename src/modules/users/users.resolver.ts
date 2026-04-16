@@ -24,6 +24,15 @@ export class UsersResolver {
         return this.usersService.updateAiPreferences(user.id, input);
     }
 
+    @Mutation(() => User)
+    @UseGuards(GqlAuthGuard)
+    async updateBrandColor(
+        @CurrentUser() user: any,
+        @Args('brandColor') brandColor: string
+    ) {
+        return this.usersService.updateBrandColor(user.id, brandColor);
+    }
+
     @Query(() => [User], { name: 'businessUsers' })
     @UseGuards(GqlAuthGuard)
     async findAllByBusiness(@Args('businessId', { type: () => ID }) businessId: string) {

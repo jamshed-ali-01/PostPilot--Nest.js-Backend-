@@ -47,6 +47,7 @@ export declare class UsersService {
         aiHashtags: string[];
         aiCaptionLength: string | null;
         aiIncludeEmojis: boolean | null;
+        brandColor: string | null;
         createdAt: Date;
         updatedAt: Date;
     }) | null>;
@@ -102,6 +103,7 @@ export declare class UsersService {
         aiHashtags: string[];
         aiCaptionLength: string | null;
         aiIncludeEmojis: boolean | null;
+        brandColor: string | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
@@ -122,9 +124,27 @@ export declare class UsersService {
         aiHashtags: string[];
         aiCaptionLength: string | null;
         aiIncludeEmojis: boolean | null;
+        brandColor: string | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
+    updateBrandColor(userId: string, brandColor: string): Promise<{
+        id: string;
+        email: string;
+        password: string;
+        firstName: string | null;
+        lastName: string | null;
+        businessId: string;
+        roleIds: string[];
+        aiTone: string | null;
+        aiHashtags: string[];
+        aiCaptionLength: string | null;
+        aiIncludeEmojis: boolean | null;
+        brandColor: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    private resolveUser;
     findAllByBusiness(businessId: string): Promise<({
         roles: {
             id: string;
@@ -146,6 +166,7 @@ export declare class UsersService {
         aiHashtags: string[];
         aiCaptionLength: string | null;
         aiIncludeEmojis: boolean | null;
+        brandColor: string | null;
         createdAt: Date;
         updatedAt: Date;
     })[]>;
@@ -161,6 +182,7 @@ export declare class UsersService {
         aiHashtags: string[];
         aiCaptionLength: string | null;
         aiIncludeEmojis: boolean | null;
+        brandColor: string | null;
         createdAt: Date;
         updatedAt: Date;
     }>;

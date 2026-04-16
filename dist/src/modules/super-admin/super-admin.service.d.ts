@@ -41,6 +41,7 @@ export declare class SuperAdminService {
         aiHashtags: string[];
         aiCaptionLength: string | null;
         aiIncludeEmojis: boolean | null;
+        brandColor: string | null;
         createdAt: Date;
         updatedAt: Date;
     })[]>;

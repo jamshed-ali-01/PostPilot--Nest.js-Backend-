@@ -71,10 +71,30 @@ let UsersService = class UsersService {
         });
     }
     async updateAiPreferences(userId, data) {
+        const user = await this.resolveUser(userId);
         return this.prisma.user.update({
-            where: { id: userId },
+            where: { id: user.id },
             data,
         });
+    }
+    async updateBrandColor(userId, brandColor) {
+        const user = await this.resolveUser(userId);
+        return this.prisma.user.update({
+            where: { id: user.id },
+            data: { brandColor },
+        });
+    }
+    async resolveUser(userId) {
+        let user = await this.prisma.user.findUnique({ where: { id: userId } });
+        if (!user) {
+            const admin = await this.prisma.systemAdmin.findUnique({ where: { id: userId } });
+            if (admin) {
+                user = await this.prisma.user.findUnique({ where: { email: admin.email } });
+            }
+        }
+        if (!user)
+            throw new Error("User record not found");
+        return user;
     }
     async findAllByBusiness(businessId) {
         const logMsg = `[UsersService] Finding all users for businessId: "${businessId}" at ${new Date().toISOString()}\n`;

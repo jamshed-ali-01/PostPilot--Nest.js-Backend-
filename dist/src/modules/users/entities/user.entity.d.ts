@@ -12,6 +12,7 @@ export declare class User {
     aiHashtags: string[];
     aiCaptionLength?: string;
     aiIncludeEmojis?: boolean;
+    brandColor?: string;
     createdAt: Date;
     updatedAt: Date;
 }

@@ -66,6 +66,7 @@ export declare class AuthService {
             aiHashtags: string[];
             aiCaptionLength: string | null;
             aiIncludeEmojis: boolean | null;
+            brandColor: string | null;
         } | {
             isSystemAdmin: boolean;
             firstName: string;
@@ -123,6 +124,7 @@ export declare class AuthService {
             aiHashtags: string[];
             aiCaptionLength: string | null;
             aiIncludeEmojis: boolean | null;
+            brandColor: string | null;
             createdAt: Date;
             updatedAt: Date;
         };
@@ -146,6 +148,7 @@ export declare class AuthService {
         aiHashtags: string[];
         aiCaptionLength: string | null;
         aiIncludeEmojis: boolean | null;
+        brandColor: string | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
@@ -161,6 +164,7 @@ export declare class AuthService {
         aiHashtags: string[];
         aiCaptionLength: string | null;
         aiIncludeEmojis: boolean | null;
+        brandColor: string | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
@@ -213,6 +217,7 @@ export declare class AuthService {
         aiHashtags: string[];
         aiCaptionLength: string | null;
         aiIncludeEmojis: boolean | null;
+        brandColor: string | null;
     } | {
         isSystemAdmin: boolean;
         firstName: string;
@@ -270,6 +275,7 @@ export declare class AuthService {
         aiHashtags: string[];
         aiCaptionLength: string | null;
         aiIncludeEmojis: boolean | null;
+        brandColor: string | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
@@ -319,6 +325,7 @@ export declare class AuthService {
         aiHashtags: string[];
         aiCaptionLength: string | null;
         aiIncludeEmojis: boolean | null;
+        brandColor: string | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
@@ -373,6 +380,7 @@ export declare class AuthService {
             aiHashtags: string[];
             aiCaptionLength: string | null;
             aiIncludeEmojis: boolean | null;
+            brandColor: string | null;
         } | {
             isSystemAdmin: boolean;
             firstName: string;
@@ -430,6 +438,7 @@ export declare class AuthService {
             aiHashtags: string[];
             aiCaptionLength: string | null;
             aiIncludeEmojis: boolean | null;
+            brandColor: string | null;
             createdAt: Date;
             updatedAt: Date;
         };
