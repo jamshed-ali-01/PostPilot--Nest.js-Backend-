@@ -1,0 +1,35 @@
+name: Deploy NestJS Backend to EC2
+
+on:
+  push:
+    branches: [ main ]
+  
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deploy NestJS via SSH
+      uses: appleboy/ssh-action@v0.1.5
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ubuntu
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          echo "🚀 NestJS Deployment Started"
+
+          cd /var/www/PostPilot--Nest.js-Backend-
+
+          git pull origin main
+
+          npm ci
+
+          npm run build
+
+          # restart with PM2
+          pm2 restart backend || pm2 start dist/main.js --name nest-backend
+
+          pm2 save
+
+          echo "✅ NestJS Deployment Done"
